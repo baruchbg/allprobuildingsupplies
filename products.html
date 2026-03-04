@@ -1,0 +1,151 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="All Pro Building Supplies LLC — product catalog." />
+  <title>Products | All Pro Building Supplies</title>
+  <link rel="icon" href="assets/logo.png" />
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body data-page="products">
+
+  <div class="topbar">
+    <div class="container">
+      <div class="row">
+        <a href="tel:17328875657">📞 732-887-5657</a>
+        <a href="mailto:baruch@allprobuildingsupplies.com">✉ baruch@allprobuildingsupplies.com</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="header">
+    <div class="goldline"></div>
+    <div class="container">
+      <div class="nav">
+        <a class="brand" href="index.html">
+          <img src="assets/logo.png" alt="All Pro Building Supplies LLC logo" />
+          <div>
+            <div class="name">All Pro Building Supplies</div>
+            <div class="tag">Building Materials • Plumbing • Hardware • Contractor Supplies</div>
+          </div>
+        </a>
+        <div class="menu">
+          <a href="index.html">Home</a>
+          <a class="active" href="products.html">Products</a>
+          <a href="about.html">About</a>
+          <a href="contact.html">Contact</a>
+          <a class="ghost" href="mailto:baruch@allprobuildingsupplies.com?subject=Need%20pricing%20or%20availability&body=Code%2C%20Size%2C%20Qty%2C%20Delivery%20ZIP">Request Pricing</a>
+          <a class="cta" href="tel:17328875657">Call Now</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container">
+      <div class="h2">Products Catalog</div>
+      <div class="sub">Search by keyword and filter by category/size. Inventory shows current on-hand when provided.</div>
+
+      <div class="notice">
+        <div>
+          <strong id="priceNote">Pricing hidden — dealer login required.</strong>
+          <div class="small" style="margin-top:4px;">
+            For public pricing requests, use the “Request Pricing” button above.
+          </div>
+        </div>
+        <div style="margin-left:auto; display:flex; flex-direction:column; align-items:flex-end; gap:6px;">
+          <button id="dealerBtn" class="ghost" type="button">Dealer Login</button>
+          <div id="dealerStatus" class="small muted">Dealer pricing: OFF</div>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <input id="search" class="input" type="search" placeholder="Search (PVC, bend, tee, 1-1/2, code...)" />
+        <select id="category" class="select" title="Category"></select>
+        <select id="size" class="select" title="Size"></select>
+        <label class="chip" title="Show only items with Qty On Hand > 0">
+          <input id="inStock" type="checkbox" />
+          In stock only
+        </label>
+        <div id="counts" class="sub" style="margin-left:auto;"></div>
+      </div>
+
+      <div id="error" class="card" style="display:none; margin-top:16px;">
+        <strong>Products list not found.</strong>
+        <div style="margin-top:6px;color:#4b5563;font-size:14px;">
+          The file <span class="code">assets/products.json</span> is missing or invalid.
+        </div>
+      </div>
+
+      <div class="tableWrap">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:160px;">Category</th>
+              <th>Product</th>
+              <th style="width:150px;">Code</th>
+              <th style="width:120px;">Size</th>
+              <th style="width:110px;">Pcs/CTN</th>
+              <th style="width:120px;">Qty On Hand</th>
+              <th style="width:140px;">Price</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+
+      <div class="small" style="margin-top:10px;color:#6b7280;">
+        Update catalog anytime by editing <span class="code">assets/products.json</span>.
+      </div>
+    </div>
+  </section>
+
+  <div class="footer">
+    <div class="container">
+      <div class="grid">
+        <div>
+          <div style="font-weight:900; font-size:16px;">All Pro Building Supplies LLC</div>
+          <div class="small" style="margin-top:6px;">Quality materials and contractor supplies with fast, dependable service.</div>
+          <hr class="sep" />
+          <div class="small">© <span id="y"></span> All Pro Building Supplies LLC. All rights reserved.</div>
+        </div>
+        <div>
+          <div style="font-weight:900; font-size:14px;">Contact</div>
+          <div style="margin-top:8px;">
+            <div class="small"><a href="tel:17328875657">732-887-5657</a></div>
+            <div class="small" style="margin-top:6px;"><a href="mailto:baruch@allprobuildingsupplies.com">baruch@allprobuildingsupplies.com</a></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>document.getElementById("y").textContent = new Date().getFullYear();</script>
+  <script src="assets/products.js"></script>
+
+  <!-- Dealer Modal -->
+  <div class="backdrop" id="backdrop" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-label="Dealer Login">
+      <div class="head">
+        <div class="t">Dealer Login</div>
+        <button class="xbtn" id="closeModal" type="button" aria-label="Close">×</button>
+      </div>
+      <div class="body">
+        <div style="font-weight:800;">Enter dealer passcode</div>
+        <div class="help">This passcode simply toggles pricing visibility on this device.</div>
+        <input id="pass" class="input" type="password" placeholder="Passcode" style="margin-top:10px; width:100%;">
+        <div id="err" class="err">Incorrect passcode.</div>
+        <div class="help" style="margin-top:10px;">
+          Want real dealer accounts? We can add a secure backend later.
+        </div>
+      </div>
+      <div class="actions">
+        <button class="ghost" type="button" onclick="document.getElementById('pass').value='';">Clear</button>
+        <button class="cta" id="loginBtn" type="button">Login</button>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
