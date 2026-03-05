@@ -1,71 +1,162 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="All Pro Building Supplies LLC — building materials, plumbing, hardware, and contractor supplies." />
-  <title>Contact | All Pro Building Supplies</title>
-  <link rel="icon" href="assets/logo.png" />
-  <link rel="stylesheet" href="assets/styles.css" />
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Contact — All Pro Building Supplies LLC</title>
+<meta name="description" content="Contact All Pro Building Supplies LLC — call 732-887-5657 or email baruch@allprobuildingsupplies.com for fast pricing and availability."/>
+<link rel="stylesheet" href="assets/style.css"/>
+<style>
+.contact-layout{display:grid;grid-template-columns:1fr 1fr;gap:80px;margin-top:64px}
+.ct-cards{display:flex;flex-direction:column;gap:14px}
+.ct-card{background:var(--ink2);border:1px solid rgba(139,160,178,.1);display:flex;align-items:center;gap:20px;padding:22px 26px;transition:border-color .3s}
+.ct-card:hover{border-color:rgba(200,152,31,.25)}
+.ct-ico{width:46px;height:46px;background:rgba(200,152,31,.1);border:1px solid rgba(200,152,31,.2);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.ct-lbl{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:3px}
+.ct-val{font-size:16px;color:var(--white)}
+.ct-val a{color:var(--white);transition:color .2s}
+.ct-val a:hover{color:var(--gold)}
+.ct-tagline{margin-top:32px;font-family:"Oswald",sans-serif;font-size:26px;font-weight:400;line-height:1.3;color:var(--smoke)}
+.ct-tagline strong{color:var(--gold)}
+.hours-grid{display:grid;grid-template-columns:1fr 1fr;gap:3px;margin-top:16px}
+.hour-card{background:var(--ink3);padding:20px 24px}
+.hour-day{font-family:"Oswald",sans-serif;font-size:13px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-bottom:4px}
+.hour-time{font-size:15px;color:var(--smoke)}
+.cf{display:flex;flex-direction:column;gap:14px}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.fg{display:flex;flex-direction:column;gap:7px}
+.fl{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--silver);font-family:"DM Mono",monospace}
+.fi,.fsel,.fta{background:var(--ink2);border:1px solid rgba(139,160,178,.15);color:var(--smoke);font-family:"DM Sans",sans-serif;font-size:15px;padding:14px 18px;outline:none;transition:border-color .2s,background .2s;width:100%}
+.fi::placeholder,.fta::placeholder{color:rgba(139,160,178,.38)}
+.fi:focus,.fsel:focus,.fta:focus{border-color:var(--gold);background:rgba(200,152,31,.03)}
+.fsel option{background:var(--ink3)}
+.fta{resize:vertical;min-height:128px}
+.fsub{background:var(--gold);color:var(--ink);border:none;font-family:"Oswald",sans-serif;font-size:15px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;padding:18px;cursor:none;display:flex;align-items:center;justify-content:center;gap:10px;transition:background .2s,transform .2s;margin-top:4px;width:100%}
+.fsub:hover{background:var(--gold2);transform:translateY(-2px)}
+@media(max-width:900px){.contact-layout{grid-template-columns:1fr;gap:48px}.frow{grid-template-columns:1fr}.hours-grid{grid-template-columns:1fr}}
+</style>
 </head>
-<body data-page="contact">
-  <div class="topbar">
-    <div class="container">
-      <div class="row">
-        <div class="left">
-          <a href="tel:17328875657">📞 732-887-5657</a>
-          <a href="mailto:baruch@allprobuildingsupplies.com">✉ baruch@allprobuildingsupplies.com</a>
-        </div>
-        <div class="small">All Pro Building Supplies LLC</div>
-      </div>
-    </div>
+<body>
+<div class="topbar">
+  <div class="topbar-links">
+    <a href="tel:17328875657"><svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.27-.27.67-.36 1.02-.22 1.12.45 2.32.68 3.58.68.55 0 1 .45 1 1V20c0 .55-.45 1-1 1C10.29 21 3 13.71 3 4.5c0-.55.45-1 1-1H8c.55 0 1 .45 1 1 0 1.27.2 2.48.57 3.62.1.32.03.68-.22.96L6.6 10.8z"/></svg>732-887-5657</a>
+    <a href="mailto:baruch@allprobuildingsupplies.com"><svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>baruch@allprobuildingsupplies.com</a>
   </div>
+  <div class="topbar-badge">Contractor-Grade · Fast Response · NJ &amp; Surrounding Areas</div>
+</div>
+<nav>
+  <div class="nav-logo">
+    <img src="assets/logo.png" alt="All Pro Building Supplies"/>
+    <div class="nav-brand-text">All Pro Building Supplies <span>LLC</span></div>
+  </div>
+  <ul class="nav-links"><li><a href="index.html" class="">Home</a></li><li><a href="products.html" class="">Products</a></li><li><a href="about.html" class="">About</a></li><li><a href="contact.html" class="active">Contact</a></li></ul>
+  <div class="nav-actions">
+    <a href="tel:17328875657" class="nav-tel"><svg viewBox="0 0 24 24" width="16" height="16" fill="var(--gold)"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.27-.27.67-.36 1.02-.22 1.12.45 2.32.68 3.58.68.55 0 1 .45 1 1V20c0 .55-.45 1-1 1C10.29 21 3 13.71 3 4.5c0-.55.45-1 1-1H8c.55 0 1 .45 1 1 0 1.27.2 2.48.57 3.62.1.32.03.68-.22.96L6.6 10.8z"/></svg>732-887-5657</a>
+    <a href="mailto:baruch@allprobuildingsupplies.com?subject=Need%20pricing%20or%20availability&body=Code%2C%20Size%2C%20Qty%2C%20Delivery%20ZIP" class="nav-cta">Get a Quote →</a>
+  </div>
+</nav>
 
-  <div class="header">
-    <div class="container">
-      <div class="nav">
-        <a class="brand" href="index.html" aria-label="All Pro Building Supplies">
-          <img src="assets/logo.png" alt="All Pro logo" />
-          <div>
-            <div class="wordmark">
-              <img class="a" src="assets/a-mark.png" alt="A" />
-              <span class="rest">LL PRO</span>
-            </div>
-            <div class="wordmark sub">BUILDING SUPPLIES LLC</div>
+<div class="page-hero">
+  <div class="page-hero-inner">
+    <div class="page-breadcrumb"><a href="index.html">Home</a> › Contact</div>
+    <div class="page-title" data-r>Get In <span>Touch</span></div>
+    <p class="page-subtitle" data-r>Call, email, or fill out the form. We get back to you fast — no tickets, no hold queues, just real answers from real people.</p>
+  </div>
+</div>
+<div class="ticker" aria-hidden="true"><div class="ticker-track">
+    <div class="t-item g">Building Materials <span class="t-dia">◆</span></div><div class="t-item">Plumbing Supplies <span class="t-dia">◆</span></div>
+    <div class="t-item g">Hardware <span class="t-dia">◆</span></div><div class="t-item">Contractor Supplies <span class="t-dia">◆</span></div>
+    <div class="t-item g">PVC Pipe &amp; Fittings <span class="t-dia">◆</span></div><div class="t-item">DWV Essentials <span class="t-dia">◆</span></div>
+    <div class="t-item g">Fasteners &amp; Anchors <span class="t-dia">◆</span></div><div class="t-item">Fast Response <span class="t-dia">◆</span></div>
+    <div class="t-item g">Special Orders Welcome <span class="t-dia">◆</span></div><div class="t-item">Volume Pricing <span class="t-dia">◆</span></div>
+    <div class="t-item g">Building Materials <span class="t-dia">◆</span></div><div class="t-item">Plumbing Supplies <span class="t-dia">◆</span></div>
+    <div class="t-item g">Hardware <span class="t-dia">◆</span></div><div class="t-item">Contractor Supplies <span class="t-dia">◆</span></div>
+    <div class="t-item g">PVC Pipe &amp; Fittings <span class="t-dia">◆</span></div><div class="t-item">DWV Essentials <span class="t-dia">◆</span></div>
+    <div class="t-item g">Fasteners &amp; Anchors <span class="t-dia">◆</span></div><div class="t-item">Fast Response <span class="t-dia">◆</span></div>
+    <div class="t-item g">Special Orders Welcome <span class="t-dia">◆</span></div><div class="t-item">Volume Pricing <span class="t-dia">◆</span></div>
+</div></div>
+<section class="sec" style="background:var(--ink)">
+  <div class="sec-inner">
+    <div class="contact-layout">
+      <div>
+        <div class="lbl" data-r>Contact Info</div>
+        <div class="ct-cards" data-r>
+          <div class="ct-card"><div class="ct-ico">📞</div><div><div class="ct-lbl">Phone</div><div class="ct-val"><a href="tel:17328875657">732-887-5657</a></div></div></div>
+          <div class="ct-card"><div class="ct-ico">✉️</div><div><div class="ct-lbl">Email</div><div class="ct-val"><a href="mailto:baruch@allprobuildingsupplies.com">baruch@allprobuildingsupplies.com</a></div></div></div>
+          <div class="ct-card"><div class="ct-ico">🌐</div><div><div class="ct-lbl">Website</div><div class="ct-val">allprobuildingsupplies.com</div></div></div>
+          <div class="ct-card"><div class="ct-ico">📦</div><div><div class="ct-lbl">For Pricing Emails, Include</div><div class="ct-val" style="font-size:14px;color:var(--silver)">Item Code · Size · Quantity · Delivery ZIP</div></div></div>
+        </div>
+        <div class="ct-tagline" data-r style="margin-top:36px">No tickets. No hold queues.<br><strong>Just fast answers.</strong></div>
+        <div class="lbl" data-r style="margin-top:48px">Business Hours</div>
+        <div class="hours-grid" data-r>
+          <div class="hour-card"><div class="hour-day">Mon – Fri</div><div class="hour-time">7:00 AM – 5:00 PM</div></div>
+          <div class="hour-card"><div class="hour-day">Saturday</div><div class="hour-time">8:00 AM – 2:00 PM</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="lbl" data-r>Send a Message</div>
+        <div class="cf" data-r>
+          <div class="frow">
+            <div class="fg"><label class="fl">First Name</label><input class="fi" type="text" placeholder="John"/></div>
+            <div class="fg"><label class="fl">Last Name</label><input class="fi" type="text" placeholder="Smith"/></div>
           </div>
-        </a>
-        <div class="menu">
-          <a class="" href="index.html">Home</a>
-          <a class="" href="products.html">Products</a>
-          <a class="" href="about.html">About</a>
-          <a class="active" href="contact.html">Contact</a>
-          <a class="btn" href="mailto:baruch@allprobuildingsupplies.com?subject=Need%20pricing%20or%20availability&body=Code%2C%20Size%2C%20Qty%2C%20Delivery%20ZIP">Request Pricing</a>
-          <a class="btn primary" href="tel:17328875657">Call Now</a>
+          <div class="fg"><label class="fl">Email</label><input class="fi" type="email" placeholder="john@company.com"/></div>
+          <div class="fg"><label class="fl">Phone</label><input class="fi" type="tel" placeholder="(555) 000-0000"/></div>
+          <div class="fg"><label class="fl">Company / Trade</label><input class="fi" type="text" placeholder="ABC Plumbing LLC"/></div>
+          <div class="fg"><label class="fl">I'm Looking For</label>
+            <select class="fsel">
+              <option value="">Select a category...</option>
+              <option>Building Materials</option><option>Plumbing Supplies</option>
+              <option>Hardware</option><option>Contractor Supplies</option>
+              <option>Project Quote</option><option>Special / Custom Order</option>
+              <option>Contractor Account Setup</option><option>General Inquiry</option>
+            </select>
+          </div>
+          <div class="fg"><label class="fl">Message (include codes, sizes, quantities, delivery ZIP)</label><textarea class="fta" placeholder="E.g.: 3&quot; PVC Schedule 40 elbow, qty 200, delivery to 07001…"></textarea></div>
+          <button class="fsub" onclick="submitForm(this)">Send Message <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
         </div>
       </div>
     </div>
   </div>
-
-  <section class="pageHero"><div class="container"><h1>Contact</h1><div class="lead">Call or email anytime.</div></div></section>
-
-  <div class="footer">
-    <div class="container">
-      <div class="grid">
-        <div>
-          <div style="font-weight:900;">All Pro Building Supplies LLC</div>
-          <div class="small" style="margin-top:6px;">Contractor-grade supplies with fast, dependable service.</div>
-          <div class="small" style="margin-top:10px;">© <span id="y"></span> All Pro Building Supplies LLC</div>
-        </div>
-        <div>
-          <div style="font-weight:900;">Contact</div>
-          <div class="small" style="margin-top:8px;"><a href="tel:17328875657">732-887-5657</a></div>
-          <div class="small" style="margin-top:6px;"><a href="mailto:baruch@allprobuildingsupplies.com">baruch@allprobuildingsupplies.com</a></div>
-        </div>
-      </div>
+</section>
+<section class="cta-band">
+  <div class="cta-band-inner">
+    <div><div class="cta-h">Ready to Get Your Supplies?</div><div class="cta-s">Call or email with your list — we respond fast with pricing and availability.</div></div>
+    <div class="cta-acts">
+      <a href="tel:17328875657" class="btn-dark"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.27-.27.67-.36 1.02-.22 1.12.45 2.32.68 3.58.68.55 0 1 .45 1 1V20c0 .55-.45 1-1 1C10.29 21 3 13.71 3 4.5c0-.55.45-1 1-1H8c.55 0 1 .45 1 1 0 1.27.2 2.48.57 3.62.1.32.03.68-.22.96L6.6 10.8z"/></svg>Call 732-887-5657</a>
+      <a href="mailto:baruch@allprobuildingsupplies.com?subject=Need%20pricing%20or%20availability&body=Code%2C%20Size%2C%20Qty%2C%20Delivery%20ZIP" class="btn-dark">✉ Email for Pricing</a>
     </div>
   </div>
-
-  <script>document.getElementById("y").textContent = new Date().getFullYear();</script>
-  
+</section>
+<footer>
+  <div class="ft-top">
+    <div>
+      <img src="assets/logo.png" alt="All Pro Building Supplies" class="ft-logo"/>
+      <p class="ft-txt">Contractor-grade building materials, plumbing, hardware, and contractor supplies. Fast response, real people, reliable service.</p>
+      <div class="ft-socials">
+        <a href="mailto:baruch@allprobuildingsupplies.com" class="soc">✉</a>
+        <a href="tel:17328875657" class="soc">📞</a>
+      </div>
+    </div>
+    <div class="ft-col"><h4>Products</h4><ul>
+      <li><a href="products.html">Building Materials</a></li><li><a href="products.html">Plumbing</a></li>
+      <li><a href="products.html">Hardware</a></li><li><a href="products.html">Contractor Supplies</a></li>
+    </ul></div>
+    <div class="ft-col"><h4>Company</h4><ul>
+      <li><a href="about.html">About Us</a></li><li><a href="products.html">Products</a></li>
+      <li><a href="contact.html">Contact</a></li><li><a href="contact.html">Request Pricing</a></li>
+    </ul></div>
+    <div class="ft-col"><h4>Contact</h4><ul>
+      <li><a href="tel:17328875657">732-887-5657</a></li>
+      <li><a href="mailto:baruch@allprobuildingsupplies.com">baruch@&#8203;allprobuildingsupplies.com</a></li>
+      <li><a href="contact.html">Get a Quote</a></li>
+    </ul></div>
+  </div>
+  <div class="ft-bot">
+    <span>© 2025 All Pro Building Supplies LLC · allprobuildingsupplies.com</span>
+    <span>Building Materials · Plumbing · Hardware · Contractor Supplies</span>
+  </div>
+</footer>
+<div id="cursor"></div><div id="cursor-ring"></div>
+<script src="assets/main.js"></script>
 </body>
 </html>
