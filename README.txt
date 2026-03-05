@@ -1,0 +1,1 @@
+Deploy by uploading all files to your GitHub repo root and enabling GitHub Pages. Passcode in assets/app.js.
