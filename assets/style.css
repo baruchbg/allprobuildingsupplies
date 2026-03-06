@@ -119,3 +119,122 @@ footer{background:var(--ink);border-top:1px solid rgba(200,152,31,.12)}
   .ft-top{grid-template-columns:1fr}
   h2.sh{font-size:32px}
 }
+
+/* ══════════════════════════════════════════
+   MOBILE NAV HAMBURGER
+══════════════════════════════════════════ */
+.hamburger{
+  display:none;flex-direction:column;justify-content:center;gap:5px;
+  background:transparent;border:none;padding:8px;cursor:pointer;
+  width:40px;height:40px;flex-shrink:0;
+}
+.hamburger span{
+  display:block;height:2px;background:var(--smoke);border-radius:2px;
+  transition:transform .3s,opacity .3s,width .3s;width:24px;
+}
+.hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.hamburger.open span:nth-child(2){opacity:0;width:0}
+.hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+
+.mobile-menu{
+  display:none;position:fixed;inset:0;top:57px;
+  background:rgba(12,17,23,.98);backdrop-filter:blur(20px);
+  z-index:99;flex-direction:column;padding:32px 28px;
+  border-top:1px solid rgba(200,152,31,.2);
+  animation:slideDown .25s ease;
+}
+@keyframes slideDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+.mobile-menu.open{display:flex}
+.mobile-menu a,.mobile-menu button{
+  font-family:'Oswald',sans-serif;font-size:22px;font-weight:500;letter-spacing:2px;
+  text-transform:uppercase;color:var(--smoke);padding:16px 0;
+  border-bottom:1px solid rgba(139,160,178,.1);background:transparent;border-left:none;border-right:none;border-top:none;
+  text-align:left;display:block;width:100%;transition:color .2s,padding-left .2s;cursor:pointer;
+}
+.mobile-menu a:hover{color:var(--gold);padding-left:6px}
+.mobile-menu .mob-cta{
+  margin-top:24px;background:var(--gold);color:var(--ink)!important;
+  padding:16px 24px!important;border:none!important;text-align:center!important;
+  font-weight:700!important;letter-spacing:2.5px;
+}
+.mobile-menu .mob-tel{
+  color:var(--gold)!important;font-size:18px!important;
+  display:flex!important;align-items:center;gap:10px;
+}
+
+/* ══════════════════════════════════════════
+   FULL RESPONSIVE OVERHAUL
+══════════════════════════════════════════ */
+
+/* — Tablet (≤900px) — */
+@media(max-width:900px){
+  /* topbar */
+  .topbar{padding:7px 20px;gap:6px}
+  .topbar-links{gap:16px;flex-wrap:wrap}
+  .topbar a{font-size:11px}
+  .topbar-badge{display:none}
+
+  /* nav */
+  nav{padding:0 20px;height:57px}
+  .nav-links,.nav-tel{display:none}
+  .nav-cta{display:none}
+  .hamburger{display:flex}
+  .nav-logo img{height:40px}
+  .nav-brand-text{font-size:14px}
+
+  /* page hero */
+  .page-hero{padding:52px 24px 40px}
+  .page-title{font-size:clamp(36px,7vw,56px)}
+  .page-subtitle{font-size:15px}
+
+  /* sections */
+  .sec{padding:64px 24px}
+
+  /* cta band */
+  .cta-band-inner{grid-template-columns:1fr;gap:28px;padding:52px 24px;text-align:center}
+  .cta-acts{flex-direction:row;justify-content:center;flex-wrap:wrap}
+
+  /* footer */
+  .ft-top{grid-template-columns:1fr 1fr;gap:32px;padding:48px 24px 36px}
+  .ft-bot{padding:16px 24px;flex-direction:column;gap:6px;text-align:center;font-size:11px}
+}
+
+/* — Mobile (≤600px) — */
+@media(max-width:600px){
+  /* topbar: just phone */
+  .topbar{padding:7px 16px}
+  .topbar-links a:last-child{display:none}
+
+  /* nav */
+  nav{height:54px}
+  .nav-brand-text span{display:none}
+  .nav-brand-text{font-size:13px;letter-spacing:.5px}
+
+  /* sections */
+  .sec{padding:52px 16px}
+  .page-hero{padding:44px 16px 32px}
+
+  /* section headings */
+  h2.sh{font-size:clamp(28px,7vw,40px)}
+  .lbl{font-size:10px;letter-spacing:3px}
+  .sh-body{font-size:15px}
+
+  /* footer */
+  .ft-top{grid-template-columns:1fr;padding:40px 16px 28px;gap:28px}
+  .ft-bot{padding:14px 16px;font-size:10px}
+  .ft-logo{height:44px}
+
+  /* buttons */
+  .btn-gold,.btn-ghost,.btn-dark{padding:13px 24px;font-size:13px;letter-spacing:2px;width:100%;justify-content:center}
+
+  /* cta */
+  .cta-band-inner{padding:44px 16px}
+  .cta-h{font-size:28px}
+  .cta-s{font-size:14px}
+  .cta-acts{flex-direction:column}
+  .cta-acts .btn-dark{width:100%;justify-content:center}
+
+  /* ticker */
+  .ticker{height:38px}
+  .t-item{font-size:11px;letter-spacing:2px;padding:0 24px;gap:24px}
+}
