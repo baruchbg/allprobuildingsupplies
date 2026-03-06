@@ -198,6 +198,30 @@ input,select,textarea{font-family:inherit}
   padding:2px 8px;display:none;
 }
 
+
+/* USERS PAGE */
+.users-table{width:100%;border-collapse:collapse;font-size:13.5px}
+.users-table thead tr{background:var(--gold)}
+.users-table thead th{font-family:'Oswald',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--ink);padding:11px 14px;text-align:left;white-space:nowrap}
+.users-table tbody tr{border-bottom:1px solid rgba(139,160,178,.07);transition:background .15s}
+.users-table tbody tr:hover{background:rgba(200,152,31,.03)}
+.users-table td{padding:11px 14px;color:var(--smoke);vertical-align:middle}
+.status-pill{display:inline-block;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;padding:3px 10px;border-radius:2px}
+.status-pill.pending{background:rgba(200,152,31,.12);color:var(--gold);border:1px solid rgba(200,152,31,.25)}
+.status-pill.approved{background:rgba(46,204,113,.1);color:#2ECC71;border:1px solid rgba(46,204,113,.25)}
+.status-pill.rejected{background:rgba(231,76,60,.1);color:#E74C3C;border:1px solid rgba(231,76,60,.25)}
+.user-actions{display:flex;gap:6px;flex-wrap:wrap}
+.ua-btn{font-family:'Oswald',sans-serif;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:6px 14px;border:none;cursor:pointer;transition:background .2s,transform .2s}
+.ua-btn:hover{transform:translateY(-1px)}
+.ua-approve{background:rgba(46,204,113,.15);color:#2ECC71;border:1px solid rgba(46,204,113,.3)}
+.ua-approve:hover{background:rgba(46,204,113,.25)}
+.ua-reject{background:rgba(231,76,60,.1);color:#E74C3C;border:1px solid rgba(231,76,60,.25)}
+.ua-reject:hover{background:rgba(231,76,60,.2)}
+.ua-delete{background:rgba(139,160,178,.08);color:var(--silver);border:1px solid rgba(139,160,178,.15)}
+.ua-delete:hover{background:rgba(231,76,60,.1);color:#E74C3C}
+.pending-count{background:var(--gold);color:var(--ink);font-family:'DM Mono',monospace;font-size:10px;padding:1px 7px;margin-left:6px;font-weight:600}
+.users-empty{text-align:center;padding:48px;color:var(--silver);font-size:14px}
+
 /* mobile */
 @media(max-width:768px){
   .adm-body{grid-template-columns:1fr}
@@ -225,6 +249,54 @@ input,select,textarea{font-family:inherit}
   thead th{font-size:10px;padding:8px 8px;letter-spacing:1px}
   tbody td{padding:7px 8px}
 }
+
+.badge{display:inline-block;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;padding:3px 9px;border-radius:2px}
+.badge-pending{background:rgba(241,196,15,.12);border:1px solid rgba(241,196,15,.3);color:#F1C40F}
+.badge-approved{background:rgba(46,204,113,.1);border:1px solid rgba(46,204,113,.3);color:#2ECC71}
+.badge-rejected{background:rgba(231,76,60,.1);border:1px solid rgba(231,76,60,.3);color:#E74C3C}
+.users-table{width:100%;border-collapse:collapse;font-size:13.5px}
+.users-table thead tr{background:var(--gold)}
+.users-table thead th{font-family:'Oswald',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--ink);padding:12px 14px;text-align:left;white-space:nowrap}
+.users-table tbody tr{border-bottom:1px solid rgba(139,160,178,.07);transition:background .15s}
+.users-table tbody tr:hover{background:rgba(200,152,31,.03)}
+.users-table td{padding:12px 14px;color:var(--smoke);vertical-align:middle}
+.users-table td.mono{font-family:'DM Mono',monospace;font-size:12px;color:var(--silver)}
+.u-acts{display:flex;gap:6px;flex-wrap:wrap}
+.u-btn{font-family:'Oswald',sans-serif;font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;padding:6px 12px;border:none;cursor:pointer;transition:background .2s,transform .15s}
+.u-btn:hover{transform:translateY(-1px)}
+.u-btn-approve{background:#2ECC71;color:#fff}
+.u-btn-reject{background:var(--ink3);border:1px solid rgba(231,76,60,.3);color:#E74C3C}
+.u-btn-delete{background:transparent;border:1px solid rgba(139,160,178,.2);color:var(--silver)}
+.u-btn-delete:hover{border-color:#E74C3C;color:#E74C3C}
+.users-empty{text-align:center;padding:48px;color:var(--silver);font-size:14px}
+.users-tabs{display:flex;gap:0;margin-bottom:24px;border-bottom:1px solid rgba(139,160,178,.1)}
+.utab{font-family:'Oswald',sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;padding:10px 20px;background:transparent;border:none;color:var(--silver);cursor:pointer;border-bottom:2px solid transparent;transition:color .2s,border-color .2s;position:relative;bottom:-1px}
+.utab.on{color:var(--gold);border-bottom-color:var(--gold)}
+.pending-dot{display:inline-block;width:7px;height:7px;background:#F1C40F;border-radius:50%;margin-left:6px;animation:blink 1.6s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+
+
+.users-table{width:100%;border-collapse:collapse;font-size:13.5px}
+.users-table thead tr{background:var(--gold)}
+.users-table thead th{font-family:"Oswald",sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--ink);padding:12px 14px;text-align:left;white-space:nowrap}
+.users-table tbody tr{border-bottom:1px solid rgba(139,160,178,.07);transition:background .15s}
+.users-table tbody tr:hover{background:rgba(200,152,31,.04)}
+.users-table td{padding:11px 14px;vertical-align:middle;color:var(--smoke);font-size:13px}
+.users-table td.mono{font-family:"DM Mono",monospace;font-size:12px}
+.status-badge{display:inline-block;font-family:"DM Mono",monospace;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;padding:3px 9px;border-radius:2px}
+.status-pending{background:rgba(200,152,31,.15);border:1px solid rgba(200,152,31,.3);color:var(--gold2)}
+.status-approved{background:rgba(46,204,113,.1);border:1px solid rgba(46,204,113,.3);color:#2ECC71}
+.status-rejected{background:rgba(231,76,60,.1);border:1px solid rgba(231,76,60,.3);color:#E74C3C}
+.u-act{display:flex;gap:6px;flex-wrap:wrap}
+.u-btn{font-family:"Oswald",sans-serif;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:6px 12px;border:none;cursor:pointer;transition:all .2s}
+.u-approve{background:rgba(46,204,113,.15);color:#2ECC71;border:1px solid rgba(46,204,113,.3)}
+.u-approve:hover{background:rgba(46,204,113,.3)}
+.u-reject{background:rgba(231,76,60,.1);color:#E74C3C;border:1px solid rgba(231,76,60,.25)}
+.u-reject:hover{background:rgba(231,76,60,.2)}
+.u-delete{background:rgba(139,160,178,.1);color:var(--silver);border:1px solid rgba(139,160,178,.15)}
+.u-delete:hover{background:rgba(231,76,60,.1);color:#E74C3C;border-color:rgba(231,76,60,.2)}
+.pending-count{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;background:var(--gold);color:var(--ink);font-size:11px;font-weight:700;border-radius:50%;margin-left:6px}
+.users-empty{text-align:center;padding:48px;color:var(--silver);font-size:14px}
 </style>
 </head>
 <body>
@@ -277,6 +349,15 @@ input,select,textarea{font-family:inherit}
         <span class="adm-nav-label">Manage</span>
         <button class="adm-nav-item active" onclick="showPage('products',this)">
           <span class="adm-nav-icon">📦</span> Products
+        </button>
+        <button class="adm-nav-item" onclick="showPage('users',this)">
+          <span class="adm-nav-icon">👥</span> Users
+        </button>
+        <button class="adm-nav-item" onclick="showPage('users',this)">
+          <span class="adm-nav-icon">👥</span> Users
+        </button>
+        <button class="adm-nav-item" onclick="showPage('users',this)">
+          <span class="adm-nav-icon">👥</span> Users
         </button>
         <button class="adm-nav-item" onclick="showPage('setup',this)">
           <span class="adm-nav-icon">⚙️</span> Settings
@@ -343,6 +424,35 @@ input,select,textarea{font-family:inherit}
         </div>
       </div>
 
+
+      <!-- ── USERS PAGE ── -->
+      <div class="adm-page" id="page-users">
+        <div class="adm-page-header">
+          <div class="adm-page-title">User Management</div>
+          <div class="adm-page-sub">Approve or reject trade account requests. Approved users can log in and view pricing.</div>
+        </div>
+        <div class="adm-status-bar idle" id="users-status-bar">
+          <div class="status-dot"></div>
+          <span id="users-status-msg">Loading users...</span>
+        </div>
+        <div class="users-tabs">
+          <button class="utab on" onclick="filterUsers('all',this)">All <span id="tab-all-count"></span></button>
+          <button class="utab" onclick="filterUsers('pending',this)">Pending <span id="tab-pending-dot"></span><span id="tab-pending-count"></span></button>
+          <button class="utab" onclick="filterUsers('approved',this)">Approved <span id="tab-approved-count"></span></button>
+          <button class="utab" onclick="filterUsers('rejected',this)">Rejected <span id="tab-rejected-count"></span></button>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="users-table">
+            <thead><tr>
+              <th>Name</th><th>Company</th><th>Email</th><th>Phone</th><th>Registered</th><th>Status</th><th>Actions</th>
+            </tr></thead>
+            <tbody id="users-tbody">
+              <tr><td colspan="7" class="users-empty">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       <!-- ── SETUP PAGE ── -->
       <div class="adm-page" id="page-setup">
         <div class="adm-page-header">
@@ -401,6 +511,37 @@ input,select,textarea{font-family:inherit}
         </div>
       </div>
 
+
+      <!-- ── USERS PAGE ── -->
+      <div class="adm-page" id="page-users">
+        <div class="adm-page-header">
+          <div class="adm-page-title">User Management</div>
+          <div class="adm-page-sub">Approve or reject customer/dealer pricing access requests.</div>
+        </div>
+        <div class="adm-status-bar idle" id="users-status-bar">
+          <div class="status-dot"></div>
+          <span id="users-status-msg">Loading users...</span>
+        </div>
+        <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap">
+          <button class="adm-btn adm-btn-add" onclick="loadUsers()" style="background:var(--ink3);color:var(--silver)">↻ Refresh</button>
+          <div style="display:flex;gap:8px;margin-left:auto">
+            <button class="filter-btn on" onclick="setUserFilter('all',this)" style="font-family:'Oswald',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;padding:8px 16px;border:1px solid rgba(139,160,178,.2);color:var(--silver);background:transparent;cursor:pointer;transition:all .2s">All</button>
+            <button class="filter-btn" onclick="setUserFilter('pending',this)" id="pending-filter-btn" style="font-family:'Oswald',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;padding:8px 16px;border:1px solid rgba(139,160,178,.2);color:var(--silver);background:transparent;cursor:pointer;transition:all .2s">Pending</button>
+            <button class="filter-btn" onclick="setUserFilter('approved',this)" style="font-family:'Oswald',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;padding:8px 16px;border:1px solid rgba(139,160,178,.2);color:var(--silver);background:transparent;cursor:pointer;transition:all .2s">Approved</button>
+          </div>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="users-table" id="users-table">
+            <thead><tr>
+              <th>Name</th><th>Company</th><th>Email</th><th>Phone</th><th>Registered</th><th>Status</th><th>Actions</th>
+            </tr></thead>
+            <tbody id="users-tbody">
+              <tr><td colspan="7" class="users-empty">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       <!-- ── HELP PAGE ── -->
       <div class="adm-page" id="page-help">
         <div class="adm-page-header">
@@ -432,6 +573,29 @@ input,select,textarea{font-family:inherit}
             <strong>Security Note</strong><br/>
             This admin panel stores your GitHub token in your browser's local storage. Only use it on your own trusted device. Never share the <code>admin.html</code> URL or your password.
           </div>
+        </div>
+      </div>
+
+
+      <!-- ── USERS PAGE ── -->
+      <div class="adm-page" id="page-users">
+        <div class="adm-page-header">
+          <div class="adm-page-title">User Management</div>
+          <div class="adm-page-sub">Approve or reject customer/dealer registration requests. Approved users can see pricing on the products page.</div>
+        </div>
+        <div class="adm-status-bar idle" id="users-status-bar">
+          <div class="status-dot"></div>
+          <span id="users-status-msg">Loading users...</span>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="users-table" id="users-table">
+            <thead><tr>
+              <th>Name</th><th>Company</th><th>Email</th><th>Phone</th><th>Registered</th><th>Status</th><th>Actions</th>
+            </tr></thead>
+            <tbody id="users-tbody">
+              <tr><td colspan="7" class="users-empty">Loading...</td></tr>
+            </tbody>
+          </table>
         </div>
       </div>
 
@@ -579,6 +743,7 @@ function updateStats(){
   const cats = new Set(products.map(p=>p.code));
   document.getElementById('stat-total').textContent = products.length;
   document.getElementById('stat-cats').textContent = cats.size;
+  document.querySelector('#adm-stats .adm-stat:last-child .adm-stat-lbl').textContent = 'Categories';
 }
 
 // ── CSV PARSE / GENERATE ─────────────────────────
@@ -958,6 +1123,392 @@ function filterTable(){const q=document.getElementById('prodSearch').value.toLow
 </body>
 </html>`;
 }
+
+// ════════════════════════════════════════════════
+// USERS MANAGEMENT
+// ════════════════════════════════════════════════
+let allUsers = [];
+let usersSha = '';
+let usersFilter = 'all';
+
+function setUsersStatus(type, msg){
+  const bar = document.getElementById('users-status-bar');
+  bar.className = 'adm-status-bar ' + type;
+  bar.innerHTML = `<div class="status-dot"></div><span>${msg}</span>`;
+}
+
+async function loadUsers(){
+  setUsersStatus('working','Loading users...');
+  try{
+    const data = await ghFetch('users.json');
+    usersSha = data.sha;
+    const parsed = JSON.parse(atob(data.content.replace(/\n/g,'')));
+    allUsers = parsed.users || [];
+    renderUsers();
+    updateUserCounts();
+    setUsersStatus('idle', `${allUsers.length} total users`);
+  }catch(e){
+    setUsersStatus('error','Failed to load users: ' + e.message);
+  }
+}
+
+function updateUserCounts(){
+  const counts = {all:0,pending:0,approved:0,rejected:0};
+  allUsers.forEach(u=>{ counts.all++; counts[u.status]=(counts[u.status]||0)+1; });
+  document.getElementById('tab-all-count').textContent = counts.all ? `(${counts.all})` : '';
+  document.getElementById('tab-pending-count').textContent = counts.pending ? `(${counts.pending})` : '';
+  document.getElementById('tab-approved-count').textContent = counts.approved ? `(${counts.approved})` : '';
+  document.getElementById('tab-rejected-count').textContent = counts.rejected ? `(${counts.rejected})` : '';
+  // Show blinking dot if pending
+  const dot = document.getElementById('tab-pending-dot');
+  dot.innerHTML = counts.pending > 0 ? '<span class="pending-dot"></span>' : '';
+  // Update sidebar stat
+  document.getElementById('stat-total').textContent = allUsers.filter(u=>u.status==='approved').length;
+  document.getElementById('stat-cats').textContent = counts.pending || '0';
+  document.querySelector('#adm-stats .adm-stat:last-child .adm-stat-lbl').textContent = 'Pending Approvals';
+}
+
+function filterUsers(filter, btn){
+  usersFilter = filter;
+  document.querySelectorAll('.utab').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  renderUsers();
+}
+
+function renderUsers(){
+  const tbody = document.getElementById('users-tbody');
+  const filtered = usersFilter === 'all' ? allUsers : allUsers.filter(u=>u.status===usersFilter);
+  if(filtered.length === 0){
+    tbody.innerHTML = `<tr><td colspan="7" class="users-empty">${usersFilter==='pending'?'No pending requests 🎉':'No users in this category'}</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = filtered.map(u => `
+    <tr id="urow-${u.id}">
+      <td><strong style="color:var(--white)">${u.fname} ${u.lname}</strong></td>
+      <td>${u.company}</td>
+      <td class="mono">${u.email}</td>
+      <td class="mono">${u.phone||'—'}</td>
+      <td class="mono" style="font-size:11px;color:var(--silver)">${new Date(u.registeredAt).toLocaleDateString()}</td>
+      <td><span class="badge badge-${u.status}">${u.status}</span></td>
+      <td>
+        <div class="u-acts">
+          ${u.status!=='approved' ? `<button class="u-btn u-btn-approve" onclick="setUserStatus('${u.id}','approved')">✓ Approve</button>` : ''}
+          ${u.status!=='rejected' ? `<button class="u-btn u-btn-reject" onclick="setUserStatus('${u.id}','rejected')">✗ Reject</button>` : ''}
+          <button class="u-btn u-btn-delete" onclick="deleteUser('${u.id}')">Delete</button>
+        </div>
+      </td>
+    </tr>`).join('');
+}
+
+async function saveUsers(commitMsg){
+  const payload = {
+    message: commitMsg,
+    content: btoa(unescape(encodeURIComponent(JSON.stringify({users: allUsers}, null, 2)))),
+    branch: GH_BRANCH,
+    sha: usersSha
+  };
+  const result = await ghFetch('users.json',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+  usersSha = result.content.sha;
+}
+
+async function setUserStatus(id, status){
+  const user = allUsers.find(u=>u.id===id);
+  if(!user) return;
+  const prev = user.status;
+  user.status = status;
+  renderUsers();
+  updateUserCounts();
+  setUsersStatus('working', `${status==='approved'?'Approving':'Rejecting'} ${user.fname}...`);
+  try{
+    await saveUsers(`${status==='approved'?'Approve':'Reject'} user: ${user.fname} ${user.lname}`);
+    setUsersStatus('success', `✓ ${user.fname} ${user.lname} ${status}. Site updates in ~1 min.`);
+    setTimeout(()=>setUsersStatus('idle',`${allUsers.length} total users`),4000);
+  }catch(e){
+    user.status = prev;
+    renderUsers(); updateUserCounts();
+    setUsersStatus('error','Failed to save: ' + e.message);
+  }
+}
+
+async function deleteUser(id){
+  const user = allUsers.find(u=>u.id===id);
+  if(!user || !confirm(`Delete ${user.fname} ${user.lname} (${user.email})?`)) return;
+  allUsers = allUsers.filter(u=>u.id!==id);
+  renderUsers(); updateUserCounts();
+  setUsersStatus('working','Deleting user...');
+  try{
+    await saveUsers(`Delete user: ${user.fname} ${user.lname}`);
+    setUsersStatus('success','✓ User deleted.');
+    setTimeout(()=>setUsersStatus('idle',`${allUsers.length} total users`),3000);
+  }catch(e){
+    allUsers.push(user);
+    renderUsers(); updateUserCounts();
+    setUsersStatus('error','Failed: ' + e.message);
+  }
+}
+
+// Auto-load users when switching to users page
+const origShowPage = window.showPage;
+window.showPage = function(name, btn){
+  origShowPage(name, btn);
+  if(name==='users' && allUsers.length===0) loadUsers();
+};
+
+
+// ════════════════════════════════════════════════
+// USER MANAGEMENT
+// ════════════════════════════════════════════════
+let usersData = null;
+let usersSha  = '';
+
+function setUsersStatus(type, msg){
+  const bar = document.getElementById('users-status-bar');
+  if(!bar) return;
+  bar.className = 'adm-status-bar ' + type;
+  bar.innerHTML = `<div class="status-dot"></div><span>${msg}</span>`;
+}
+
+async function loadUsers(){
+  setUsersStatus('working','Loading users from GitHub...');
+  try{
+    const d = await ghFetch('users.json');
+    usersSha = d.sha;
+    usersData = JSON.parse(atob(d.content.replace(/\n/g,'')));
+    renderUsers(usersData.users);
+    const pending = usersData.users.filter(u=>u.status==='pending').length;
+    setUsersStatus('success', `Loaded ${usersData.users.length} user(s) — ${pending} pending approval`);
+    // Update sidebar badge
+    const navItem = document.querySelector('[onclick*="users"]');
+    if(navItem && pending > 0){
+      if(!navItem.querySelector('.pending-count')){
+        navItem.innerHTML += `<span class="pending-count">${pending}</span>`;
+      }
+    }
+  } catch(e){
+    setUsersStatus('error','Failed to load users: '+e.message);
+  }
+}
+
+function renderUsers(users){
+  const tbody = document.getElementById('users-tbody');
+  if(!users || users.length===0){
+    tbody.innerHTML='<tr><td colspan="7" class="users-empty">No registered users yet. Users will appear here when they register at <strong>login.html</strong></td></tr>';
+    return;
+  }
+  // Sort: pending first, then by date
+  const sorted = [...users].sort((a,b)=>{
+    if(a.status==='pending'&&b.status!=='pending') return -1;
+    if(b.status==='pending'&&a.status!=='pending') return 1;
+    return new Date(b.registeredAt)-new Date(a.registeredAt);
+  });
+  tbody.innerHTML = sorted.map(u=>`
+    <tr id="urow-${u.id}">
+      <td><strong style="color:var(--white)">${u.name}</strong></td>
+      <td>${u.company||'—'}</td>
+      <td class="mono"><a href="mailto:${u.email}" style="color:var(--gold)">${u.email}</a></td>
+      <td class="mono">${u.phone||'—'}</td>
+      <td class="mono" style="font-size:11px">${new Date(u.registeredAt).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</td>
+      <td><span class="status-badge status-${u.status}">${u.status}</span></td>
+      <td><div class="u-act">
+        ${u.status!=='approved'?`<button class="u-btn u-approve" onclick="setUserStatus('${u.id}','approved')">✓ Approve</button>`:''}
+        ${u.status!=='rejected'?`<button class="u-btn u-reject" onclick="setUserStatus('${u.id}','rejected')">✗ Reject</button>`:''}
+        <button class="u-btn u-delete" onclick="deleteUser('${u.id}','${u.name}')">Delete</button>
+      </div></td>
+    </tr>`).join('');
+}
+
+async function setUserStatus(id, status){
+  if(!usersData) return;
+  const user = usersData.users.find(u=>u.id===id);
+  if(!user) return;
+  user.status = status;
+  user.updatedAt = new Date().toISOString();
+  setUsersStatus('working', `Setting ${user.name} to ${status}...`);
+  try{
+    const result = await ghFetch('users.json',{
+      method:'PUT',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        message:`${status} user: ${user.email}`,
+        content:btoa(unescape(encodeURIComponent(JSON.stringify(usersData,null,2)))),
+        branch:GH_BRANCH,
+        sha:usersSha
+      })
+    });
+    usersSha = result.content.sha;
+    renderUsers(usersData.users);
+    const pending = usersData.users.filter(u=>u.status==='pending').length;
+    setUsersStatus('success',`✓ ${user.name} ${status}. ${pending} pending.`);
+  } catch(e){
+    setUsersStatus('error','Failed: '+e.message);
+    user.status = status==='approved'?'pending':'approved'; // revert
+  }
+}
+
+async function deleteUser(id, name){
+  if(!confirm(`Delete user "${name}"? They will need to re-register.`)) return;
+  if(!usersData) return;
+  usersData.users = usersData.users.filter(u=>u.id!==id);
+  setUsersStatus('working','Deleting user...');
+  try{
+    const result = await ghFetch('users.json',{
+      method:'PUT',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        message:`Delete user: ${name}`,
+        content:btoa(unescape(encodeURIComponent(JSON.stringify(usersData,null,2)))),
+        branch:GH_BRANCH,
+        sha:usersSha
+      })
+    });
+    usersSha = result.content.sha;
+    renderUsers(usersData.users);
+    setUsersStatus('success','User deleted.');
+  } catch(e){
+    setUsersStatus('error','Delete failed: '+e.message);
+  }
+}
+
+// Override showPage to load users when navigating to users tab
+const _origShowPage = showPage;
+function showPage(name, btn){
+  _origShowPage(name, btn);
+  if(name==='users' && !usersData) loadUsers();
+}
+
+
+// ════════════════════════════════════════════════
+// USERS MANAGEMENT
+// ════════════════════════════════════════════════
+let allUsers = [], usersSha = '', userFilter = 'all';
+
+async function loadUsers() {
+  setUsersStatus('working', 'Loading users...');
+  try {
+    const data = await ghFetch('users.json');
+    usersSha = data.sha;
+    allUsers = JSON.parse(atob(data.content.replace(/\n/g,''))).users || [];
+    renderUsers();
+    const pending = allUsers.filter(u=>u.status==='pending').length;
+    setUsersStatus('success', `Loaded ${allUsers.length} user${allUsers.length!==1?'s':''} — ${pending} pending approval`);
+    // Update pending badge in nav
+    const pendingBtn = document.getElementById('pending-filter-btn');
+    if(pendingBtn && pending > 0) pendingBtn.innerHTML = `Pending <span class="pending-count">${pending}</span>`;
+    setTimeout(()=>setUsersStatus('idle','Ready'),3000);
+  } catch(e) {
+    setUsersStatus('error', 'Failed to load users: ' + e.message);
+  }
+}
+
+function setUserFilter(f, btn) {
+  userFilter = f;
+  document.querySelectorAll('#page-users .filter-btn').forEach(b=>{
+    b.style.borderColor='rgba(139,160,178,.2)';b.style.color='var(--silver)';b.style.background='transparent';
+  });
+  btn.style.borderColor='var(--gold)';btn.style.color='var(--gold)';btn.style.background='rgba(200,152,31,.07)';
+  renderUsers();
+}
+
+function renderUsers() {
+  const tbody = document.getElementById('users-tbody');
+  const filtered = userFilter === 'all' ? allUsers : allUsers.filter(u=>u.status===userFilter);
+  if(filtered.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="7" class="users-empty">No ${userFilter === 'all' ? '' : userFilter} users found.</td></tr>`;
+    return;
+  }
+  // Sort: pending first
+  const sorted = [...filtered].sort((a,b)=>{
+    const order = {pending:0,approved:1,rejected:2};
+    return (order[a.status]||0)-(order[b.status]||0);
+  });
+  tbody.innerHTML = sorted.map(u => {
+    const reg = u.registered ? new Date(u.registered).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '—';
+    const actions = u.status === 'pending'
+      ? `<div class="user-actions"><button class="ua-btn ua-approve" onclick="updateUserStatus('${u.id}','approved')">✓ Approve</button><button class="ua-btn ua-reject" onclick="updateUserStatus('${u.id}','rejected')">✗ Reject</button></div>`
+      : u.status === 'approved'
+      ? `<div class="user-actions"><button class="ua-btn ua-reject" onclick="updateUserStatus('${u.id}','rejected')">Revoke</button><button class="ua-btn ua-delete" onclick="deleteUser('${u.id}')">Delete</button></div>`
+      : `<div class="user-actions"><button class="ua-btn ua-approve" onclick="updateUserStatus('${u.id}','approved')">Re-approve</button><button class="ua-btn ua-delete" onclick="deleteUser('${u.id}')">Delete</button></div>`;
+    return `<tr>
+      <td><strong style="color:var(--white)">${u.fname} ${u.lname}</strong></td>
+      <td>${u.company||'—'}</td>
+      <td><a href="mailto:${u.email}" style="color:var(--gold)">${u.email}</a></td>
+      <td>${u.phone||'—'}</td>
+      <td style="font-size:12px;color:var(--silver)">${reg}</td>
+      <td><span class="status-pill ${u.status}">${u.status}</span></td>
+      <td>${actions}</td>
+    </tr>`;
+  }).join('');
+}
+
+async function updateUserStatus(id, newStatus) {
+  const user = allUsers.find(u=>u.id===id);
+  if(!user) return;
+  const action = newStatus==='approved'?'approve':'reject';
+  if(!confirm(`${action.charAt(0).toUpperCase()+action.slice(1)} access for ${user.fname} ${user.lname} (${user.company})?`)) return;
+
+  setUsersStatus('working', `Updating ${user.fname} ${user.lname}...`);
+  try {
+    user.status = newStatus;
+    user.approved = newStatus==='approved' ? new Date().toISOString() : null;
+    await ghFetch('users.json', {
+      method:'PUT', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        message: `${newStatus==='approved'?'Approve':'Reject'} user: ${user.fname} ${user.lname}`,
+        content: btoa(unescape(encodeURIComponent(JSON.stringify({users:allUsers},null,2)))),
+        branch: GH_BRANCH, sha: usersSha
+      })
+    });
+    // Refresh sha
+    const fresh = await ghFetch('users.json');
+    usersSha = fresh.sha;
+    renderUsers();
+    setUsersStatus('success', `✓ ${user.fname} ${user.lname} ${newStatus}`);
+    setTimeout(()=>setUsersStatus('idle','Ready'),3000);
+  } catch(e) {
+    setUsersStatus('error', 'Update failed: ' + e.message);
+  }
+}
+
+async function deleteUser(id) {
+  const user = allUsers.find(u=>u.id===id);
+  if(!user) return;
+  if(!confirm(`Permanently delete ${user.fname} ${user.lname}'s account?`)) return;
+  setUsersStatus('working', 'Deleting user...');
+  try {
+    allUsers = allUsers.filter(u=>u.id!==id);
+    await ghFetch('users.json', {
+      method:'PUT', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        message: `Delete user: ${user.fname} ${user.lname}`,
+        content: btoa(unescape(encodeURIComponent(JSON.stringify({users:allUsers},null,2)))),
+        branch: GH_BRANCH, sha: usersSha
+      })
+    });
+    const fresh = await ghFetch('users.json');
+    usersSha = fresh.sha;
+    renderUsers();
+    setUsersStatus('success', `✓ User deleted`);
+    setTimeout(()=>setUsersStatus('idle','Ready'),3000);
+  } catch(e) {
+    setUsersStatus('error', 'Delete failed: ' + e.message);
+  }
+}
+
+function setUsersStatus(type, msg) {
+  const bar = document.getElementById('users-status-bar');
+  if(!bar) return;
+  bar.className = 'adm-status-bar ' + type;
+  const icon = type==='working'?'<span class="spin">⟳</span>':type==='success'?'✓':type==='error'?'✗':'●';
+  bar.innerHTML = `<div class="status-dot"></div><span>${icon} ${msg}</span>`;
+}
+
+// Auto-load users when users tab is opened
+const origShowPage = showPage;
+window.showPage = function(name, btn) {
+  origShowPage(name, btn);
+  if(name === 'users' && allUsers.length === 0) loadUsers();
+};
+
 </script>
 </body>
 </html>

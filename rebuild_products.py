@@ -57,7 +57,7 @@ for p in products:
       <td>{p["size"]}</td>
       <td><span class="qty-badge">{p["pcs_per_ctn"]}/CTN</span></td>
       <td>{stock_cell(p["qty_on_hand"])}</td>
-      <td class="price">${p["unit_price"]:.2f}</td>
+      <td class="price price-cell" data-price="{p['unit_price']:.2f}"></td>
     </tr>\n'''
 
 # ── Filter buttons ────────────────────────────────────────────────
@@ -98,7 +98,7 @@ NAV = '''<nav>
   </ul>
   <div class="nav-actions">
     <a href="tel:17328875854" class="nav-tel"><svg viewBox="0 0 24 24" width="16" height="16" fill="var(--gold)"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.27-.27.67-.36 1.02-.22 1.12.45 2.32.68 3.58.68.55 0 1 .45 1 1V20c0 .55-.45 1-1 1C10.29 21 3 13.71 3 4.5c0-.55.45-1 1-1H8c.55 0 1 .45 1 1 0 1.27.2 2.48.57 3.62.1.32.03.68-.22.96L6.6 10.8z"/></svg>732-887-5854</a>
-    <a href="mailto:baruch@allprobuildingsupplies.com?subject=Need%20pricing%20or%20availability&body=Code%2C%20Size%2C%20Qty%2C%20Delivery%20ZIP" class="nav-cta">Get a Quote →</a>
+    <a href="login.html" class="nav-cta">Login / Register →</a>
   </div>
 </nav>'''
 
@@ -187,6 +187,19 @@ tbody td.price{{font-weight:500;color:var(--white)}}
 </div></div>
 <section class="sec" style="background:var(--ink)">
   <div class="sec-inner">
+    <!-- PRICE GATE -->
+    <div class="price-gate" id="price-gate" style="display:none;background:var(--ink2);border:1px solid rgba(200,152,31,.2);padding:20px 28px;margin-bottom:28px;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap">
+      <div style="font-size:15px;color:var(--smoke)"><strong style="color:var(--gold)">🔒 Login to See Pricing</strong><br/>Create a free trade account to unlock full pricing.</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <a href="login.html" class="btn-gold" style="padding:11px 24px;font-size:13px">Log In →</a>
+        <a href="register.html" class="btn-ghost" style="padding:11px 24px;font-size:13px">Request Access</a>
+      </div>
+    </div>
+    <!-- USER BAR -->
+    <div class="user-bar" id="user-bar" style="display:none;background:rgba(200,152,31,.08);border:1px solid rgba(200,152,31,.2);padding:12px 20px;margin-bottom:20px;align-items:center;justify-content:space-between;font-size:14px;color:var(--smoke);flex-wrap:wrap;gap:8px">
+      <span>Logged in as <strong id="user-name-display" style="color:var(--gold)"></strong> — <span id="user-company-display" style="color:var(--silver)"></span></span>
+      <button onclick="doLogout()" style="font-family:'DM Mono',monospace;font-size:11px;color:var(--silver);background:transparent;border:1px solid rgba(139,160,178,.2);padding:5px 12px;cursor:pointer">Log Out</button>
+    </div>
     <div class="note-box">
       <strong>How to Order:</strong> Call <a href="tel:17328875854" style="color:var(--gold)">732-887-5854</a> or email
       <a href="mailto:baruch@allprobuildingsupplies.com?subject=Pricing%20Request&body=Code%2C%20Size%2C%20Qty%2C%20Delivery%20ZIP" style="color:var(--gold)">baruch@allprobuildingsupplies.com</a>
@@ -204,7 +217,7 @@ tbody td.price{{font-weight:500;color:var(--white)}}
     <div class="prod-table-wrap">
       <table id="prodTable">
         <thead><tr>
-          <th>Code</th><th>Size</th><th>Pack</th><th>Availability</th><th>Unit Price</th>
+          <th>Code</th><th>Size</th><th>Pack</th><th>Availability</th><th id="price-col-header">Unit Price</th>
         </tr></thead>
         <tbody id="prodBody">
 {rows_html}
