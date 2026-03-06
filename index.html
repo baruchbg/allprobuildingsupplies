@@ -74,9 +74,33 @@ h1.htitle strong{color:var(--gold)}
 .step-n::after{content:"";position:absolute;inset:4px;background:rgba(200,152,31,.06)}
 .step-ttl{font-family:"Oswald",sans-serif;font-size:19px;font-weight:600;color:var(--white);margin-bottom:8px}
 .step-body{font-size:13.5px;color:var(--silver);line-height:1.7}
-@media(max-width:1100px){#hero{grid-template-columns:1fr}.hero-right{display:none}.hero-left{padding:80px 24px}.why-grid{grid-template-columns:1fr;gap:48px}}
-@media(max-width:768px){.cat-grid{grid-template-columns:1fr 1fr}.steps{grid-template-columns:1fr 1fr}.steps::before{display:none}h1.htitle{font-size:48px}}
-@media(max-width:480px){.steps{grid-template-columns:1fr}}
+@media(max-width:1100px){
+  #hero{grid-template-columns:1fr}
+  .hero-right{display:none}
+  .hero-left{padding:80px 48px}
+  .why-grid{grid-template-columns:1fr;gap:48px}
+}
+@media(max-width:768px){
+  .hero-left{padding:64px 24px}
+  h1.htitle{font-size:clamp(42px,10vw,64px);letter-spacing:-.5px}
+  .hero-sub{font-size:15px}
+  .hero-btns{flex-direction:column}
+  .hero-btns .btn-gold,.hero-btns .btn-ghost{width:100%;justify-content:center}
+  .hero-proof{gap:24px;flex-wrap:wrap}
+  .proof-num{font-size:28px}
+  .cat-grid{grid-template-columns:1fr 1fr}
+  .steps{grid-template-columns:1fr 1fr;gap:32px}
+  .steps::before{display:none}
+  .why-card{padding:32px 24px}
+  .why-qtxt{font-size:22px}
+}
+@media(max-width:480px){
+  .hero-left{padding:52px 16px}
+  h1.htitle{font-size:38px}
+  .cat-grid{grid-template-columns:1fr}
+  .steps{grid-template-columns:1fr}
+  .hero-proof{gap:20px}
+}
 </style>
 </head>
 <body>
@@ -97,7 +121,20 @@ h1.htitle strong{color:var(--gold)}
     <a href="tel:17328875854" class="nav-tel"><svg viewBox="0 0 24 24" width="16" height="16" fill="var(--gold)"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.27-.27.67-.36 1.02-.22 1.12.45 2.32.68 3.58.68.55 0 1 .45 1 1V20c0 .55-.45 1-1 1C10.29 21 3 13.71 3 4.5c0-.55.45-1 1-1H8c.55 0 1 .45 1 1 0 1.27.2 2.48.57 3.62.1.32.03.68-.22.96L6.6 10.8z"/></svg>732-887-5854</a>
     <a href="mailto:baruch@allprobuildingsupplies.com?subject=Need%20pricing%20or%20availability&body=Code%2C%20Size%2C%20Qty%2C%20Delivery%20ZIP" class="nav-cta">Get a Quote →</a>
   </div>
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
 </nav>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobile-menu">
+  <a href="index.html">Home</a>
+  <a href="products.html">Products</a>
+  <a href="about.html">About</a>
+  <a href="contact.html">Contact</a>
+  <a href="tel:17328875854" class="mob-tel">📞 732-887-5854</a>
+  <a href="mailto:baruch@allprobuildingsupplies.com?subject=Need%20pricing%20or%20availability&body=Code%2C%20Size%2C%20Qty%2C%20Delivery%20ZIP" class="mob-cta">Get a Quote →</a>
+</div>
 
 <section id="hero">
   <div class="hero-left">
