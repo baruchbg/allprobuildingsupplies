@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="assets/style.css"/>
 <style>
 .filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:40px}
-.filter-btn{font-family:"Oswald",sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;padding:9px 20px;border:1px solid rgba(139,160,178,.2);color:var(--silver);background:transparent;cursor:pointer;transition:all .2s}
+.filter-btn{font-family:"Oswald",sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;padding:9px 20px;border:1px solid rgba(139,160,178,.2);color:var(--silver);background:transparent;cursor:none;transition:all .2s}
 .filter-btn:hover,.filter-btn.on{border-color:var(--gold);color:var(--gold);background:rgba(200,152,31,.07)}
 .prod-table-wrap{overflow-x:auto;border:1px solid rgba(139,160,178,.1)}
 table{width:100%;border-collapse:collapse;font-size:14px}
@@ -27,6 +27,24 @@ tbody td.price{font-weight:500;color:var(--white)}
 .search-input{width:100%;background:var(--ink2);border:1px solid rgba(139,160,178,.2);color:var(--smoke);font-family:"DM Sans",sans-serif;font-size:15px;padding:14px 18px 14px 48px;outline:none;transition:border-color .2s}
 .search-input:focus{border-color:var(--gold)}
 .search-icon{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--silver);font-size:16px}
+
+@media(max-width:900px){
+  .filter-bar{gap:6px}
+  .filter-btn{font-size:11px;padding:7px 14px;letter-spacing:1.5px}
+  .prod-table-wrap{border-radius:0}
+  thead th{font-size:11px;padding:10px 12px}
+  tbody td{padding:10px 12px;font-size:13px}
+}
+@media(max-width:600px){
+  .note-box{font-size:13px;padding:14px 16px}
+  .search-input{font-size:14px;padding:12px 14px 12px 40px}
+  .results-count{font-size:11px}
+  .filter-btn{font-size:10px;padding:6px 12px}
+  thead th{font-size:10px;padding:8px 10px;letter-spacing:1px}
+  tbody td{padding:8px 10px;font-size:12px}
+  tbody td.code{font-size:11px}
+  .qty-badge{font-size:10px;padding:1px 5px}
+}
 .results-count{font-family:"DM Mono",monospace;font-size:12px;color:var(--silver);letter-spacing:1px;margin-bottom:20px}
 </style>
 </head>
@@ -50,10 +68,23 @@ tbody td.price{font-weight:500;color:var(--white)}
     <li><a href="contact.html">Contact</a></li>
   </ul>
   <div class="nav-actions">
-    <a href="tel:17328875854" class="nav-tel">732-887-5854</a>
-    <a href="mailto:baruch@allprobuildingsupplies.com?subject=Need%20pricing&body=Code%2C%20Size%2C%20Qty%2C%20ZIP" class="nav-cta">Get a Quote →</a>
+    <a href="tel:17328875854" class="nav-tel"><svg viewBox="0 0 24 24" width="16" height="16" fill="var(--gold)"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.27-.27.67-.36 1.02-.22 1.12.45 2.32.68 3.58.68.55 0 1 .45 1 1V20c0 .55-.45 1-1 1C10.29 21 3 13.71 3 4.5c0-.55.45-1 1-1H8c.55 0 1 .45 1 1 0 1.27.2 2.48.57 3.62.1.32.03.68-.22.96L6.6 10.8z"/></svg>732-887-5854</a>
+    <a href="mailto:baruch@allprobuildingsupplies.com?subject=Need%20pricing%20or%20availability&body=Code%2C%20Size%2C%20Qty%2C%20Delivery%20ZIP" class="nav-cta">Get a Quote →</a>
   </div>
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
 </nav>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobile-menu">
+  <a href="index.html">Home</a>
+  <a href="products.html">Products</a>
+  <a href="about.html">About</a>
+  <a href="contact.html">Contact</a>
+  <a href="tel:17328875854" class="mob-tel">📞 732-887-5854</a>
+  <a href="mailto:baruch@allprobuildingsupplies.com?subject=Need%20pricing%20or%20availability&body=Code%2C%20Size%2C%20Qty%2C%20Delivery%20ZIP" class="mob-cta">Get a Quote →</a>
+</div>
 <div class="page-hero">
   <div class="page-hero-inner">
     <div class="page-breadcrumb"><a href="index.html">Home</a> › Products</div>
@@ -75,7 +106,7 @@ tbody td.price{font-weight:500;color:var(--white)}
       <strong>How to Order:</strong> Call <a href="tel:17328875854" style="color:var(--gold)">732-887-5854</a> or email
       <a href="mailto:baruch@allprobuildingsupplies.com?subject=Pricing%20Request&body=Code%2C%20Size%2C%20Qty%2C%20Delivery%20ZIP" style="color:var(--gold)">baruch@allprobuildingsupplies.com</a>
       with your <strong>Item Code · Size · Quantity · Delivery ZIP</strong>.
-      Volume pricing available. Don't see what you need? We can source it.
+      Volume pricing available. Don't see what you need? We can source it — just ask.
     </div>
     <div class="search-wrap">
       <span class="search-icon">🔍</span>
@@ -83,233 +114,235 @@ tbody td.price{font-weight:500;color:var(--white)}
     </div>
     <div class="filter-bar">
       <button class="filter-btn on" onclick="setFilter('all',this)">All Products</button>
-      <button class="filter-btn" onclick="setFilter('PIPE-SOLID',this)">ASTM D1785 SCH40 PVC</button>
-      <button class="filter-btn" onclick="setFilter('PIPE-FOAM',this)">ASTM F891 PVC Foam Core DWV Pipe</button>
-      <button class="filter-btn" onclick="setFilter('PVC-1/4HH',this)">1/4 BEND</button>
-      <button class="filter-btn" onclick="setFilter('PVC-1/8HH',this)">1/8 BEND</button>
-      <button class="filter-btn" onclick="setFilter('PVC-1/8HS',this)">1/8 BEND STREET</button>
-      <button class="filter-btn" onclick="setFilter('PVC-SANTEE',this)">SANITARY TEE</button>
-      <button class="filter-btn" onclick="setFilter('PVC-WYEHUB',this)">WYE</button>
-      <button class="filter-btn" onclick="setFilter('PVC-SANTEERED',this)">REDUCING SANITARY TEE</button>
-      <button class="filter-btn" onclick="setFilter('PVC-CLSTFLNGH',this)">CLOSET FLANGE W/TEST PLATE</button>
+      <button class="filter-btn" onclick="setFilter('PIPE-SOLID',this)">Astm D1785 Sch40 Pvc</button>
+      <button class="filter-btn" onclick="setFilter('PIPE-FOAM',this)">Astm F891 Pvc Foam Core Dwv Pipe</button>
+      <button class="filter-btn" onclick="setFilter('PVC-1/4HH',this)">1/4 Bend</button>
+      <button class="filter-btn" onclick="setFilter('PVC-1/8HH',this)">1/8 Bend</button>
+      <button class="filter-btn" onclick="setFilter('PVC-1/8HS',this)">1/8 Bend Street</button>
+      <button class="filter-btn" onclick="setFilter('PVC-SANTEE',this)">Sanitary Tee</button>
+      <button class="filter-btn" onclick="setFilter('PVC-WYEHUB',this)">Wye</button>
+      <button class="filter-btn" onclick="setFilter('PVC-SANTEERED',this)">Reducing Sanitary Tee</button>
+      <button class="filter-btn" onclick="setFilter('PVC-CLSTFLNGH',this)">Closet Flange W/Test Plate</button>
 
     </div>
     <div class="results-count" id="resultsCount">Showing all 29 products</div>
     <div class="prod-table-wrap">
       <table id="prodTable">
-        <thead><tr><th>Code</th><th>Size</th><th>Pack</th><th>Availability</th><th>Unit Price</th></tr></thead>
+        <thead><tr>
+          <th>Code</th><th>Size</th><th>Pack</th><th>Availability</th><th>Unit Price</th>
+        </tr></thead>
         <tbody id="prodBody">
 <tr class="section-divider"><td colspan="5">ASTM D1785 SCH40 PVC</td></tr>
     <tr>
       <td class="code">PIPE-SOLID</td>
-      <td>2</td>
+      <td>2"</td>
       <td><span class="qty-badge">20/CTN</span></td>
       <td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">460</span></td>
-      <td class="price">$16.25</td>
+      <td class="price">$14.93</td>
     </tr>
     <tr>
       <td class="code">PIPE-SOLID</td>
-      <td>3</td>
+      <td>3"</td>
       <td><span class="qty-badge">20/CTN</span></td>
       <td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">460</span></td>
-      <td class="price">$30.50</td>
+      <td class="price">$27.74</td>
     </tr>
     <tr>
       <td class="code">PIPE-SOLID</td>
-      <td>4</td>
+      <td>4"</td>
       <td><span class="qty-badge">20/CTN</span></td>
       <td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">460</span></td>
-      <td class="price">$55.75</td>
+      <td class="price">$50.73</td>
     </tr>
 <tr class="section-divider"><td colspan="5">ASTM F891 PVC Foam Core DWV Pipe</td></tr>
     <tr>
       <td class="code">PIPE-FOAM</td>
-      <td>1-1/2</td>
+      <td>1-1/2"</td>
       <td><span class="qty-badge">20/CTN</span></td>
       <td><span style="color:var(--silver)">Call for Availability</span></td>
-      <td class="price">$7.75</td>
+      <td class="price">$7.11</td>
     </tr>
     <tr>
       <td class="code">PIPE-FOAM</td>
-      <td>2</td>
+      <td>2"</td>
       <td><span class="qty-badge">20/CTN</span></td>
       <td><span style="color:var(--silver)">Call for Availability</span></td>
-      <td class="price">$9.75</td>
+      <td class="price">$9.01</td>
     </tr>
     <tr>
       <td class="code">PIPE-FOAM</td>
-      <td>3</td>
+      <td>3"</td>
       <td><span class="qty-badge">20/CTN</span></td>
       <td><span style="color:var(--silver)">Call for Availability</span></td>
-      <td class="price">$18.75</td>
+      <td class="price">$17.15</td>
     </tr>
     <tr>
       <td class="code">PIPE-FOAM</td>
-      <td>4</td>
+      <td>4"</td>
       <td><span class="qty-badge">20/CTN</span></td>
       <td><span style="color:var(--silver)">Call for Availability</span></td>
-      <td class="price">$28.00</td>
+      <td class="price">$25.54</td>
     </tr>
 <tr class="section-divider"><td colspan="5">1/4 BEND (H x H)</td></tr>
     <tr>
       <td class="code">PVC-1/4HH</td>
-      <td>1-1/2</td>
+      <td>1-1/2"</td>
       <td><span class="qty-badge">100/CTN</span></td>
       <td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">4,800</span></td>
-      <td class="price">$0.50</td>
+      <td class="price">$0.49</td>
     </tr>
     <tr>
       <td class="code">PVC-1/4HH</td>
-      <td>2</td>
+      <td>2"</td>
       <td><span class="qty-badge">50/CTN</span></td>
       <td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">3,700</span></td>
-      <td class="price">$0.85</td>
+      <td class="price">$0.78</td>
     </tr>
     <tr>
       <td class="code">PVC-1/4HH</td>
-      <td>3</td>
+      <td>3"</td>
       <td><span class="qty-badge">25/CTN</span></td>
       <td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">2,075</span></td>
-      <td class="price">$2.35</td>
+      <td class="price">$2.20</td>
     </tr>
     <tr>
       <td class="code">PVC-1/4HH</td>
-      <td>4</td>
+      <td>4"</td>
       <td><span class="qty-badge">10/CTN</span></td>
       <td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">230</span></td>
-      <td class="price">$4.00</td>
+      <td class="price">$3.75</td>
     </tr>
 <tr class="section-divider"><td colspan="5">1/8 BEND (H x H)</td></tr>
     <tr>
       <td class="code">PVC-1/8HH</td>
-      <td>1-1/2</td>
+      <td>1-1/2"</td>
       <td><span class="qty-badge">100/CTN</span></td>
       <td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">1,000</span></td>
-      <td class="price">$0.50</td>
+      <td class="price">$0.46</td>
     </tr>
     <tr>
       <td class="code">PVC-1/8HH</td>
-      <td>2</td>
+      <td>2"</td>
       <td><span class="qty-badge">50/CTN</span></td>
       <td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">2,400</span></td>
-      <td class="price">$0.75</td>
+      <td class="price">$0.72</td>
     </tr>
     <tr>
       <td class="code">PVC-1/8HH</td>
-      <td>3</td>
+      <td>3"</td>
       <td><span class="qty-badge">25/CTN</span></td>
       <td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">1,725</span></td>
-      <td class="price">$2.20</td>
+      <td class="price">$2.04</td>
     </tr>
     <tr>
       <td class="code">PVC-1/8HH</td>
-      <td>4</td>
+      <td>4"</td>
       <td><span class="qty-badge">15/CTN</span></td>
       <td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">180</span></td>
-      <td class="price">$4.00</td>
+      <td class="price">$3.75</td>
     </tr>
 <tr class="section-divider"><td colspan="5">1/8 BEND STREET (H x S)</td></tr>
     <tr>
       <td class="code">PVC-1/8HS</td>
-      <td>1-1/2</td>
+      <td>1-1/2"</td>
       <td><span class="qty-badge">100/CTN</span></td>
       <td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">800</span></td>
-      <td class="price">$0.50</td>
+      <td class="price">$0.46</td>
     </tr>
     <tr>
       <td class="code">PVC-1/8HS</td>
-      <td>2</td>
+      <td>2"</td>
       <td><span class="qty-badge">50/CTN</span></td>
       <td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">2,400</span></td>
-      <td class="price">$0.75</td>
+      <td class="price">$0.71</td>
     </tr>
     <tr>
       <td class="code">PVC-1/8HS</td>
-      <td>3</td>
+      <td>3"</td>
       <td><span class="qty-badge">25/CTN</span></td>
       <td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">1,500</span></td>
-      <td class="price">$2.05</td>
+      <td class="price">$1.94</td>
     </tr>
     <tr>
       <td class="code">PVC-1/8HS</td>
-      <td>4</td>
+      <td>4"</td>
       <td><span class="qty-badge">9/CTN</span></td>
       <td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">153</span></td>
-      <td class="price">$3.50</td>
+      <td class="price">$3.20</td>
     </tr>
 <tr class="section-divider"><td colspan="5">SANITARY TEE (ALL HUB)</td></tr>
     <tr>
       <td class="code">PVC-SANTEE</td>
-      <td>1-1/2</td>
+      <td>1-1/2"</td>
       <td><span class="qty-badge">60/CTN</span></td>
       <td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">360</span></td>
-      <td class="price">$0.95</td>
+      <td class="price">$0.86</td>
     </tr>
     <tr>
       <td class="code">PVC-SANTEE</td>
-      <td>2</td>
+      <td>2"</td>
       <td><span class="qty-badge">35/CTN</span></td>
       <td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">105</span></td>
-      <td class="price">$1.30</td>
+      <td class="price">$1.22</td>
     </tr>
     <tr>
       <td class="code">PVC-SANTEE</td>
-      <td>3</td>
+      <td>3"</td>
       <td><span class="qty-badge">15/CTN</span></td>
       <td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">105</span></td>
-      <td class="price">$3.50</td>
+      <td class="price">$3.20</td>
     </tr>
     <tr>
       <td class="code">PVC-SANTEE</td>
-      <td>4</td>
+      <td>4"</td>
       <td><span class="qty-badge">5/CTN</span></td>
       <td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">100</span></td>
-      <td class="price">$8.50</td>
+      <td class="price">$7.91</td>
     </tr>
 <tr class="section-divider"><td colspan="5">WYE (ALL HUB)</td></tr>
     <tr>
       <td class="code">PVC-WYEHUB</td>
-      <td>1-1/2</td>
+      <td>1-1/2"</td>
       <td><span class="qty-badge">50/CTN</span></td>
       <td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">100</span></td>
-      <td class="price">$1.10</td>
+      <td class="price">$1.00</td>
     </tr>
     <tr>
       <td class="code">PVC-WYEHUB</td>
-      <td>2</td>
+      <td>2"</td>
       <td><span class="qty-badge">25/CTN</span></td>
       <td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">700</span></td>
-      <td class="price">$1.65</td>
+      <td class="price">$1.54</td>
     </tr>
     <tr>
       <td class="code">PVC-WYEHUB</td>
-      <td>3</td>
+      <td>3"</td>
       <td><span class="qty-badge">15/CTN</span></td>
       <td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">105</span></td>
-      <td class="price">$4.50</td>
+      <td class="price">$4.17</td>
     </tr>
     <tr>
       <td class="code">PVC-WYEHUB</td>
-      <td>4</td>
+      <td>4"</td>
       <td><span class="qty-badge">8/CTN</span></td>
       <td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">100</span></td>
-      <td class="price">$7.75</td>
+      <td class="price">$7.27</td>
     </tr>
 <tr class="section-divider"><td colspan="5">REDUCING SANITARY TEE (ALL HUB)</td></tr>
     <tr>
       <td class="code">PVC-SANTEERED</td>
-      <td>3x3x2</td>
+      <td>3x3x2"</td>
       <td><span class="qty-badge">15/CTN</span></td>
       <td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">375</span></td>
-      <td class="price">$3.35</td>
+      <td class="price">$3.15</td>
     </tr>
 <tr class="section-divider"><td colspan="5">CLOSET FLANGE W/TEST PLATE (H)</td></tr>
     <tr>
       <td class="code">PVC-CLSTFLNGH</td>
-      <td>4x3</td>
+      <td>4x3"</td>
       <td><span class="qty-badge">20/CTN</span></td>
       <td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">1,620</span></td>
-      <td class="price">$3.00</td>
+      <td class="price">$2.79</td>
     </tr>
 
         </tbody>
@@ -323,7 +356,7 @@ tbody td.price{font-weight:500;color:var(--white)}
 </section>
 <section class="cta-band">
   <div class="cta-band-inner">
-    <div><div class="cta-h">Ready to Get Your Supplies?</div><div class="cta-s">Call or email — we respond fast.</div></div>
+    <div><div class="cta-h">Ready to Get Your Supplies?</div><div class="cta-s">Call or email with your list — we respond fast with pricing and availability.</div></div>
     <div class="cta-acts">
       <a href="tel:17328875854" class="btn-dark">📞 Call 732-887-5854</a>
       <a href="mailto:baruch@allprobuildingsupplies.com?subject=Need%20pricing%20or%20availability&body=Code%2C%20Size%2C%20Qty%2C%20Delivery%20ZIP" class="btn-dark">✉ Email for Pricing</a>
@@ -341,19 +374,24 @@ tbody td.price{font-weight:500;color:var(--white)}
       </div>
     </div>
     <div class="ft-col"><h4>Products</h4><ul>
-      <li><a href="products.html">Building Materials</a></li><li><a href="products.html">Plumbing</a></li>
-      <li><a href="products.html">Hardware</a></li><li><a href="products.html">Contractor Supplies</a></li>
+      <li><a href="products.html">Building Materials</a></li>
+      <li><a href="products.html">Plumbing</a></li>
+      <li><a href="products.html">Hardware</a></li>
+      <li><a href="products.html">Contractor Supplies</a></li>
     </ul></div>
     <div class="ft-col"><h4>Company</h4><ul>
-      <li><a href="about.html">About Us</a></li><li><a href="contact.html">Contact</a></li>
+      <li><a href="about.html">About Us</a></li>
+      <li><a href="products.html">Products</a></li>
+      <li><a href="contact.html">Contact</a></li>
     </ul></div>
     <div class="ft-col"><h4>Contact</h4><ul>
       <li><a href="tel:17328875854">732-887-5854</a></li>
       <li><a href="mailto:baruch@allprobuildingsupplies.com">baruch@allprobuildingsupplies.com</a></li>
+      <li><a href="contact.html">Get a Quote</a></li>
     </ul></div>
   </div>
   <div class="ft-bot">
-    <span>© 2025 All Pro Building Supplies LLC</span>
+    <span>© 2025 All Pro Building Supplies LLC · allprobuildingsupplies.com</span>
     <span>Building Materials · Plumbing · Hardware · Contractor Supplies</span>
   </div>
 </footer>
@@ -361,8 +399,27 @@ tbody td.price{font-weight:500;color:var(--white)}
 <script src="assets/main.js"></script>
 <script>
 let activeFilter='all';
-function setFilter(f,btn){activeFilter=f;document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('on'));btn.classList.add('on');filterTable();}
-function filterTable(){const q=document.getElementById('prodSearch').value.toLowerCase();const rows=document.querySelectorAll('#prodBody tr');let vis=0,lastDiv=null;rows.forEach(r=>{if(r.classList.contains('section-divider')){lastDiv=r;r.style.display='none';return}const txt=r.textContent.toLowerCase();const matchQ=!q||txt.includes(q);const matchF=activeFilter==='all'||txt.toLowerCase().includes(activeFilter.toLowerCase());if(matchQ&&matchF){r.style.display='';if(lastDiv){lastDiv.style.display='';lastDiv=null}vis++;}else{r.style.display='none'}});document.getElementById('resultsCount').textContent=vis===0?'No products found':`Showing ${vis} product${vis!==1?'s':''}`;}
+function setFilter(f,btn){
+  activeFilter=f;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  filterTable();
+}
+function filterTable(){
+  const q=document.getElementById('prodSearch').value.toLowerCase();
+  const rows=document.querySelectorAll('#prodBody tr');
+  let vis=0,lastDiv=null;
+  rows.forEach(r=>{
+    if(r.classList.contains('section-divider')){lastDiv=r;r.style.display='none';return}
+    const txt=r.textContent.toLowerCase();
+    const matchQ=!q||txt.includes(q);
+    const matchF=activeFilter==='all'||txt.includes(activeFilter.toLowerCase());
+    if(matchQ&&matchF){r.style.display='';if(lastDiv){lastDiv.style.display='';lastDiv=null}vis++;}
+    else{r.style.display='none'}
+  });
+  document.getElementById('resultsCount').textContent=
+    vis===0?'No products found':`Showing ${vis} product${vis!==1?'s':''}`;
+}
 </script>
 </body>
 </html>
