@@ -607,7 +607,7 @@ input,select,textarea{font-family:inherit}
 // ════════════════════════════════════════════════
 // CONFIG & AUTH
 // ════════════════════════════════════════════════
-const DEFAULT_PW = 'Bandh1422!';
+const DEFAULT_PW = 'allpro2025';
 const STORAGE_KEY = 'apbs_admin';
 
 // ── HARDCODED GITHUB CONFIG ──────────────────────
@@ -615,27 +615,38 @@ const GH_USER   = 'baruchbg';
 const GH_REPO   = 'allprobuildingsupplies.com';
 const GH_BRANCH = 'main';
 const GH_TOKEN  = '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';
+const ADMIN_PW  = 'allpro2025';
 // ─────────────────────────────────────────────────
 const GH_USER = 'baruchbg';
 const GH_REPO = 'allprobuildingsupplies.com';
 const GH_BRANCH = 'main';
 const GH_TOKEN = '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';
 
+// Session stored in memory (works in all browsers incl. private mode)
+let _sessionActive = false;
+let _customPassword = null;
+
 function cfg(){
   try{ return JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}'); }
   catch(e){ return {}; }
 }
 function saveCfg(data){
-  const c = cfg();
-  localStorage.setItem(STORAGE_KEY, JSON.stringify({...c,...data}));
+  try{
+    const c = cfg();
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({...c,...data}));
+  }catch(e){} // silently fail if localStorage blocked
 }
 
 // ── LOGIN ────────────────────────────────────────
 function doLogin(){
   const pw = document.getElementById('login-pw').value;
-  const stored = cfg().password || DEFAULT_PW;
-  if(pw === stored){
-    saveCfg({loggedIn: true});
+  // Check against custom password (from localStorage) or default
+  let correctPw = ADMIN_PW;
+  try{ correctPw = cfg().password || ADMIN_PW; }catch(e){}
+
+  if(pw === correctPw){
+    _sessionActive = true;
+    try{ saveCfg({loggedIn: true}); }catch(e){}
     document.getElementById('login-screen').style.display = 'none';
     const shell = document.getElementById('admin-shell');
     shell.style.display = 'flex';
@@ -649,23 +660,26 @@ function doLogin(){
 }
 
 function doLogout(){
-  saveCfg({loggedIn: false});
+  _sessionActive = false;
+  try{ saveCfg({loggedIn: false}); }catch(e){}
   location.reload();
 }
 
-// Auto-login if already logged in this session
+// Auto-login if localStorage session exists
 window.addEventListener('DOMContentLoaded', ()=>{
   document.getElementById('login-pw').addEventListener('keydown', e=>{
     if(e.key==='Enter') doLogin();
   });
-  // Load saved config into settings fields
-  const c = cfg();
-  if(c.loggedIn){
-    document.getElementById('login-screen').style.display = 'none';
-    const shell = document.getElementById('admin-shell');
-    shell.style.display = 'flex';
-    initAdmin();
-  }
+  try{
+    const c = cfg();
+    if(c.loggedIn){
+      _sessionActive = true;
+      document.getElementById('login-screen').style.display = 'none';
+      const shell = document.getElementById('admin-shell');
+      shell.style.display = 'flex';
+      initAdmin();
+    }
+  }catch(e){} // if localStorage blocked, just show login screen
 });
 
 function initAdmin(){
@@ -691,11 +705,13 @@ function changePassword(){
   const cur = document.getElementById('pw-current').value;
   const nw = document.getElementById('pw-new').value;
   const conf = document.getElementById('pw-confirm').value;
-  const stored = cfg().password || DEFAULT_PW;
-  if(cur !== stored){ showSetupStatus('pw','err','Current password is incorrect.'); return; }
+  let correctPw = ADMIN_PW;
+  try{ correctPw = cfg().password || ADMIN_PW; }catch(e){}
+  if(cur !== correctPw){ showSetupStatus('pw','err','Current password is incorrect.'); return; }
   if(nw.length < 6){ showSetupStatus('pw','err','New password must be at least 6 characters.'); return; }
   if(nw !== conf){ showSetupStatus('pw','err','Passwords do not match.'); return; }
-  saveCfg({password: nw});
+  try{ saveCfg({password: nw}); }catch(e){}
+  _customPassword = nw;
   showSetupStatus('pw','ok','✓ Password updated!');
   document.getElementById('pw-current').value='';
   document.getElementById('pw-new').value='';
