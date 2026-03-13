@@ -276,11 +276,9 @@ button{font-family:inherit;cursor:pointer}input,select,textarea{font-family:inhe
 </div>
 
 <script>
-var GH_USER   = 'baruchbg';
-var GH_REPO   = 'allprobuildingsupplies';
-var GH_BRANCH = 'main';
-var GH_TOKEN  = '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';
-var ADMIN_PW  = 'allpro2025';
+const WORKER_URL = 'https://allpro-github-proxy.baruch-6d5.workers.dev';
+
+var ADMIN_PW = 'allpro2025';
 var STORE_KEY = 'apbs_adm3';
 
 var products   = [];
@@ -305,9 +303,9 @@ function doLogin(){
     store({loggedIn:true});
     document.getElementById('login-screen').style.display='none';
     document.getElementById('admin-shell').style.display='flex';
-    document.getElementById('cfg-user').value=GH_USER;
-    document.getElementById('cfg-repo').value=GH_REPO;
-    document.getElementById('cfg-branch').value=GH_BRANCH;
+    document.getElementById('cfg-user').value='baruchbg';
+    document.getElementById('cfg-repo').value='allprobuildingsupplies';
+    document.getElementById('cfg-branch').value='main';
     loadProducts();
   } else {
     var err=document.getElementById('login-error');
@@ -327,9 +325,9 @@ document.addEventListener('DOMContentLoaded',function(){
     if(stored('loggedIn',false)){
       document.getElementById('login-screen').style.display='none';
       document.getElementById('admin-shell').style.display='flex';
-      document.getElementById('cfg-user').value=GH_USER;
-      document.getElementById('cfg-repo').value=GH_REPO;
-      document.getElementById('cfg-branch').value=GH_BRANCH;
+      document.getElementById('cfg-user').value='baruchbg';
+      document.getElementById('cfg-repo').value='allprobuildingsupplies';
+      document.getElementById('cfg-branch').value='main';
       loadProducts();
     }
   }catch(e){}
@@ -345,10 +343,10 @@ function showPage(name,btn){
 
 function ghFetch(path,opts){
   opts=opts||{};
-  var url='https://api.github.com/repos/'+GH_USER+'/'+GH_REPO+'/contents/'+path;
+  var url=WORKER_URL+'/github/'+path;
   return fetch(url,{
     method:opts.method||'GET',
-    headers:Object.assign({'Authorization':'Bearer '+GH_TOKEN,'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'},opts.headers||{}),
+    headers:Object.assign({'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'},opts.headers||{}),
     body:opts.body
   }).then(function(r){return r.json().then(function(d){if(!r.ok)throw new Error(d.message||'GitHub error '+r.status);return d;});});
 }
@@ -455,17 +453,17 @@ function publishToGitHub(){
   var btn=document.querySelector('.adm-btn-save');
   btn.textContent='Publishing...';btn.disabled=true;
   setProdStatus('working','Saving products.csv...');
-  var csvPayload=JSON.stringify({message:'Update products via admin',content:btoa(unescape(encodeURIComponent(toCSV(products)))),branch:GH_BRANCH,sha:prodSha});
+  var csvPayload=JSON.stringify({message:'Update products via admin',content:btoa(unescape(encodeURIComponent(toCSV(products)))),branch:'main',sha:prodSha});
   ghFetch('products.csv',{method:'PUT',headers:{'Content-Type':'application/json'},body:csvPayload}).then(function(r){
     prodSha=r.content.sha;
     setProdStatus('working','Rebuilding products.html...');
     var html=buildProductsHTML(products);
     var htmlPayload;
     return ghFetch('products.html').then(function(ex){
-      htmlPayload=JSON.stringify({message:'Rebuild products.html via admin',content:btoa(unescape(encodeURIComponent(html))),branch:GH_BRANCH,sha:ex.sha});
+      htmlPayload=JSON.stringify({message:'Rebuild products.html via admin',content:btoa(unescape(encodeURIComponent(html))),branch:'main',sha:ex.sha});
       return ghFetch('products.html',{method:'PUT',headers:{'Content-Type':'application/json'},body:htmlPayload});
     }).catch(function(){
-      htmlPayload=JSON.stringify({message:'Rebuild products.html via admin',content:btoa(unescape(encodeURIComponent(html))),branch:GH_BRANCH});
+      htmlPayload=JSON.stringify({message:'Rebuild products.html via admin',content:btoa(unescape(encodeURIComponent(html))),branch:'main'});
       return ghFetch('products.html',{method:'PUT',headers:{'Content-Type':'application/json'},body:htmlPayload});
     });
   }).then(function(){
@@ -538,7 +536,7 @@ function renderUsers(){
   }).join('');
 }
 function saveUsers(msg){
-  var payload=JSON.stringify({message:msg,content:btoa(unescape(encodeURIComponent(JSON.stringify({users:allUsers},null,2)))),branch:GH_BRANCH,sha:usersSha});
+  var payload=JSON.stringify({message:msg,content:btoa(unescape(encodeURIComponent(JSON.stringify({users:allUsers},null,2)))),branch:'main',sha:usersSha});
   return ghFetch('users.json',{method:'PUT',headers:{'Content-Type':'application/json'},body:payload}).then(function(r){usersSha=r.content.sha;});
 }
 function setUserStatus(id,status){
