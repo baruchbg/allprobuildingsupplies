@@ -1,1 +1,16 @@
-{"users":[]}
+{
+  "users": [
+    {
+      "id": "1773419333947",
+      "fname": "Baruch",
+      "lname": "Grossman",
+      "company": "ABC",
+      "email": "baruchstablet@gmail.com",
+      "phone": "7328875657",
+      "password": "8ebe5e444d911b3b0f860ccfbaf0d811d639a8219bedc6bd3268b381c033599a",
+      "status": "pending",
+      "registeredAt": "2026-03-13T16:28:53.948Z",
+      "approvedAt": null
+    }
+  ]
+}
