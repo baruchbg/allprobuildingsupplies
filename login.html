@@ -146,7 +146,7 @@ async function doLogin(){
     }
 
     // Approved — save session and redirect
-    sessionStorage.setItem('apbs_user',JSON.stringify({id:user.id,fname:user.fname,lname:user.lname,company:user.company,email:user.email,status:user.status}));
+    sessionStorage.setItem('apbs_user',JSON.stringify({id:user.id,fname:user.fname,lname:user.lname,name:user.fname+' '+user.lname,company:user.company,email:user.email,status:user.status}));
     window.location.href='products.html';
 
   }catch(e){

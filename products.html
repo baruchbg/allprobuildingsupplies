@@ -128,47 +128,9 @@ tbody td.price{font-weight:500;color:var(--white)}
   <div class="sec-inner">
     
 <!-- PRICING AUTH GATE -->
-<div id="auth-bar" style="display:none;background:var(--ink2);border:1px solid rgba(200,152,31,.2);padding:14px 20px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
-  <span id="auth-bar-msg" style="font-size:14px;color:var(--smoke)"></span>
-  <a href="login.html" id="auth-bar-btn" class="btn-gold" style="padding:10px 22px;font-size:13px">Login / Register →</a>
-</div>
 
-<script>
-(function(){
-  const sess = sessionStorage.getItem('apbs_user');
-  const user = sess ? JSON.parse(sess) : null;
-  const bar  = document.getElementById('auth-bar');
-  const hdr  = document.getElementById('price-col-header');
 
-  if(user && user.approved){
-    // LOGGED IN — show prices, show welcome bar
-    bar.style.display='flex';
-    bar.style.background='rgba(46,204,113,.07)';
-    bar.style.borderColor='rgba(46,204,113,.2)';
-    document.getElementById('auth-bar-msg').innerHTML =
-      '👋 Welcome back, <strong style="color:var(--white)">'+user.name+'</strong> ('+user.company+') — <a href="#" onclick="logout();return false" style="color:var(--gold)">Log out</a>';
-    document.getElementById('auth-bar-btn').style.display='none';
-    // Show all price cells
-    document.querySelectorAll('.price-cell').forEach(el=>{
-      el.innerHTML = '<span style="color:var(--white);font-weight:500">$'+parseFloat(el.dataset.price).toFixed(2)+'</span>';
-    });
-  } else {
-    // GUEST — show lock instead of prices
-    bar.style.display='flex';
-    document.getElementById('auth-bar-msg').innerHTML =
-      '🔒 <strong style="color:var(--smoke)">Login or register</strong> to view pricing. Free trade accounts approved within 1 business day.';
-    hdr.innerHTML='Price';
-    document.querySelectorAll('.price-cell').forEach(el=>{
-      el.innerHTML='<a href="login.html" style="color:var(--gold);font-size:12px;white-space:nowrap;font-family:'DM Mono',monospace;letter-spacing:.5px">🔒 Login</a>';
-    });
-  }
 
-  function logout(){
-    sessionStorage.removeItem('apbs_user');
-    location.reload();
-  }
-})();
-</script>
     <div class="note-box">
       <strong>How to Order:</strong> Call <a href="tel:17328875854" style="color:var(--gold)">732-887-5854</a> or email
       <a href="mailto:baruch@allprobuildingsupplies.com?subject=Pricing%20Request&body=Code%2C%20Size%2C%20Qty%2C%20Delivery%20ZIP" style="color:var(--gold)">baruch@allprobuildingsupplies.com</a>
@@ -192,9 +154,7 @@ tbody td.price{font-weight:500;color:var(--white)}
       <button onclick="doLogout()">Log Out</button>
     </div>
     <!-- PRICE GATE (shown to guests) -->
-    <div class="price-gate" id="price-gate">
-      <div class="price-gate-txt"><strong>🔒 Login to See Pricing</strong><br/>Create a free trade account to unlock full pricing on all products.</div>
-      <div class="price-gate-acts">
+    <div class="price-gate-acts">
         <a href="login.html" class="btn-gold" style="padding:11px 24px;font-size:13px">Log In →</a>
         <a href="register.html" class="btn-ghost" style="padding:11px 24px;font-size:13px">Request Access</a>
       </div>
@@ -518,69 +478,57 @@ function filterTable(){
 }
 </script>
 
+
+
+
+
+
 <script>
 (function(){
-  const session = sessionStorage.getItem('apbs_user');
-  const banner = document.getElementById('login-banner');
-  const userBar = document.getElementById('user-bar');
-  const priceHeader = document.getElementById('price-col-header');
+  // Single authoritative auth handler for products page
+  var sess = sessionStorage.getItem('apbs_user');
+  var user = null;
+  try{ if(sess) user = JSON.parse(sess); }catch(e){}
 
-  if(session){
-    const user = JSON.parse(session);
-    // Show user bar
-    banner.style.display = 'none';
-    userBar.style.display = 'flex';
-    document.getElementById('user-name-display').textContent = user.name;
-    document.getElementById('user-company-display').textContent = user.company;
-    // Reveal all prices
-    document.querySelectorAll('td[data-price]').forEach(td=>{
-      td.innerHTML = '$' + parseFloat(td.dataset.price).toFixed(2);
-    });
+  var isLoggedIn = user && user.status === 'approved';
+
+  var loginBanner = document.getElementById('login-banner');
+  var userBar     = document.getElementById('user-bar');
+  var priceHeader = document.getElementById('price-col-header');
+
+  if(isLoggedIn){
+    // Hide login banner, show user bar
+    if(loginBanner) loginBanner.style.display = 'none';
+    if(userBar) userBar.style.display = 'flex';
+    // Show name — handle both {name} and {fname,lname} formats
+    var displayName = user.name || (user.fname + ' ' + user.lname);
+    var nameEl = document.getElementById('user-name-display');
+    var compEl = document.getElementById('user-company-display');
+    if(nameEl) nameEl.textContent = displayName;
+    if(compEl) compEl.textContent = user.company || '';
+    // Update nav
+    var navCta = document.querySelector('.nav-cta');
+    if(navCta){ navCta.textContent = 'My Account'; navCta.href = 'login.html'; }
     if(priceHeader) priceHeader.textContent = 'Unit Price';
+    // Reveal prices — handle both selector styles
+    document.querySelectorAll('td[data-price]').forEach(function(td){
+      td.innerHTML = '<span style="color:var(--white);font-weight:500">$' + parseFloat(td.dataset.price).toFixed(2) + '</span>';
+    });
+    document.querySelectorAll('.price-cell[data-price]').forEach(function(td){
+      td.innerHTML = '<span style="color:var(--white);font-weight:500">$' + parseFloat(td.dataset.price).toFixed(2) + '</span>';
+    });
+  } else {
+    // Show login banner, hide user bar
+    if(loginBanner) loginBanner.style.display = 'flex';
+    if(userBar) userBar.style.display = 'none';
   }
 
+  // Logout handler
   window.doLogout = function(){
     sessionStorage.removeItem('apbs_user');
     location.reload();
   };
 })();
 </script>
-
-<script>
-// ── PRICING AUTH ─────────────────────────────────────────────────
-(function(){
-  const user = (() => { try{ return JSON.parse(sessionStorage.getItem('apbs_user')); }catch(e){return null;} })();
-  const isLoggedIn = user && user.status === 'approved';
-
-  if(isLoggedIn){
-    // Show user bar
-    const ub = document.getElementById('user-bar');
-    if(ub){ ub.style.display='flex'; }
-    document.getElementById('user-name-display').textContent = user.fname + ' ' + user.lname;
-    document.getElementById('user-company-display').textContent = user.company;
-    document.getElementById('price-gate').style.display = 'none';
-    document.getElementById('price-col-header').textContent = 'Unit Price';
-    // Nav: show logged in state
-    const navCta = document.querySelector('.nav-cta');
-    if(navCta){ navCta.textContent = 'My Account'; navCta.href = 'login.html'; }
-  } else {
-    // Hide price column cells, show gate
-    document.getElementById('price-gate').style.display = 'flex';
-    document.querySelectorAll('tbody td.price').forEach(td => {
-      td.innerHTML = '<span class="price-hidden" onclick="window.location.href=\'login.html\'">🔒 Login</span>';
-    });
-    document.getElementById('price-col-header').innerHTML = 'Price <a href="login.html" style="color:var(--gold);font-size:10px;margin-left:4px">Login →</a>';
-    // Update nav CTA
-    const navCta = document.querySelector('.nav-cta');
-    if(navCta){ navCta.textContent = 'Log In →'; navCta.href = 'login.html'; }
-  }
-})();
-
-function doLogout(){
-  sessionStorage.removeItem('apbs_user');
-  window.location.reload();
-}
-</script>
-
 </body>
 </html>

@@ -199,8 +199,8 @@ async function submitReg(){
       phone:document.getElementById('r-phone').value.trim(),
       password:await sha256(document.getElementById('r-pw').value),
       status:'pending',
-      registered:new Date().toISOString(),
-      approved:null
+      registeredAt:new Date().toISOString(),
+      approvedAt:null
     };
     users.push(newUser);
     await ghPut('users.json',JSON.stringify({users},null,2),fileSha,`New registration: ${newUser.fname} ${newUser.lname} (${newUser.company})`);
