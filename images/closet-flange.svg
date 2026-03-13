@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <radialGradient id="gfl" cx="50%" cy="40%" r="55%">
+      <stop offset="0%" stop-color="#ffffff"/><stop offset="60%" stop-color="#d8d8d8"/><stop offset="100%" stop-color="#a0a0a0"/>
+    </radialGradient>
+    <linearGradient id="gpipe" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#b0b0b0"/><stop offset="40%" stop-color="#e8e8e8"/><stop offset="100%" stop-color="#a0a0a0"/>
+    </linearGradient>
+  </defs>
+  <!-- pipe stub -->
+  <rect x="76" y="110" width="48" height="62" rx="2" fill="url(#gpipe)"/>
+  <rect x="83" y="110" width="12" height="62" fill="rgba(255,255,255,0.4)"/>
+  <!-- bottom pipe end -->
+  <ellipse cx="100" cy="172" rx="24" ry="7" fill="#b8b8b8"/>
+  <ellipse cx="100" cy="172" rx="16" ry="5" fill="#2a2a2a"/>
+  <!-- flange ring -->
+  <ellipse cx="100" cy="110" rx="58" ry="16" fill="url(#gfl)"/>
+  <ellipse cx="100" cy="110" rx="46" ry="12" fill="#d0d0d0"/>
+  <!-- bolt holes -->
+  <circle cx="54" cy="110" r="4" fill="#888"/>
+  <circle cx="146" cy="110" r="4" fill="#888"/>
+  <circle cx="74" cy="98" r="3.5" fill="#888"/>
+  <circle cx="126" cy="98" r="3.5" fill="#888"/>
+  <circle cx="74" cy="122" r="3.5" fill="#888"/>
+  <circle cx="126" cy="122" r="3.5" fill="#888"/>
+  <!-- test plate -->
+  <ellipse cx="100" cy="108" rx="30" ry="8" fill="#e0e0d8"/>
+  <ellipse cx="100" cy="107" rx="24" ry="6" fill="#d4d4cc"/>
+  <!-- test plate center -->
+  <circle cx="100" cy="107" r="8" fill="#c8c8c0"/>
+  <text x="100" y="55" text-anchor="middle" font-family="sans-serif" font-size="11" font-weight="bold" fill="#C8981F">CLOSET FLANGE</text>
+  <text x="100" y="70" text-anchor="middle" font-family="sans-serif" font-size="9" fill="#888">w/ Test Plate • Hub</text>
+</svg>
