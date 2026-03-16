@@ -536,8 +536,6 @@ function setFilter(f,btn){
     var compEl = document.getElementById('user-company-display');
     if(nameEl) nameEl.textContent = displayName;
     if(compEl) compEl.textContent = user.company || '';
-    var navCta = document.querySelector('.nav-cta');
-    if(navCta){ navCta.textContent = 'My Account'; navCta.href = 'login.html'; }
     document.querySelectorAll('.price-col-hdr').forEach(function(h){ h.textContent = 'Unit Price'; });
     document.querySelectorAll('.price[data-price]').forEach(function(td){
       td.innerHTML = '<span style="color:var(--white);font-weight:500">$' + parseFloat(td.dataset.price).toFixed(2) + '</span>';
