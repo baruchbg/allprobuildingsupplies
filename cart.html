@@ -53,19 +53,37 @@
 <body>
 <div id="cursor"></div><div id="cursor-ring"></div>
 
-<nav class="nav" id="main-nav">
-  <div class="nav-inner">
-    <a class="nav-brand" href="index.html"><img src="assets/logo.png" alt="All Pro Building Supplies" style="height:38px"/></a>
-    <div class="nav-links">
-      <a href="index.html">Home</a>
-      <a href="products.html">Products</a>
-      <a href="about.html">About</a>
-      <a href="contact.html">Contact</a>
-      <a href="cart.html" class="nav-cta active" id="nav-cart-link">🛒 Cart <span id="nav-cart-count" style="display:none;background:var(--ink);color:var(--gold);padding:1px 6px;font-size:11px;border-radius:2px;margin-left:4px;"></span></a>
-    </div>
-    <button class="hamburger" id="hamburger" aria-label="Menu">&#9776;</button>
+<nav>
+  <div class="nav-logo">
+    <img src="assets/logo.png" alt="All Pro Building Supplies"/>
+    <div class="nav-brand-text">All Pro Building Supplies <span>LLC</span></div>
   </div>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="products.html">Products</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+  <div class="nav-actions">
+    <a href="tel:17328875854" class="nav-tel"><svg viewBox="0 0 24 24" width="16" height="16" fill="var(--gold)"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.27-.27.67-.36 1.02-.22 1.12.45 2.32.68 3.58.68.55 0 1 .45 1 1V20c0 .55-.45 1-1 1C10.29 21 3 13.71 3 4.5c0-.55.45-1 1-1H8c.55 0 1 .45 1 1 0 1.27.2 2.48.57 3.62.1.32.03.68-.22.96L6.6 10.8z"/></svg>732-887-5854</a>
+    <a href="cart.html" class="nav-cta" id="nav-cart-btn">🛒 Cart <span id="nav-cart-count" class="cart-nav-badge"></span></a>
+    <a href="account.html" class="nav-cta" id="nav-account-btn" style="display:none;background:var(--ink3);border:1px solid rgba(200,152,31,.3);margin-left:6px;">👤 My Account</a>
+  </div>
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
 </nav>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobile-menu">
+  <a href="index.html">Home</a>
+  <a href="products.html">Products</a>
+  <a href="about.html">About</a>
+  <a href="contact.html">Contact</a>
+  <a href="tel:17328875854" class="mob-tel">📞 732-887-5854</a>
+  <a href="cart.html" class="mob-cta">🛒 Cart →</a>
+</div>
+
 <div class="nav-overlay" id="nav-overlay">
   <button class="nav-overlay-close" id="nav-close">&#10005;</button>
   <div class="nav-overlay-links">
@@ -75,15 +93,15 @@
   </div>
 </div>
 
-<section class="page-hero">
+<div class="page-hero">
   <div class="page-hero-inner">
-    <div class="page-hero-label">Order</div>
-    <h1 class="page-hero-title">Your Cart</h1>
-    <p class="page-hero-sub">Review your items and quantities before checking out.</p>
+    <div class="page-breadcrumb"><a href="index.html">Home</a> › <a href="products.html">Products</a> › Cart</div>
+    <div class="page-title" data-r>Your <span>Cart</span></div>
+    <p class="page-subtitle" data-r>Review your items and quantities before checking out.</p>
   </div>
-</section>
+</div>
 
-<section class="section">
+<div class="section">
   <div class="container">
     <div class="cart-wrap">
 
@@ -151,7 +169,7 @@
 
     </div>
   </div>
-</section>
+</div>
 
 <footer class="footer"><div class="footer-inner"><span>© 2025 All Pro Building Supplies LLC</span></div></footer>
 
@@ -162,21 +180,7 @@ const WORKER_URL = 'https://allpro-github-proxy.baruch-6d5.workers.dev';
 
 function getCart(){ try{ return JSON.parse(localStorage.getItem('apbs_cart')||'[]'); }catch(e){return [];} }
 function saveCart(c){ localStorage.setItem('apbs_cart', JSON.stringify(c)); updateNavCount();
-// Show My Account if logged in
-(function(){
-  try{
-    var u = JSON.parse(sessionStorage.getItem('apbs_user'));
-    if(u && u.status==='approved'){
-      var btn = document.createElement('a');
-      btn.href='account.html';
-      btn.className='nav-cta';
-      btn.style.cssText='background:var(--ink3);border:1px solid rgba(200,152,31,.3);margin-left:6px;';
-      btn.textContent='\uD83D\uDC64 My Account';
-      var cartBtn = document.getElementById('nav-cart-btn');
-      if(cartBtn) cartBtn.parentNode.insertBefore(btn, cartBtn.nextSibling);
-    }
-  }catch(e){}
-})(); }
+ }
 function clearCart(){ if(!confirm('Clear all items from your cart?')) return; saveCart([]); renderCart(); }
 
 function updateNavCount(){
@@ -297,21 +301,7 @@ async function renderCart(){
   document.getElementById('summary-total').textContent    = '$'+subtotal.toFixed(2);
   document.getElementById('summary-items').textContent    = totalItems+' pcs';
   updateNavCount();
-// Show My Account if logged in
-(function(){
-  try{
-    var u = JSON.parse(sessionStorage.getItem('apbs_user'));
-    if(u && u.status==='approved'){
-      var btn = document.createElement('a');
-      btn.href='account.html';
-      btn.className='nav-cta';
-      btn.style.cssText='background:var(--ink3);border:1px solid rgba(200,152,31,.3);margin-left:6px;';
-      btn.textContent='\uD83D\uDC64 My Account';
-      var cartBtn = document.getElementById('nav-cart-btn');
-      if(cartBtn) cartBtn.parentNode.insertBefore(btn, cartBtn.nextSibling);
-    }
-  }catch(e){}
-})();
+
 }
 
 function changeQty(idx, delta, maxQty){
@@ -354,21 +344,7 @@ function removeItem(idx){
 }
 
 updateNavCount();
-// Show My Account if logged in
-(function(){
-  try{
-    var u = JSON.parse(sessionStorage.getItem('apbs_user'));
-    if(u && u.status==='approved'){
-      var btn = document.createElement('a');
-      btn.href='account.html';
-      btn.className='nav-cta';
-      btn.style.cssText='background:var(--ink3);border:1px solid rgba(200,152,31,.3);margin-left:6px;';
-      btn.textContent='\uD83D\uDC64 My Account';
-      var cartBtn = document.getElementById('nav-cart-btn');
-      if(cartBtn) cartBtn.parentNode.insertBefore(btn, cartBtn.nextSibling);
-    }
-  }catch(e){}
-})();
+
 </script>
 </body>
 </html>
