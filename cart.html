@@ -161,7 +161,22 @@
 const WORKER_URL = 'https://allpro-github-proxy.baruch-6d5.workers.dev';
 
 function getCart(){ try{ return JSON.parse(localStorage.getItem('apbs_cart')||'[]'); }catch(e){return [];} }
-function saveCart(c){ localStorage.setItem('apbs_cart', JSON.stringify(c)); updateNavCount(); }
+function saveCart(c){ localStorage.setItem('apbs_cart', JSON.stringify(c)); updateNavCount();
+// Show My Account if logged in
+(function(){
+  try{
+    var u = JSON.parse(sessionStorage.getItem('apbs_user'));
+    if(u && u.status==='approved'){
+      var btn = document.createElement('a');
+      btn.href='account.html';
+      btn.className='nav-cta';
+      btn.style.cssText='background:var(--ink3);border:1px solid rgba(200,152,31,.3);margin-left:6px;';
+      btn.textContent='\uD83D\uDC64 My Account';
+      var cartBtn = document.getElementById('nav-cart-btn');
+      if(cartBtn) cartBtn.parentNode.insertBefore(btn, cartBtn.nextSibling);
+    }
+  }catch(e){}
+})(); }
 function clearCart(){ if(!confirm('Clear all items from your cart?')) return; saveCart([]); renderCart(); }
 
 function updateNavCount(){
@@ -282,6 +297,21 @@ async function renderCart(){
   document.getElementById('summary-total').textContent    = '$'+subtotal.toFixed(2);
   document.getElementById('summary-items').textContent    = totalItems+' pcs';
   updateNavCount();
+// Show My Account if logged in
+(function(){
+  try{
+    var u = JSON.parse(sessionStorage.getItem('apbs_user'));
+    if(u && u.status==='approved'){
+      var btn = document.createElement('a');
+      btn.href='account.html';
+      btn.className='nav-cta';
+      btn.style.cssText='background:var(--ink3);border:1px solid rgba(200,152,31,.3);margin-left:6px;';
+      btn.textContent='\uD83D\uDC64 My Account';
+      var cartBtn = document.getElementById('nav-cart-btn');
+      if(cartBtn) cartBtn.parentNode.insertBefore(btn, cartBtn.nextSibling);
+    }
+  }catch(e){}
+})();
 }
 
 function changeQty(idx, delta, maxQty){
@@ -324,6 +354,21 @@ function removeItem(idx){
 }
 
 updateNavCount();
+// Show My Account if logged in
+(function(){
+  try{
+    var u = JSON.parse(sessionStorage.getItem('apbs_user'));
+    if(u && u.status==='approved'){
+      var btn = document.createElement('a');
+      btn.href='account.html';
+      btn.className='nav-cta';
+      btn.style.cssText='background:var(--ink3);border:1px solid rgba(200,152,31,.3);margin-left:6px;';
+      btn.textContent='\uD83D\uDC64 My Account';
+      var cartBtn = document.getElementById('nav-cart-btn');
+      if(cartBtn) cartBtn.parentNode.insertBefore(btn, cartBtn.nextSibling);
+    }
+  }catch(e){}
+})();
 </script>
 </body>
 </html>
