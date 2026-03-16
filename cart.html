@@ -200,7 +200,9 @@ async function fetchInventory(){
       var code = cols[codeIdx]||'';
       var size = cols[sizeIdx]||'';
       var qty  = parseInt(cols[qtyIdx])||0;
-      liveInventory[code+'|'+size] = qty;
+      var sizeClean = size.replace(/\"/g,'').trim();
+      liveInventory[code+'|'+sizeClean] = qty;
+      liveInventory[code+'|'+sizeClean+'"'] = qty;  // also store with inch mark
     }
   }catch(e){ console.warn('Could not fetch live inventory', e); }
 }
@@ -239,7 +241,11 @@ async function renderCart(){
 
   cart.forEach(function(item, idx){
     var key = item.code+'|'+item.size;
-    var maxQty = liveInventory[key] !== undefined ? liveInventory[key] : item.qty;
+    var invKey1 = item.code+'|'+item.size.replace(/"/g,'');
+    var invKey2 = item.code+'|'+item.size;
+    var maxQty = liveInventory[invKey1] !== undefined ? liveInventory[invKey1]
+               : liveInventory[invKey2] !== undefined ? liveInventory[invKey2]
+               : (item.maxQty || 9999);
     // Cap qty at available stock
     if(item.qty > maxQty){ item.qty = maxQty; saveCart(cart); }
 
