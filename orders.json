@@ -36,7 +36,7 @@
     {
       "id": "APB-MMTL735E",
       "placedAt": "2026-03-16T19:39:03.218Z",
-      "status": "pending",
+      "status": "cancelled",
       "customer": {
         "id": "1773689763045",
         "name": "Menachem Grossman",
@@ -114,7 +114,7 @@
       ],
       "total": 43.3,
       "confirmedAt": null,
-      "cancelledAt": null
+      "cancelledAt": "2026-03-16T21:16:40.091Z"
     }
   ]
 }
