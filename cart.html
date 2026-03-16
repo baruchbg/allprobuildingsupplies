@@ -242,6 +242,11 @@ function parseCSVLine(line){
 
 // ── RENDER CART ───────────────────────────────────────────────────
 async function renderCart(){
+  var canOrderPieces = true;
+  try{
+    var _sess = JSON.parse(sessionStorage.getItem('apbs_user'));
+    if(_sess && _sess.canOrderPieces === false) canOrderPieces = false;
+  }catch(e){}
   await fetchInventory();
   var cart = getCart();
   var contentsEl = document.getElementById('cart-contents');
@@ -284,8 +289,9 @@ async function renderCart(){
       +'<div class="cart-prod-sub">'+item.code+' &nbsp;|&nbsp; '+item.pcsPerCtn+' pcs/ctn</div></td>'
       +'<td class="cart-price">$'+unitPrice.toFixed(2)+'</td>'
       +'<td><div class="unit-toggle">'
-      +'<label><input type="radio" name="unit-'+idx+'" value="piece" '+(item.unit==='piece'?'checked':'')+' onchange="setUnit('+idx+',\'piece\')"> Piece</label>'
+      +(canOrderPieces !== false ? '<label><input type="radio" name="unit-'+idx+'" value="piece" '+(item.unit==='piece'?'checked':'')+' onchange="setUnit('+idx+',\'piece\')"> Piece</label>' : '')
       +'<label><input type="radio" name="unit-'+idx+'" value="carton" '+(item.unit==='carton'?'checked':'')+' onchange="setUnit('+idx+',\'carton\')"> Carton</label>'
+      +(canOrderPieces === false ? '<span style="font-size:10px;color:var(--silver);margin-left:4px">CASES ONLY</span>' : '')
       +'</div></td>'
       +'<td><div class="qty-wrap">'
       +'<button class="qty-btn" onclick="changeQty('+idx+',-1)">−</button>'
@@ -328,6 +334,9 @@ function setQty(idx, val, maxQty){
 
 function setUnit(idx, unit){
   var cart = getCart();
+  // Block piece selection if not allowed
+  var _u = null; try{ _u = JSON.parse(sessionStorage.getItem('apbs_user')); }catch(e){}
+  if(unit === 'piece' && _u && _u.canOrderPieces === false) return;
   cart[idx].unit = unit;
   // If switching to carton, snap qty to nearest carton
   if(unit === 'carton'){

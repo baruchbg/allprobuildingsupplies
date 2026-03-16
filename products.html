@@ -613,8 +613,10 @@ function addToCart(btn){
   if(existing){
     if(existing.qty < maxQty){ existing.qty += 1; }
   } else {
+    var defaultUnit = (sess && sess.canOrderPieces === false) ? 'carton' : 'piece';
+    var defaultQty  = defaultUnit === 'carton' ? pcs : 1;
     cart.push({code:code, size:size, description:desc, pcsPerCtn:pcs,
-               unitPrice:price, qty:1, unit:'piece', maxQty:maxQty});
+               unitPrice:price, qty:defaultQty, unit:defaultUnit, maxQty:maxQty});
   }
   saveCart(cart);
   btn.textContent = '✓ Added';
