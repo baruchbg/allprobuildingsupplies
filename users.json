@@ -11,6 +11,18 @@
       "status": "approved",
       "registeredAt": "2026-03-13T16:28:53.948Z",
       "approvedAt": null
+    },
+    {
+      "id": "1773689763045",
+      "fname": "Menachem",
+      "lname": "Grossman",
+      "company": "Men-E Consulting",
+      "email": "mennyg@achimonline.com",
+      "phone": "3473219340",
+      "password": "c0c11257994347392227f5cb66d4274c45b92840ba44a8e3e56ca7a088f308ea",
+      "status": "pending",
+      "registeredAt": "2026-03-16T19:36:03.045Z",
+      "approvedAt": null
     }
   ]
 }
