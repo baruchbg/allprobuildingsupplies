@@ -388,6 +388,7 @@ function showPage(name,btn){
   document.getElementById('page-'+name).classList.add('active');
   if(btn)btn.classList.add('active');
   if(name==='users'&&!usersLoaded)loadUsers();
+  if(name==='orders')loadOrders();
 }
 
 function ghFetch(path,opts){
