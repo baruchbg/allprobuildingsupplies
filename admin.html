@@ -706,6 +706,41 @@ function showPwMsg(type,msg){
 var allOrders=[], ordersSha='', currentOrderFilter='all';
 
 function toggleOrderCard(el){el.closest('.order-card').classList.toggle('open');}
+
+// ── EMAIL CONFIG ──────────────────────────────────────────────────
+var EMAILJS_SVC_ADM = 'service_qefaa3x';
+var EMAILJS_TPL_ADM = 'template_nh3iqob';
+var EMAILJS_KEY_ADM = 'MNDXK3JgE890yvoA6';
+
+function buildStatusEmail(order, status){
+  var isConfirmed = status === 'confirmed';
+  var statusWord = isConfirmed ? 'Confirmed' : 'Cancelled';
+  var statusMsg  = isConfirmed
+    ? 'Your order has been confirmed and is being processed. We will contact you shortly to arrange delivery or pickup.'
+    : 'Your order has been cancelled. If you have any questions or believe this was an error, please contact us right away.';
+  var badgeColor = isConfirmed ? '#2ecc71' : '#e74c3c';
+  return '<!DOCTYPE html><html><head><meta charset="UTF-8"/></head><body style="margin:0;padding:0;background:#f4f4f4;font-family:Helvetica Neue,Arial,sans-serif;"><table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;padding:32px 0;"><tr><td align="center"><table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:4px;overflow:hidden;"><tr><td style="background:#0C1117;padding:28px 36px;border-bottom:4px solid #C8981F;"><table width="100%" cellpadding="0" cellspacing="0"><tr><td><div style="font-size:20px;font-weight:900;color:#FFFFFF;letter-spacing:2px;text-transform:uppercase;">ALL PRO BUILDING SUPPLIES</div><div style="font-size:11px;color:#C8981F;letter-spacing:3px;text-transform:uppercase;margin-top:3px;">LLC</div></td><td align="right"><div style="background:'+badgeColor+';color:#fff;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:6px 14px;border-radius:2px;">ORDER '+statusWord.toUpperCase()+'</div></td></tr></table></td></tr><tr><td style="padding:0;"><div style="background:#f8f8f8;border-left:4px solid '+badgeColor+';padding:20px 36px;font-size:15px;color:#444;">Hi <strong>'+order.customer.name+'</strong> &mdash; your order <strong style="color:#C8981F;font-family:monospace;">'+order.id+'</strong> has been <strong>'+statusWord+'</strong>.</div></td></tr><tr><td style="padding:28px 36px 0;"><p style="margin:0;font-size:15px;color:#444;line-height:1.7;">'+statusMsg+'</p></td></tr><tr><td style="padding:24px 36px 0;"><table width="100%" cellpadding="0" cellspacing="0" style="background:#f8f8f8;border-radius:4px;border:1px solid #e8e8e8;"><tr><td style="padding:16px 20px;border-right:1px solid #e8e8e8;"><div style="font-size:10px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Order ID</div><div style="font-size:14px;font-weight:700;color:#C8981F;font-family:monospace;">'+order.id+'</div></td><td style="padding:16px 20px;border-right:1px solid #e8e8e8;"><div style="font-size:10px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Order Total</div><div style="font-size:16px;font-weight:700;color:#222;">$'+order.total.toFixed(2)+'</div></td><td style="padding:16px 20px;"><div style="font-size:10px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Delivery</div><div style="font-size:13px;color:#222;">'+order.delivery.address+'</div></td></tr></table></td></tr><tr><td style="padding:24px 36px;"><p style="margin:0;font-size:14px;color:#444;">Questions? Call <a href="tel:17328875854" style="color:#C8981F;text-decoration:none;font-weight:600;">732-887-5854</a> or email <a href="mailto:baruch@allprobuildingsupplies.com" style="color:#C8981F;text-decoration:none;">baruch@allprobuildingsupplies.com</a></p></td></tr><tr><td style="background:#0C1117;padding:20px 36px;text-align:center;"><div style="font-size:12px;color:#888;">&copy; 2025 All Pro Building Supplies LLC &nbsp;&middot;&nbsp; <a href="https://allprobuildingsupplies.com" style="color:#C8981F;text-decoration:none;">allprobuildingsupplies.com</a></div></td></tr></table></td></tr></table></body></html>';
+}
+
+function sendStatusEmail(order, status){
+  if(!order || !order.customer || !order.customer.email) return;
+  var isConfirmed = status === 'confirmed';
+  var subject = 'Order '+order.id+' '+(isConfirmed?'Confirmed':'Cancelled')+' | All Pro Building Supplies';
+  try{
+    emailjs.init(EMAILJS_KEY_ADM);
+    emailjs.send(EMAILJS_SVC_ADM, EMAILJS_TPL_ADM, {
+      cust_email:    order.customer.email,
+      email_subject: subject,
+      email_body:    buildStatusEmail(order, status),
+      order_id:      order.id,
+      cust_name:     order.customer.name,
+      total:         '$'+order.total.toFixed(2),
+      delivery:      order.delivery.address
+    }).then(function(){ console.log('Status email sent to', order.customer.email); })
+      .catch(function(e){ console.warn('Status email failed:', e); });
+  }catch(e){ console.warn('EmailJS error:', e); }
+}
+
 function doSetStatus(btn){
   var id=btn.getAttribute('data-oid');
   var status=btn.getAttribute('data-st');
@@ -816,6 +851,8 @@ function setOrderStatus(id,status){
     ordersSha=r.content.sha;
     setOrdersStatus('success','Order '+id+' '+status+'.');
     setTimeout(function(){setOrdersStatus('','');},3000);
+    // Send status email to customer
+    sendStatusEmail(order, status);
   }).catch(function(e){
     order.status=prev;
     renderOrders(currentOrderFilter);
