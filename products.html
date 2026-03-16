@@ -147,6 +147,14 @@ tbody td.price{font-weight:500;color:var(--white)}
   .prod-inner-table th,.prod-inner-table td{padding:8px 10px;font-size:12px;}
 }
 </style>
+<style id="cart-css">
+.cart-nav-badge{background:var(--ink);color:var(--gold);padding:1px 6px;font-size:11px;border-radius:2px;margin-left:4px;display:none;}
+.add-to-cart-btn{background:transparent;border:1px solid rgba(200,152,31,.4);color:var(--gold);font-family:'Oswald',sans-serif;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;padding:6px 12px;cursor:pointer;transition:all .2s;white-space:nowrap;}
+.add-to-cart-btn:hover{background:var(--gold);color:var(--ink);}
+.add-to-cart-btn.added{background:rgba(46,204,113,.15);border-color:#2ecc71;color:#2ecc71;}
+.prod-inner-table td:last-child{text-align:right;}
+.prod-inner-table th:last-child{text-align:right;}
+</style>
 </head>
 <body>
 <div class="topbar">
@@ -169,7 +177,7 @@ tbody td.price{font-weight:500;color:var(--white)}
   </ul>
   <div class="nav-actions">
     <a href="tel:17328875854" class="nav-tel"><svg viewBox="0 0 24 24" width="16" height="16" fill="var(--gold)"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.27-.27.67-.36 1.02-.22 1.12.45 2.32.68 3.58.68.55 0 1 .45 1 1V20c0 .55-.45 1-1 1C10.29 21 3 13.71 3 4.5c0-.55.45-1 1-1H8c.55 0 1 .45 1 1 0 1.27.2 2.48.57 3.62.1.32.03.68-.22.96L6.6 10.8z"/></svg>732-887-5854</a>
-    <a href="login.html" class="nav-cta">Login →</a>
+    <a href="cart.html" class="nav-cta" id="nav-cart-btn">🛒 Cart <span id="nav-cart-count" class="cart-nav-badge"></span></a>
   </div>
     <button class="hamburger" id="hamburger" aria-label="Menu">
       <span></span><span></span><span></span>
@@ -268,11 +276,11 @@ tbody td.price{font-weight:500;color:var(--white)}
         </div>
         <div class="prod-section-body">
           <table class="prod-inner-table">
-            <thead><tr><th>Size</th><th>Pack</th><th>Availability</th><th class="price-col-hdr">Unit Price 🔒</th></tr></thead>
+            <thead><tr><th>Size</th><th>Pack</th><th>Availability</th><th class="price-col-hdr">Unit Price 🔒</th><th></th></tr></thead>
             <tbody>
-            <tr data-code="PIPE-SOLID"><td>2"</td><td><span class="qty-badge">20/CTN</span></td><td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">460</span></td><td class="price" data-price="16.20"><span class="price-locked">🔒 Login to view</span></td></tr>
-            <tr data-code="PIPE-SOLID"><td>3"</td><td><span class="qty-badge">20/CTN</span></td><td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">460</span></td><td class="price" data-price="30.00"><span class="price-locked">🔒 Login to view</span></td></tr>
-            <tr data-code="PIPE-SOLID"><td>4"</td><td><span class="qty-badge">20/CTN</span></td><td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">460</span></td><td class="price" data-price="54.80"><span class="price-locked">🔒 Login to view</span></td></tr>
+            <tr data-code="PIPE-SOLID"><td>2"</td><td><span class="qty-badge">20/CTN</span></td><td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">460</span></td><td class="price" data-price="16.20"><span class="price-locked">🔒 Login to view</span></td><td><button class="add-to-cart-btn" onclick="addToCart(this,'PIPE-SOLID','2&quot;','ASTM D1785 SCH40 PVC',20,16.20)">+ Cart</button></td></tr>
+            <tr data-code="PIPE-SOLID"><td>3"</td><td><span class="qty-badge">20/CTN</span></td><td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">460</span></td><td class="price" data-price="30.00"><span class="price-locked">🔒 Login to view</span></td><td><button class="add-to-cart-btn" onclick="addToCart(this,'PIPE-SOLID','3&quot;','ASTM D1785 SCH40 PVC',20,30.00)">+ Cart</button></td></tr>
+            <tr data-code="PIPE-SOLID"><td>4"</td><td><span class="qty-badge">20/CTN</span></td><td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">460</span></td><td class="price" data-price="54.80"><span class="price-locked">🔒 Login to view</span></td><td><button class="add-to-cart-btn" onclick="addToCart(this,'PIPE-SOLID','4&quot;','ASTM D1785 SCH40 PVC',20,54.80)">+ Cart</button></td></tr>
             </tbody>
           </table>
         </div>
@@ -288,12 +296,12 @@ tbody td.price{font-weight:500;color:var(--white)}
         </div>
         <div class="prod-section-body">
           <table class="prod-inner-table">
-            <thead><tr><th>Size</th><th>Pack</th><th>Availability</th><th class="price-col-hdr">Unit Price 🔒</th></tr></thead>
+            <thead><tr><th>Size</th><th>Pack</th><th>Availability</th><th class="price-col-hdr">Unit Price 🔒</th><th></th></tr></thead>
             <tbody>
-            <tr data-code="PIPE-FOAM"><td>1-1/2"</td><td><span class="qty-badge">20/CTN</span></td><td><span style="color:var(--silver)">Call for Availability</span></td><td class="price" data-price="7.70"><span class="price-locked">🔒 Login to view</span></td></tr>
-            <tr data-code="PIPE-FOAM"><td>2"</td><td><span class="qty-badge">20/CTN</span></td><td><span style="color:var(--silver)">Call for Availability</span></td><td class="price" data-price="9.80"><span class="price-locked">🔒 Login to view</span></td></tr>
-            <tr data-code="PIPE-FOAM"><td>3"</td><td><span class="qty-badge">20/CTN</span></td><td><span style="color:var(--silver)">Call for Availability</span></td><td class="price" data-price="18.60"><span class="price-locked">🔒 Login to view</span></td></tr>
-            <tr data-code="PIPE-FOAM"><td>4"</td><td><span class="qty-badge">20/CTN</span></td><td><span style="color:var(--silver)">Call for Availability</span></td><td class="price" data-price="27.60"><span class="price-locked">🔒 Login to view</span></td></tr>
+            <tr data-code="PIPE-FOAM"><td>1-1/2"</td><td><span class="qty-badge">20/CTN</span></td><td><span style="color:var(--silver)">Call for Availability</span></td><td class="price" data-price="7.70"><span class="price-locked">🔒 Login to view</span></td><td><button class="add-to-cart-btn" onclick="addToCart(this,'PIPE-FOAM','1-1/2&quot;','ASTM F891 PVC Foam Core DWV Pipe',20,7.70)">+ Cart</button></td></tr>
+            <tr data-code="PIPE-FOAM"><td>2"</td><td><span class="qty-badge">20/CTN</span></td><td><span style="color:var(--silver)">Call for Availability</span></td><td class="price" data-price="9.80"><span class="price-locked">🔒 Login to view</span></td><td><button class="add-to-cart-btn" onclick="addToCart(this,'PIPE-FOAM','2&quot;','ASTM F891 PVC Foam Core DWV Pipe',20,9.80)">+ Cart</button></td></tr>
+            <tr data-code="PIPE-FOAM"><td>3"</td><td><span class="qty-badge">20/CTN</span></td><td><span style="color:var(--silver)">Call for Availability</span></td><td class="price" data-price="18.60"><span class="price-locked">🔒 Login to view</span></td><td><button class="add-to-cart-btn" onclick="addToCart(this,'PIPE-FOAM','3&quot;','ASTM F891 PVC Foam Core DWV Pipe',20,18.60)">+ Cart</button></td></tr>
+            <tr data-code="PIPE-FOAM"><td>4"</td><td><span class="qty-badge">20/CTN</span></td><td><span style="color:var(--silver)">Call for Availability</span></td><td class="price" data-price="27.60"><span class="price-locked">🔒 Login to view</span></td><td><button class="add-to-cart-btn" onclick="addToCart(this,'PIPE-FOAM','4&quot;','ASTM F891 PVC Foam Core DWV Pipe',20,27.60)">+ Cart</button></td></tr>
             </tbody>
           </table>
         </div>
@@ -309,12 +317,12 @@ tbody td.price{font-weight:500;color:var(--white)}
         </div>
         <div class="prod-section-body">
           <table class="prod-inner-table">
-            <thead><tr><th>Size</th><th>Pack</th><th>Availability</th><th class="price-col-hdr">Unit Price 🔒</th></tr></thead>
+            <thead><tr><th>Size</th><th>Pack</th><th>Availability</th><th class="price-col-hdr">Unit Price 🔒</th><th></th></tr></thead>
             <tbody>
-            <tr data-code="PVC-1/4HH"><td>1-1/2"</td><td><span class="qty-badge">100/CTN</span></td><td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">4800</span></td><td class="price" data-price="0.60"><span class="price-locked">🔒 Login to view</span></td></tr>
-            <tr data-code="PVC-1/4HH"><td>2"</td><td><span class="qty-badge">50/CTN</span></td><td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">3700</span></td><td class="price" data-price="0.90"><span class="price-locked">🔒 Login to view</span></td></tr>
-            <tr data-code="PVC-1/4HH"><td>3"</td><td><span class="qty-badge">25/CTN</span></td><td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">2075</span></td><td class="price" data-price="2.40"><span class="price-locked">🔒 Login to view</span></td></tr>
-            <tr data-code="PVC-1/4HH"><td>4"</td><td><span class="qty-badge">10/CTN</span></td><td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">230</span></td><td class="price" data-price="4.10"><span class="price-locked">🔒 Login to view</span></td></tr>
+            <tr data-code="PVC-1/4HH"><td>1-1/2"</td><td><span class="qty-badge">100/CTN</span></td><td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">4800</span></td><td class="price" data-price="0.60"><span class="price-locked">🔒 Login to view</span></td><td><button class="add-to-cart-btn" onclick="addToCart(this,'PVC-1/4HH','1-1/2&quot;','1/4 BEND (H x H)',100,0.60)">+ Cart</button></td></tr>
+            <tr data-code="PVC-1/4HH"><td>2"</td><td><span class="qty-badge">50/CTN</span></td><td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">3700</span></td><td class="price" data-price="0.90"><span class="price-locked">🔒 Login to view</span></td><td><button class="add-to-cart-btn" onclick="addToCart(this,'PVC-1/4HH','2&quot;','1/4 BEND (H x H)',50,0.90)">+ Cart</button></td></tr>
+            <tr data-code="PVC-1/4HH"><td>3"</td><td><span class="qty-badge">25/CTN</span></td><td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">2075</span></td><td class="price" data-price="2.40"><span class="price-locked">🔒 Login to view</span></td><td><button class="add-to-cart-btn" onclick="addToCart(this,'PVC-1/4HH','3&quot;','1/4 BEND (H x H)',25,2.40)">+ Cart</button></td></tr>
+            <tr data-code="PVC-1/4HH"><td>4"</td><td><span class="qty-badge">10/CTN</span></td><td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">230</span></td><td class="price" data-price="4.10"><span class="price-locked">🔒 Login to view</span></td><td><button class="add-to-cart-btn" onclick="addToCart(this,'PVC-1/4HH','4&quot;','1/4 BEND (H x H)',10,4.10)">+ Cart</button></td></tr>
             </tbody>
           </table>
         </div>
@@ -330,12 +338,12 @@ tbody td.price{font-weight:500;color:var(--white)}
         </div>
         <div class="prod-section-body">
           <table class="prod-inner-table">
-            <thead><tr><th>Size</th><th>Pack</th><th>Availability</th><th class="price-col-hdr">Unit Price 🔒</th></tr></thead>
+            <thead><tr><th>Size</th><th>Pack</th><th>Availability</th><th class="price-col-hdr">Unit Price 🔒</th><th></th></tr></thead>
             <tbody>
-            <tr data-code="PVC-1/8HH"><td>1-1/2"</td><td><span class="qty-badge">100/CTN</span></td><td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">1000</span></td><td class="price" data-price="0.60"><span class="price-locked">🔒 Login to view</span></td></tr>
-            <tr data-code="PVC-1/8HH"><td>2"</td><td><span class="qty-badge">50/CTN</span></td><td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">2400</span></td><td class="price" data-price="0.80"><span class="price-locked">🔒 Login to view</span></td></tr>
-            <tr data-code="PVC-1/8HH"><td>3"</td><td><span class="qty-badge">25/CTN</span></td><td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">1725</span></td><td class="price" data-price="2.30"><span class="price-locked">🔒 Login to view</span></td></tr>
-            <tr data-code="PVC-1/8HH"><td>4"</td><td><span class="qty-badge">15/CTN</span></td><td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">180</span></td><td class="price" data-price="4.10"><span class="price-locked">🔒 Login to view</span></td></tr>
+            <tr data-code="PVC-1/8HH"><td>1-1/2"</td><td><span class="qty-badge">100/CTN</span></td><td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">1000</span></td><td class="price" data-price="0.60"><span class="price-locked">🔒 Login to view</span></td><td><button class="add-to-cart-btn" onclick="addToCart(this,'PVC-1/8HH','1-1/2&quot;','1/8 BEND (H x H)',100,0.60)">+ Cart</button></td></tr>
+            <tr data-code="PVC-1/8HH"><td>2"</td><td><span class="qty-badge">50/CTN</span></td><td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">2400</span></td><td class="price" data-price="0.80"><span class="price-locked">🔒 Login to view</span></td><td><button class="add-to-cart-btn" onclick="addToCart(this,'PVC-1/8HH','2&quot;','1/8 BEND (H x H)',50,0.80)">+ Cart</button></td></tr>
+            <tr data-code="PVC-1/8HH"><td>3"</td><td><span class="qty-badge">25/CTN</span></td><td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">1725</span></td><td class="price" data-price="2.30"><span class="price-locked">🔒 Login to view</span></td><td><button class="add-to-cart-btn" onclick="addToCart(this,'PVC-1/8HH','3&quot;','1/8 BEND (H x H)',25,2.30)">+ Cart</button></td></tr>
+            <tr data-code="PVC-1/8HH"><td>4"</td><td><span class="qty-badge">15/CTN</span></td><td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">180</span></td><td class="price" data-price="4.10"><span class="price-locked">🔒 Login to view</span></td><td><button class="add-to-cart-btn" onclick="addToCart(this,'PVC-1/8HH','4&quot;','1/8 BEND (H x H)',15,4.10)">+ Cart</button></td></tr>
             </tbody>
           </table>
         </div>
@@ -351,12 +359,12 @@ tbody td.price{font-weight:500;color:var(--white)}
         </div>
         <div class="prod-section-body">
           <table class="prod-inner-table">
-            <thead><tr><th>Size</th><th>Pack</th><th>Availability</th><th class="price-col-hdr">Unit Price 🔒</th></tr></thead>
+            <thead><tr><th>Size</th><th>Pack</th><th>Availability</th><th class="price-col-hdr">Unit Price 🔒</th><th></th></tr></thead>
             <tbody>
-            <tr data-code="PVC-1/8HS"><td>1-1/2"</td><td><span class="qty-badge">100/CTN</span></td><td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">800</span></td><td class="price" data-price="0.50"><span class="price-locked">🔒 Login to view</span></td></tr>
-            <tr data-code="PVC-1/8HS"><td>2"</td><td><span class="qty-badge">50/CTN</span></td><td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">2400</span></td><td class="price" data-price="0.80"><span class="price-locked">🔒 Login to view</span></td></tr>
-            <tr data-code="PVC-1/8HS"><td>3"</td><td><span class="qty-badge">25/CTN</span></td><td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">1500</span></td><td class="price" data-price="2.10"><span class="price-locked">🔒 Login to view</span></td></tr>
-            <tr data-code="PVC-1/8HS"><td>4"</td><td><span class="qty-badge">9/CTN</span></td><td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">153</span></td><td class="price" data-price="3.50"><span class="price-locked">🔒 Login to view</span></td></tr>
+            <tr data-code="PVC-1/8HS"><td>1-1/2"</td><td><span class="qty-badge">100/CTN</span></td><td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">800</span></td><td class="price" data-price="0.50"><span class="price-locked">🔒 Login to view</span></td><td><button class="add-to-cart-btn" onclick="addToCart(this,'PVC-1/8HS','1-1/2&quot;','1/8 BEND STREET (H x S)',100,0.50)">+ Cart</button></td></tr>
+            <tr data-code="PVC-1/8HS"><td>2"</td><td><span class="qty-badge">50/CTN</span></td><td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">2400</span></td><td class="price" data-price="0.80"><span class="price-locked">🔒 Login to view</span></td><td><button class="add-to-cart-btn" onclick="addToCart(this,'PVC-1/8HS','2&quot;','1/8 BEND STREET (H x S)',50,0.80)">+ Cart</button></td></tr>
+            <tr data-code="PVC-1/8HS"><td>3"</td><td><span class="qty-badge">25/CTN</span></td><td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">1500</span></td><td class="price" data-price="2.10"><span class="price-locked">🔒 Login to view</span></td><td><button class="add-to-cart-btn" onclick="addToCart(this,'PVC-1/8HS','3&quot;','1/8 BEND STREET (H x S)',25,2.10)">+ Cart</button></td></tr>
+            <tr data-code="PVC-1/8HS"><td>4"</td><td><span class="qty-badge">9/CTN</span></td><td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">153</span></td><td class="price" data-price="3.50"><span class="price-locked">🔒 Login to view</span></td><td><button class="add-to-cart-btn" onclick="addToCart(this,'PVC-1/8HS','4&quot;','1/8 BEND STREET (H x S)',9,3.50)">+ Cart</button></td></tr>
             </tbody>
           </table>
         </div>
@@ -372,12 +380,12 @@ tbody td.price{font-weight:500;color:var(--white)}
         </div>
         <div class="prod-section-body">
           <table class="prod-inner-table">
-            <thead><tr><th>Size</th><th>Pack</th><th>Availability</th><th class="price-col-hdr">Unit Price 🔒</th></tr></thead>
+            <thead><tr><th>Size</th><th>Pack</th><th>Availability</th><th class="price-col-hdr">Unit Price 🔒</th><th></th></tr></thead>
             <tbody>
-            <tr data-code="PVC-SANTEE"><td>1-1/2"</td><td><span class="qty-badge">60/CTN</span></td><td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">360</span></td><td class="price" data-price="1.00"><span class="price-locked">🔒 Login to view</span></td></tr>
-            <tr data-code="PVC-SANTEE"><td>2"</td><td><span class="qty-badge">35/CTN</span></td><td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">105</span></td><td class="price" data-price="1.40"><span class="price-locked">🔒 Login to view</span></td></tr>
-            <tr data-code="PVC-SANTEE"><td>3"</td><td><span class="qty-badge">15/CTN</span></td><td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">105</span></td><td class="price" data-price="3.50"><span class="price-locked">🔒 Login to view</span></td></tr>
-            <tr data-code="PVC-SANTEE"><td>4"</td><td><span class="qty-badge">5/CTN</span></td><td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">100</span></td><td class="price" data-price="8.60"><span class="price-locked">🔒 Login to view</span></td></tr>
+            <tr data-code="PVC-SANTEE"><td>1-1/2"</td><td><span class="qty-badge">60/CTN</span></td><td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">360</span></td><td class="price" data-price="1.00"><span class="price-locked">🔒 Login to view</span></td><td><button class="add-to-cart-btn" onclick="addToCart(this,'PVC-SANTEE','1-1/2&quot;','SANITARY TEE (ALL HUB)',60,1.00)">+ Cart</button></td></tr>
+            <tr data-code="PVC-SANTEE"><td>2"</td><td><span class="qty-badge">35/CTN</span></td><td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">105</span></td><td class="price" data-price="1.40"><span class="price-locked">🔒 Login to view</span></td><td><button class="add-to-cart-btn" onclick="addToCart(this,'PVC-SANTEE','2&quot;','SANITARY TEE (ALL HUB)',35,1.40)">+ Cart</button></td></tr>
+            <tr data-code="PVC-SANTEE"><td>3"</td><td><span class="qty-badge">15/CTN</span></td><td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">105</span></td><td class="price" data-price="3.50"><span class="price-locked">🔒 Login to view</span></td><td><button class="add-to-cart-btn" onclick="addToCart(this,'PVC-SANTEE','3&quot;','SANITARY TEE (ALL HUB)',15,3.50)">+ Cart</button></td></tr>
+            <tr data-code="PVC-SANTEE"><td>4"</td><td><span class="qty-badge">5/CTN</span></td><td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">100</span></td><td class="price" data-price="8.60"><span class="price-locked">🔒 Login to view</span></td><td><button class="add-to-cart-btn" onclick="addToCart(this,'PVC-SANTEE','4&quot;','SANITARY TEE (ALL HUB)',5,8.60)">+ Cart</button></td></tr>
             </tbody>
           </table>
         </div>
@@ -393,12 +401,12 @@ tbody td.price{font-weight:500;color:var(--white)}
         </div>
         <div class="prod-section-body">
           <table class="prod-inner-table">
-            <thead><tr><th>Size</th><th>Pack</th><th>Availability</th><th class="price-col-hdr">Unit Price 🔒</th></tr></thead>
+            <thead><tr><th>Size</th><th>Pack</th><th>Availability</th><th class="price-col-hdr">Unit Price 🔒</th><th></th></tr></thead>
             <tbody>
-            <tr data-code="PVC-WYEHUB"><td>1-1/2"</td><td><span class="qty-badge">50/CTN</span></td><td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">100</span></td><td class="price" data-price="1.10"><span class="price-locked">🔒 Login to view</span></td></tr>
-            <tr data-code="PVC-WYEHUB"><td>2"</td><td><span class="qty-badge">25/CTN</span></td><td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">700</span></td><td class="price" data-price="1.70"><span class="price-locked">🔒 Login to view</span></td></tr>
-            <tr data-code="PVC-WYEHUB"><td>3"</td><td><span class="qty-badge">15/CTN</span></td><td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">105</span></td><td class="price" data-price="4.50"><span class="price-locked">🔒 Login to view</span></td></tr>
-            <tr data-code="PVC-WYEHUB"><td>4"</td><td><span class="qty-badge">8/CTN</span></td><td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">100</span></td><td class="price" data-price="7.90"><span class="price-locked">🔒 Login to view</span></td></tr>
+            <tr data-code="PVC-WYEHUB"><td>1-1/2"</td><td><span class="qty-badge">50/CTN</span></td><td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">100</span></td><td class="price" data-price="1.10"><span class="price-locked">🔒 Login to view</span></td><td><button class="add-to-cart-btn" onclick="addToCart(this,'PVC-WYEHUB','1-1/2&quot;','WYE (ALL HUB)',50,1.10)">+ Cart</button></td></tr>
+            <tr data-code="PVC-WYEHUB"><td>2"</td><td><span class="qty-badge">25/CTN</span></td><td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">700</span></td><td class="price" data-price="1.70"><span class="price-locked">🔒 Login to view</span></td><td><button class="add-to-cart-btn" onclick="addToCart(this,'PVC-WYEHUB','2&quot;','WYE (ALL HUB)',25,1.70)">+ Cart</button></td></tr>
+            <tr data-code="PVC-WYEHUB"><td>3"</td><td><span class="qty-badge">15/CTN</span></td><td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">105</span></td><td class="price" data-price="4.50"><span class="price-locked">🔒 Login to view</span></td><td><button class="add-to-cart-btn" onclick="addToCart(this,'PVC-WYEHUB','3&quot;','WYE (ALL HUB)',15,4.50)">+ Cart</button></td></tr>
+            <tr data-code="PVC-WYEHUB"><td>4"</td><td><span class="qty-badge">8/CTN</span></td><td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">100</span></td><td class="price" data-price="7.90"><span class="price-locked">🔒 Login to view</span></td><td><button class="add-to-cart-btn" onclick="addToCart(this,'PVC-WYEHUB','4&quot;','WYE (ALL HUB)',8,7.90)">+ Cart</button></td></tr>
             </tbody>
           </table>
         </div>
@@ -414,9 +422,9 @@ tbody td.price{font-weight:500;color:var(--white)}
         </div>
         <div class="prod-section-body">
           <table class="prod-inner-table">
-            <thead><tr><th>Size</th><th>Pack</th><th>Availability</th><th class="price-col-hdr">Unit Price 🔒</th></tr></thead>
+            <thead><tr><th>Size</th><th>Pack</th><th>Availability</th><th class="price-col-hdr">Unit Price 🔒</th><th></th></tr></thead>
             <tbody>
-            <tr data-code="PVC-SANTEERED"><td>3x3x2"</td><td><span class="qty-badge">15/CTN</span></td><td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">375</span></td><td class="price" data-price="3.40"><span class="price-locked">🔒 Login to view</span></td></tr>
+            <tr data-code="PVC-SANTEERED"><td>3x3x2"</td><td><span class="qty-badge">15/CTN</span></td><td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">375</span></td><td class="price" data-price="3.40"><span class="price-locked">🔒 Login to view</span></td><td><button class="add-to-cart-btn" onclick="addToCart(this,'PVC-SANTEERED','3x3x2&quot;','REDUCING SANITARY TEE (ALL HUB)',15,3.40)">+ Cart</button></td></tr>
             </tbody>
           </table>
         </div>
@@ -432,9 +440,9 @@ tbody td.price{font-weight:500;color:var(--white)}
         </div>
         <div class="prod-section-body">
           <table class="prod-inner-table">
-            <thead><tr><th>Size</th><th>Pack</th><th>Availability</th><th class="price-col-hdr">Unit Price 🔒</th></tr></thead>
+            <thead><tr><th>Size</th><th>Pack</th><th>Availability</th><th class="price-col-hdr">Unit Price 🔒</th><th></th></tr></thead>
             <tbody>
-            <tr data-code="PVC-CLSTFLNGH"><td>4x3"</td><td><span class="qty-badge">20/CTN</span></td><td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">1620</span></td><td class="price" data-price="3.10"><span class="price-locked">🔒 Login to view</span></td></tr>
+            <tr data-code="PVC-CLSTFLNGH"><td>4x3"</td><td><span class="qty-badge">20/CTN</span></td><td><span style="color:#4CAF50">● In Stock</span> <span class="qty-badge">1620</span></td><td class="price" data-price="3.10"><span class="price-locked">🔒 Login to view</span></td><td><button class="add-to-cart-btn" onclick="addToCart(this,'PVC-CLSTFLNGH','4x3&quot;','CLOSET FLANGE W/TEST PLATE (H)',20,3.10)">+ Cart</button></td></tr>
             </tbody>
           </table>
         </div>
@@ -564,6 +572,74 @@ document.addEventListener('DOMContentLoaded', function(){
     if(e.target === this) this.classList.remove('open');
   });
 });
+</script>
+<script id="cart-js">
+// ── CART HELPERS ─────────────────────────────────────────────────
+function getCart(){ try{ return JSON.parse(localStorage.getItem('apbs_cart')||'[]'); }catch(e){return [];} }
+function saveCart(c){ localStorage.setItem('apbs_cart', JSON.stringify(c)); updateCartBadge(); }
+
+function updateCartBadge(){
+  var cart = getCart();
+  var total = cart.reduce(function(s,i){return s+i.qty;},0);
+  var el = document.getElementById('nav-cart-count');
+  if(el){ el.textContent = total; el.style.display = total?'inline':'none'; }
+}
+
+function addToCart(btn, code, size, description, pcsPerCtn, unitPrice){
+  // Only logged-in approved users can add to cart
+  var sess = null;
+  try{ sess = JSON.parse(sessionStorage.getItem('apbs_user')); }catch(e){}
+  if(!sess || sess.status !== 'approved'){
+    window.location.href = 'login.html';
+    return;
+  }
+  // Get stock from the row
+  var tr = btn.closest('tr');
+  var availCell = tr ? tr.cells[2] : null;
+  var stockText = availCell ? availCell.textContent : '';
+  var stockMatch = stockText.match(/\d+/);
+  var maxQty = stockMatch ? parseInt(stockMatch[0]) : 9999;
+  
+  if(maxQty <= 0){
+    btn.textContent = 'Out of Stock';
+    btn.style.borderColor = '#666';
+    btn.style.color = '#666';
+    btn.disabled = true;
+    return;
+  }
+
+  var cart = getCart();
+  var key = code+'|'+size;
+  var existing = cart.find(function(i){ return i.code===code && i.size===size; });
+
+  if(existing){
+    if(existing.qty < maxQty){
+      existing.qty += 1;
+    }
+  } else {
+    cart.push({
+      code: code,
+      size: size,
+      description: description,
+      pcsPerCtn: parseInt(pcsPerCtn),
+      unitPrice: parseFloat(unitPrice),
+      qty: 1,
+      unit: 'piece'
+    });
+  }
+  saveCart(cart);
+
+  // Animate button
+  btn.textContent = '✓ Added';
+  btn.classList.add('added');
+  setTimeout(function(){
+    btn.textContent = '+ Cart';
+    btn.classList.remove('added');
+  }, 1500);
+}
+
+// Init badge on load
+updateCartBadge();
 </script>
 </body>
 </html>

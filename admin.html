@@ -135,6 +135,39 @@ button{font-family:inherit;cursor:pointer}input,select,textarea{font-family:inhe
   .adm-toolbar{flex-direction:column;align-items:stretch}.adm-btn{width:100%;justify-content:center}
 }
 </style>
+
+<style id="orders-css">
+.order-card{background:var(--ink3);border:1px solid rgba(200,152,31,.15);border-radius:6px;margin-bottom:16px;overflow:hidden}
+.order-card-hdr{display:flex;align-items:center;gap:16px;padding:14px 18px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.05)}
+.order-card-hdr:hover{background:rgba(200,152,31,.04)}
+.order-card-id{font-family:"DM Mono",monospace;font-size:13px;color:var(--gold);font-weight:500}
+.order-card-who{font-size:13px;color:var(--white);flex:1}
+.order-card-who small{display:block;font-size:11px;color:var(--silver);margin-top:1px}
+.order-card-total{font-family:"DM Mono",monospace;font-size:14px;color:var(--white)}
+.order-card-date{font-size:11px;color:var(--silver);font-family:"DM Mono",monospace;margin-left:8px}
+.badge-pending{background:rgba(255,159,67,.15);color:#ff9f43;border:1px solid rgba(255,159,67,.3);padding:3px 10px;font-size:10px;font-family:"DM Mono",monospace;letter-spacing:1px;border-radius:2px}
+.badge-confirmed{background:rgba(46,204,113,.12);color:#2ecc71;border:1px solid rgba(46,204,113,.25);padding:3px 10px;font-size:10px;font-family:"DM Mono",monospace;border-radius:2px}
+.badge-cancelled{background:rgba(255,107,107,.1);color:#ff6b6b;border:1px solid rgba(255,107,107,.2);padding:3px 10px;font-size:10px;font-family:"DM Mono",monospace;border-radius:2px}
+.order-card-body{display:none;padding:16px 18px}
+.order-card.open .order-card-body{display:block}
+.order-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.order-detail-item{font-size:12px}
+.order-detail-label{color:var(--silver);font-family:"DM Mono",monospace;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:3px}
+.order-detail-val{color:var(--smoke)}
+.order-items-table{width:100%;border-collapse:collapse;margin-bottom:14px;font-size:12px}
+.order-items-table th{background:rgba(200,152,31,.1);color:var(--gold);font-family:"Oswald",sans-serif;font-size:10px;letter-spacing:1.5px;padding:7px 10px;text-align:left;text-transform:uppercase;letter-spacing:1.5px}
+.order-items-table td{padding:7px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:var(--smoke)}
+.order-items-table tr:last-child td{border-bottom:none}
+.order-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.o-btn{font-family:"Oswald",sans-serif;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;padding:8px 18px;border:none;cursor:pointer;transition:all .2s}
+.o-btn-confirm{background:rgba(46,204,113,.15);color:#2ecc71;border:1px solid rgba(46,204,113,.3)}
+.o-btn-confirm:hover{background:#2ecc71;color:var(--ink)}
+.o-btn-cancel{background:rgba(255,107,107,.1);color:#ff6b6b;border:1px solid rgba(255,107,107,.2)}
+.o-btn-cancel:hover{background:#ff6b6b;color:var(--white)}
+.orders-filter{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+.otab{background:var(--ink3);color:var(--silver);border:1px solid rgba(255,255,255,.08);padding:7px 16px;font-size:12px;cursor:pointer;font-family:"Oswald",sans-serif;letter-spacing:1px;transition:all .2s}
+.otab.on{background:rgba(200,152,31,.15);border-color:var(--gold);color:var(--gold)}
+</style>
 </head>
 <body>
 
@@ -176,6 +209,7 @@ button{font-family:inherit;cursor:pointer}input,select,textarea{font-family:inhe
         <span class="adm-nav-label">Manage</span>
         <button class="adm-nav-item active" onclick="showPage('products',this)"><span class="adm-nav-icon">&#128230;</span> Products</button>
         <button class="adm-nav-item" onclick="showPage('users',this)"><span class="adm-nav-icon">&#128101;</span> Users <span id="pending-indicator"></span></button>
+        <button class="adm-nav-item" onclick="showPage('orders',this)"><span class="adm-nav-icon">&#128222;</span> Orders <span id="orders-indicator"></span></button>
         <button class="adm-nav-item" onclick="showPage('setup',this)"><span class="adm-nav-icon">&#9881;</span> Settings</button>
         <button class="adm-nav-item" onclick="showPage('help',this)"><span class="adm-nav-icon">&#10067;</span> Help</button>
       </div>
@@ -237,6 +271,20 @@ button{font-family:inherit;cursor:pointer}input,select,textarea{font-family:inhe
         </div>
       </div>
 
+      <div class="adm-page" id="page-orders">
+        <div class="adm-page-header">
+          <div class="adm-page-title">Orders</div>
+          <div class="adm-page-sub">Review and manage customer orders.</div>
+        </div>
+        <div id="orders-status-bar" class="adm-status-bar" style="display:none;margin-bottom:16px;"></div>
+        <div class="orders-filter">
+          <button class="otab on" onclick="filterOrders('all',this)">All <span id="otab-all"></span></button>
+          <button class="otab" onclick="filterOrders('pending',this)">Pending <span id="otab-pending"></span></button>
+          <button class="otab" onclick="filterOrders('confirmed',this)">Confirmed <span id="otab-confirmed"></span></button>
+          <button class="otab" onclick="filterOrders('cancelled',this)">Cancelled <span id="otab-cancelled"></span></button>
+        </div>
+        <div id="orders-list"><div style="color:var(--silver);padding:40px;text-align:center;">Loading orders...</div></div>
+      </div>
       <div class="adm-page" id="page-setup">
         <div class="adm-page-header">
           <div class="adm-page-title">Settings</div>
@@ -652,6 +700,129 @@ function showPwMsg(type,msg){
   var el=document.getElementById('pw-status');el.className='setup-status '+type;el.textContent=msg;el.style.display='block';
   setTimeout(function(){el.style.display='none';},4000);
 }
+
+// ── ORDERS ───────────────────────────────────────────────────────
+var allOrders=[], ordersSha='', currentOrderFilter='all';
+
+function toggleOrderCard(el){el.closest('.order-card').classList.toggle('open');}
+function doSetStatus(btn){
+  var id=btn.getAttribute('data-oid');
+  var status=btn.getAttribute('data-st');
+  setOrderStatus(id,status);
+}
+function loadOrders(){
+  setOrdersStatus('working','Loading orders...');
+  ghFetch('orders.json').then(function(data){
+    ordersSha=data.sha;
+    try{ allOrders=JSON.parse(atob(data.content.replace(/\n/g,''))).orders||[]; }
+    catch(e){ allOrders=[]; }
+    renderOrders(currentOrderFilter);
+    updateOrderCounts();
+    setOrdersStatus('','');
+  }).catch(function(e){ setOrdersStatus('error','Failed: '+e.message); });
+}
+
+function setOrdersStatus(type,msg){
+  var b=document.getElementById('orders-status-bar');
+  if(!b)return;
+  if(!msg){b.style.display='none';return;}
+  b.style.display='block';
+  b.className='adm-status-bar'+(type?' adm-status-'+type:'');
+  b.textContent=msg;
+}
+
+function filterOrders(f,btn){
+  currentOrderFilter=f;
+  document.querySelectorAll('.otab').forEach(function(b){b.classList.remove('on');});
+  btn.classList.add('on');
+  renderOrders(f);
+}
+
+function updateOrderCounts(){
+  var counts={all:allOrders.length,pending:0,confirmed:0,cancelled:0};
+  allOrders.forEach(function(o){if(counts[o.status]!==undefined)counts[o.status]++;});
+  ['all','pending','confirmed','cancelled'].forEach(function(k){
+    var el=document.getElementById('otab-'+k);
+    if(el)el.textContent=counts[k]?'('+counts[k]+')':'';
+  });
+  var ind=document.getElementById('orders-indicator');
+  if(ind)ind.innerHTML=counts.pending?'<span style="display:inline-block;width:8px;height:8px;background:#ff9f43;border-radius:50%;margin-left:5px;vertical-align:middle"></span>':'';
+}
+
+function renderOrders(filter){
+  var listEl=document.getElementById('orders-list');
+  if(!listEl)return;
+  var filtered=filter==='all'?allOrders.slice():allOrders.filter(function(o){return o.status===filter;});
+  if(!filtered.length){
+    listEl.innerHTML='<div style="color:var(--silver);padding:40px;text-align:center;">No '+filter+' orders.</div>';
+    return;
+  }
+  filtered.sort(function(a,b){return new Date(b.placedAt)-new Date(a.placedAt);});
+  listEl.innerHTML=filtered.map(function(o){
+    var items=(o.items||[]).map(function(i){
+      return '<tr><td style="font-family:DM Mono,monospace;font-size:11px;color:var(--gold)">'+i.code+'</td>'
+        +'<td>'+i.description+' '+i.size+'</td>'
+        +'<td style="text-align:center">'+i.qty+' pcs</td>'
+        +'<td style="text-align:right;font-family:DM Mono,monospace">$'+parseFloat(i.lineTotal).toFixed(2)+'</td></tr>';
+    }).join('');
+    var oid=o.id;
+    var acts='';
+    if(o.status==='pending'){
+      acts='<button class="o-btn o-btn-confirm" data-oid="'+oid+'" data-st="confirmed" onclick="doSetStatus(this)">&#10003; Confirm</button>'
+          +'<button class="o-btn o-btn-cancel" data-oid="'+oid+'" data-st="cancelled" onclick="doSetStatus(this)">&#10007; Cancel</button>';
+    } else if(o.status==='confirmed'){
+      acts='<button class="o-btn o-btn-cancel" data-oid="'+oid+'" data-st="cancelled" onclick="doSetStatus(this)">&#10007; Cancel Order</button>';
+
+    }
+    return '<div class="order-card" id="ocard-'+o.id+'">'
+      +'<div class="order-card-hdr" onclick="toggleOrderCard(this)">'
+      +'<div class="order-card-id">'+o.id+'</div>'
+      +'<div class="order-card-who">'+o.customer.name+'<small>'+o.customer.company+'</small></div>'
+      +'<span class="badge-'+(o.status||'pending')+'">'+((o.status||'pending').toUpperCase())+'</span>'
+      +'<div class="order-card-total">$'+parseFloat(o.total).toFixed(2)+'</div>'
+      +'<div class="order-card-date">'+new Date(o.placedAt).toLocaleDateString()+'</div>'
+      +'</div>'
+      +'<div class="order-card-body">'
+      +'<div class="order-detail-grid">'
+      +'<div class="order-detail-item"><div class="order-detail-label">Customer</div><div class="order-detail-val">'+o.customer.name+' &mdash; '+o.customer.company+'</div></div>'
+      +'<div class="order-detail-item"><div class="order-detail-label">Contact</div><div class="order-detail-val">'+o.customer.phone+'<br><a href="mailto:'+o.customer.email+'" style="color:var(--gold)">'+o.customer.email+'</a></div></div>'
+      +'<div class="order-detail-item"><div class="order-detail-label">Delivery</div><div class="order-detail-val">'+o.delivery.method.toUpperCase()+': '+o.delivery.address+'</div></div>'
+      +'<div class="order-detail-item"><div class="order-detail-label">PO Number</div><div class="order-detail-val">'+(o.po||'&mdash;')+'</div></div>'
+      +(o.notes?'<div class="order-detail-item" style="grid-column:1/-1"><div class="order-detail-label">Notes</div><div class="order-detail-val">'+o.notes+'</div></div>':'')
+      +'</div>'
+      +'<table class="order-items-table"><thead><tr><th>Code</th><th>Product</th><th style="text-align:center">Qty</th><th style="text-align:right">Total</th></tr></thead>'
+      +'<tbody>'+items+'</tbody>'
+      +'<tfoot><tr><td colspan="3" style="text-align:right;padding:8px 10px;color:var(--silver);font-size:11px">ORDER TOTAL</td>'
+      +'<td style="text-align:right;padding:8px 10px;font-family:DM Mono,monospace;color:var(--gold);font-size:14px">$'+parseFloat(o.total).toFixed(2)+'</td></tr></tfoot>'
+      +'</table>'
+      +'<div class="order-actions">'+acts+'</div>'
+      +'</div></div>';
+  }).join('');
+}
+
+function setOrderStatus(id,status){
+  var order=allOrders.find(function(o){return o.id===id;});
+  if(!order)return;
+  if(!confirm((status==='cancelled'?'Cancel':'Confirm')+' order '+id+'?'))return;
+  var prev=order.status;
+  order.status=status;
+  if(status==='confirmed')order.confirmedAt=new Date().toISOString();
+  if(status==='cancelled')order.cancelledAt=new Date().toISOString();
+  renderOrders(currentOrderFilter);
+  updateOrderCounts();
+  var payload=JSON.stringify({message:status+' order: '+id,content:btoa(unescape(encodeURIComponent(JSON.stringify({orders:allOrders},null,2)))),branch:'main',sha:ordersSha});
+  ghFetch('orders.json',{method:'PUT',headers:{'Content-Type':'application/json'},body:payload}).then(function(r){
+    ordersSha=r.content.sha;
+    setOrdersStatus('success','Order '+id+' '+status+'.');
+    setTimeout(function(){setOrdersStatus('','');},3000);
+  }).catch(function(e){
+    order.status=prev;
+    renderOrders(currentOrderFilter);
+    updateOrderCounts();
+    setOrdersStatus('error','Failed: '+e.message);
+  });
+}
+
 </script>
 </body>
 </html>

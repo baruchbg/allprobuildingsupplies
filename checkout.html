@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Checkout — All Pro Building Supplies LLC</title>
+<link rel="stylesheet" href="assets/style.css"/>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<style>
+.checkout-grid{display:grid;grid-template-columns:1fr 380px;gap:32px;align-items:start;}
+.checkout-form-wrap{background:var(--ink2);border:1px solid rgba(200,152,31,.15);padding:32px;}
+.checkout-section-title{font-family:'Oswald',sans-serif;font-size:16px;color:var(--gold);letter-spacing:2px;text-transform:uppercase;margin:0 0 20px;padding-bottom:10px;border-bottom:1px solid rgba(200,152,31,.2);}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
+.form-row.full{grid-template-columns:1fr;}
+.form-group{display:flex;flex-direction:column;gap:6px;}
+.form-label{font-size:11px;color:var(--silver);font-family:'DM Mono',monospace;letter-spacing:1.5px;text-transform:uppercase;}
+.form-input,.form-select,.form-textarea{background:var(--ink3);border:1px solid rgba(139,160,178,.2);color:var(--white);font-family:'DM Sans',sans-serif;font-size:14px;padding:11px 14px;outline:none;transition:border-color .2s;width:100%;box-sizing:border-box;}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--gold);}
+.form-textarea{resize:vertical;min-height:90px;}
+.form-select option{background:var(--ink3);}
+.form-input.err,.form-select.err{border-color:#ff6b6b;}
+.err-msg{font-size:11px;color:#ff6b6b;display:none;font-family:'DM Mono',monospace;}
+/* delivery toggle */
+.delivery-toggle{display:flex;gap:0;margin-bottom:20px;}
+.del-opt{flex:1;padding:12px;text-align:center;border:1px solid rgba(139,160,178,.2);cursor:pointer;font-family:'Oswald',sans-serif;font-size:13px;letter-spacing:1.5px;color:var(--silver);transition:all .2s;user-select:none;}
+.del-opt:first-child{border-right:none;}
+.del-opt.active{background:rgba(200,152,31,.12);border-color:var(--gold);color:var(--gold);}
+/* order summary sidebar */
+.order-summary{background:var(--ink2);border:1px solid rgba(200,152,31,.2);padding:28px;position:sticky;top:100px;}
+.order-summary-title{font-family:'Oswald',sans-serif;font-size:15px;color:var(--white);margin-bottom:18px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,.06);}
+.order-line{display:flex;justify-content:space-between;align-items:flex-start;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:13px;}
+.order-line:last-of-type{border-bottom:none;}
+.order-line-name{color:var(--smoke);max-width:200px;}
+.order-line-sub{font-size:11px;color:var(--silver);font-family:'DM Mono',monospace;margin-top:2px;}
+.order-line-price{font-family:'DM Mono',monospace;color:var(--gold);white-space:nowrap;padding-left:12px;}
+.order-total-row{display:flex;justify-content:space-between;align-items:center;padding-top:16px;margin-top:8px;border-top:1px solid rgba(200,152,31,.2);}
+.order-total-label{font-family:'Oswald',sans-serif;font-size:16px;color:var(--white);}
+.order-total-val{font-family:'Oswald',sans-serif;font-size:24px;color:var(--gold);}
+/* place order btn */
+.place-order-btn{width:100%;background:var(--gold);color:var(--ink);font-family:'Oswald',sans-serif;font-size:15px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;padding:18px;border:none;cursor:pointer;margin-top:20px;transition:background .2s,transform .2s;display:flex;align-items:center;justify-content:center;gap:10px;}
+.place-order-btn:hover:not(:disabled){background:var(--gold2);transform:translateY(-1px);}
+.place-order-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+/* success screen */
+#success-screen{display:none;text-align:center;padding:60px 20px;}
+.success-icon{font-size:64px;margin-bottom:20px;}
+.success-title{font-family:'Oswald',sans-serif;font-size:36px;color:var(--white);margin-bottom:12px;}
+.success-sub{color:var(--silver);font-size:15px;line-height:1.7;max-width:480px;margin:0 auto 32px;}
+.success-order-num{font-family:'DM Mono',monospace;font-size:18px;color:var(--gold);background:rgba(200,152,31,.08);border:1px solid rgba(200,152,31,.2);padding:12px 24px;display:inline-block;margin-bottom:24px;}
+/* global error */
+#global-err{display:none;background:rgba(255,80,80,.08);border:1px solid rgba(255,80,80,.3);border-left:3px solid #ff6b6b;padding:14px 18px;margin-bottom:20px;color:#ff9999;font-size:13px;}
+@media(max-width:900px){
+  .checkout-grid{grid-template-columns:1fr;}
+  .order-summary{position:static;}
+  .form-row{grid-template-columns:1fr;}
+}
+@media(max-width:600px){
+  .checkout-form-wrap{padding:20px;}
+  .order-summary{padding:20px;}
+}
+</style>
+</head>
+<body>
+<div id="cursor"></div><div id="cursor-ring"></div>
+
+<nav class="nav" id="main-nav">
+  <div class="nav-inner">
+    <a class="nav-brand" href="index.html"><img src="assets/logo.png" alt="All Pro Building Supplies" style="height:38px"/></a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="products.html">Products</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+      <a href="cart.html" class="nav-cta">← Back to Cart</a>
+    </div>
+    <button class="hamburger" id="hamburger" aria-label="Menu">&#9776;</button>
+  </div>
+</nav>
+<div class="nav-overlay" id="nav-overlay">
+  <button class="nav-overlay-close" id="nav-close">&#10005;</button>
+  <div class="nav-overlay-links">
+    <a href="index.html">Home</a><a href="products.html">Products</a>
+    <a href="about.html">About</a><a href="contact.html">Contact</a>
+    <a href="cart.html">Cart</a>
+  </div>
+</div>
+
+<section class="page-hero">
+  <div class="page-hero-inner">
+    <div class="page-hero-label">Order</div>
+    <h1 class="page-hero-title">Checkout</h1>
+    <p class="page-hero-sub">Complete your order details below.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+
+    <!-- Auth gate -->
+    <div id="auth-gate" style="display:none;background:var(--ink2);border:1px solid rgba(200,152,31,.25);border-left:4px solid var(--gold);padding:24px 28px;margin-bottom:32px;max-width:600px;">
+      <strong style="color:var(--white);font-size:15px;display:block;margin-bottom:6px;">Trade account required</strong>
+      <a href="login.html" style="color:var(--gold);">Log in →</a>
+    </div>
+
+    <!-- Empty cart redirect -->
+    <div id="empty-gate" style="display:none;text-align:center;padding:60px;">
+      <p style="color:var(--silver);margin-bottom:20px;">Your cart is empty.</p>
+      <a href="products.html" class="btn-gold" style="background:var(--gold);color:var(--ink);font-family:Oswald,sans-serif;font-size:13px;letter-spacing:2px;padding:12px 28px;text-decoration:none;">Browse Products →</a>
+    </div>
+
+    <!-- Success screen -->
+    <div id="success-screen">
+      <div class="success-icon">✅</div>
+      <h2 class="success-title">Order Placed!</h2>
+      <div class="success-order-num" id="success-order-num"></div>
+      <p class="success-sub">Thank you! Your order has been received. Baruch will review and confirm it shortly. You'll be contacted at <strong id="success-email"></strong> with confirmation details.</p>
+      <a href="products.html" style="background:var(--gold);color:var(--ink);font-family:Oswald,sans-serif;font-size:13px;letter-spacing:2px;padding:14px 32px;text-decoration:none;display:inline-block;">Continue Shopping</a>
+    </div>
+
+    <!-- Checkout form -->
+    <div id="checkout-wrap">
+      <div id="global-err"></div>
+      <div class="checkout-grid">
+
+        <!-- LEFT: Form -->
+        <div>
+          <!-- Delivery Method -->
+          <div class="checkout-form-wrap" style="margin-bottom:24px;">
+            <div class="checkout-section-title">Delivery Method</div>
+            <div class="delivery-toggle">
+              <div class="del-opt active" id="opt-delivery" onclick="setDelivery('delivery')">🚚 Delivery</div>
+              <div class="del-opt" id="opt-pickup" onclick="setDelivery('pickup')">🏭 Pickup</div>
+            </div>
+            <div id="delivery-fields">
+              <div class="form-row full"><div class="form-group">
+                <label class="form-label">Delivery Address *</label>
+                <input class="form-input" id="f-address" placeholder="Street address" type="text"/>
+                <span class="err-msg" id="e-address">Required</span>
+              </div></div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">City *</label>
+                  <input class="form-input" id="f-city" placeholder="City" type="text"/>
+                  <span class="err-msg" id="e-city">Required</span>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">State / ZIP *</label>
+                  <input class="form-input" id="f-statzip" placeholder="NJ  07001" type="text"/>
+                  <span class="err-msg" id="e-statzip">Required</span>
+                </div>
+              </div>
+            </div>
+            <div id="pickup-note" style="display:none;background:rgba(200,152,31,.06);border:1px solid rgba(200,152,31,.2);padding:14px 16px;font-size:13px;color:var(--silver);">
+              📍 Pickup at our warehouse. We'll contact you to confirm a pickup time.
+            </div>
+          </div>
+
+          <!-- Contact Info -->
+          <div class="checkout-form-wrap" style="margin-bottom:24px;">
+            <div class="checkout-section-title">Contact &amp; Company</div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Contact Name *</label>
+                <input class="form-input" id="f-name" placeholder="Your name" type="text"/>
+                <span class="err-msg" id="e-name">Required</span>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Phone *</label>
+                <input class="form-input" id="f-phone" placeholder="(732) 000-0000" type="tel"/>
+                <span class="err-msg" id="e-phone">Required</span>
+              </div>
+            </div>
+            <div class="form-row full">
+              <div class="form-group">
+                <label class="form-label">Company</label>
+                <input class="form-input" id="f-company" type="text" readonly style="opacity:.6;"/>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">PO Number <span style="color:var(--silver);font-size:10px;">(optional)</span></label>
+                <input class="form-input" id="f-po" placeholder="PO-0000" type="text"/>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Email</label>
+                <input class="form-input" id="f-email" type="text" readonly style="opacity:.6;"/>
+              </div>
+            </div>
+            <div class="form-row full">
+              <div class="form-group">
+                <label class="form-label">Special Notes <span style="color:var(--silver);font-size:10px;">(optional)</span></label>
+                <textarea class="form-textarea" id="f-notes" placeholder="Delivery instructions, special requirements, etc."></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: Order Summary -->
+        <div>
+          <div class="order-summary">
+            <div class="order-summary-title">Order Summary</div>
+            <div id="order-lines"></div>
+            <div class="order-total-row">
+              <span class="order-total-label">Total</span>
+              <span class="order-total-val" id="order-total">$0.00</span>
+            </div>
+            <button class="place-order-btn" id="place-btn" onclick="placeOrder()">
+              Place Order →
+            </button>
+            <p style="font-size:11px;color:var(--silver);margin-top:12px;text-align:center;font-family:'DM Mono',monospace;line-height:1.6;">By placing this order you agree to our standard trade terms. Payment due on delivery.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer"><div class="footer-inner"><span>© 2025 All Pro Building Supplies LLC</span></div></footer>
+<script src="assets/main.js"></script>
+<script>
+// ── CONFIG ────────────────────────────────────────────────────────
+const WORKER_URL   = 'https://allpro-github-proxy.baruch-6d5.workers.dev';
+const EMAILJS_SVC  = 'service_qefaa3x';   // ← fill in after EmailJS setup
+const EMAILJS_TPL  = 'template_p61wo2v';  // ← fill in after EmailJS setup
+const EMAILJS_KEY  = 'MNDXK3JgE890yvoA6';   // ← fill in after EmailJS setup
+const NOTIFY_EMAIL = 'baruch@allprobuildingsupplies.com';
+
+// ── AUTH & CART ───────────────────────────────────────────────────
+var currentUser = null;
+try{ currentUser = JSON.parse(sessionStorage.getItem('apbs_user')); }catch(e){}
+
+function getCart(){ try{ return JSON.parse(localStorage.getItem('apbs_cart')||'[]'); }catch(e){return [];} }
+function saveCart(c){ localStorage.setItem('apbs_cart', JSON.stringify(c)); }
+
+(function init(){
+  if(!currentUser || currentUser.status !== 'approved'){
+    document.getElementById('auth-gate').style.display = 'block';
+    document.getElementById('checkout-wrap').style.display = 'none';
+    return;
+  }
+  var cart = getCart();
+  if(!cart.length){
+    document.getElementById('empty-gate').style.display = 'block';
+    document.getElementById('checkout-wrap').style.display = 'none';
+    return;
+  }
+  // Pre-fill user info
+  document.getElementById('f-name').value    = (currentUser.fname||'')+' '+(currentUser.lname||'');
+  document.getElementById('f-email').value   = currentUser.email||'';
+  document.getElementById('f-company').value = currentUser.company||'';
+
+  renderSummary(cart);
+  emailjs.init(EMAILJS_KEY);
+})();
+
+// ── DELIVERY TOGGLE ───────────────────────────────────────────────
+var deliveryMethod = 'delivery';
+function setDelivery(method){
+  deliveryMethod = method;
+  document.getElementById('opt-delivery').classList.toggle('active', method==='delivery');
+  document.getElementById('opt-pickup').classList.toggle('active', method==='pickup');
+  document.getElementById('delivery-fields').style.display = method==='delivery'?'block':'none';
+  document.getElementById('pickup-note').style.display     = method==='pickup'?'block':'none';
+}
+
+// ── ORDER SUMMARY RENDER ──────────────────────────────────────────
+function renderSummary(cart){
+  var linesEl = document.getElementById('order-lines');
+  var total = 0;
+  linesEl.innerHTML = '';
+  cart.forEach(function(item){
+    var lineTotal = parseFloat(item.unitPrice) * item.qty;
+    total += lineTotal;
+    var unitLabel = item.unit==='carton'
+      ? Math.ceil(item.qty/item.pcsPerCtn)+' ctn ('+item.qty+' pcs)'
+      : item.qty+' pcs';
+    linesEl.innerHTML +=
+      '<div class="order-line">'
+      +'<div><div class="order-line-name">'+item.description+' '+item.size+'</div>'
+      +'<div class="order-line-sub">'+unitLabel+' × $'+parseFloat(item.unitPrice).toFixed(2)+'</div></div>'
+      +'<div class="order-line-price">$'+lineTotal.toFixed(2)+'</div>'
+      +'</div>';
+  });
+  document.getElementById('order-total').textContent = '$'+total.toFixed(2);
+}
+
+// ── VALIDATION ────────────────────────────────────────────────────
+function req(id, errId){ 
+  var val = document.getElementById(id).value.trim();
+  var ok = val.length > 0;
+  document.getElementById(id).classList.toggle('err',!ok);
+  document.getElementById(errId).style.display = ok?'none':'block';
+  return ok;
+}
+
+// ── PLACE ORDER ───────────────────────────────────────────────────
+async function placeOrder(){
+  // Validate
+  var valid = true;
+  if(deliveryMethod==='delivery'){
+    valid = req('f-address','e-address') & req('f-city','e-city') & req('f-statzip','e-statzip') & valid;
+  }
+  valid = req('f-name','e-name') & req('f-phone','e-phone') & valid;
+  if(!valid){ document.getElementById('global-err').style.display='none'; return; }
+
+  var btn = document.getElementById('place-btn');
+  btn.disabled = true;
+  btn.textContent = 'Placing Order...';
+  document.getElementById('global-err').style.display = 'none';
+
+  var cart = getCart();
+  var orderId = 'APB-'+Date.now().toString(36).toUpperCase();
+  var now = new Date().toISOString();
+  var total = cart.reduce(function(s,i){return s+parseFloat(i.unitPrice)*i.qty;},0);
+
+  var deliveryAddr = deliveryMethod==='pickup' ? 'PICKUP'
+    : [document.getElementById('f-address').value.trim(),
+       document.getElementById('f-city').value.trim(),
+       document.getElementById('f-statzip').value.trim()].join(', ');
+
+  var order = {
+    id: orderId,
+    placedAt: now,
+    status: 'pending',
+    customer: {
+      id: currentUser.id,
+      name: document.getElementById('f-name').value.trim(),
+      email: currentUser.email,
+      company: currentUser.company,
+      phone: document.getElementById('f-phone').value.trim()
+    },
+    delivery: {
+      method: deliveryMethod,
+      address: deliveryAddr
+    },
+    po: document.getElementById('f-po').value.trim(),
+    notes: document.getElementById('f-notes').value.trim(),
+    items: cart.map(function(item){
+      return {
+        code: item.code,
+        description: item.description,
+        size: item.size,
+        qty: item.qty,
+        unit: item.unit,
+        pcsPerCtn: item.pcsPerCtn,
+        unitPrice: parseFloat(item.unitPrice),
+        lineTotal: parseFloat(item.unitPrice)*item.qty
+      };
+    }),
+    total: total,
+    confirmedAt: null,
+    cancelledAt: null
+  };
+
+  try{
+    // 1. Save order to orders.json
+    await saveOrder(order);
+    // 2. Deduct inventory from products.csv
+    await deductInventory(cart);
+    // 3. Send email notification
+    await sendNotification(order);
+    // 4. Clear cart & show success
+    saveCart([]);
+    document.getElementById('checkout-wrap').style.display = 'none';
+    document.getElementById('success-screen').style.display = 'block';
+    document.getElementById('success-order-num').textContent = orderId;
+    document.getElementById('success-email').textContent = currentUser.email;
+  }catch(e){
+    console.error(e);
+    document.getElementById('global-err').textContent = 'Something went wrong — please try again or call 732-887-5854.';
+    document.getElementById('global-err').style.display = 'block';
+    btn.disabled = false;
+    btn.textContent = 'Place Order →';
+  }
+}
+
+// ── SAVE ORDER ────────────────────────────────────────────────────
+async function saveOrder(order){
+  var r = await fetch(WORKER_URL+'/github/orders.json');
+  var d = await r.json();
+  var sha = d.sha;
+  var data = JSON.parse(atob(d.content.replace(/\n/g,'')));
+  data.orders.push(order);
+  var payload = JSON.stringify({
+    message:'New order: '+order.id,
+    content: btoa(unescape(encodeURIComponent(JSON.stringify(data,null,2)))),
+    branch:'main', sha:sha
+  });
+  var pr = await fetch(WORKER_URL+'/github/orders.json',{method:'PUT',headers:{'Content-Type':'application/json'},body:payload});
+  if(!pr.ok){ var e=await pr.json(); throw new Error(e.message||'Failed to save order'); }
+}
+
+// ── DEDUCT INVENTORY ──────────────────────────────────────────────
+async function deductInventory(cart){
+  var r = await fetch(WORKER_URL+'/github/products.csv');
+  var d = await r.json();
+  var sha = d.sha;
+  var csv = atob(d.content.replace(/\n/g,''));
+  var lines = csv.trim().split('\n');
+  var headers = lines[0];
+
+  // Build deduction map: "code|size" -> qty to deduct
+  var deductions = {};
+  cart.forEach(function(item){
+    var key = item.code+'|'+item.size;
+    deductions[key] = (deductions[key]||0) + item.qty;
+  });
+
+  // Update CSV lines
+  var newLines = [headers];
+  for(var i=1;i<lines.length;i++){
+    var cols = parseCSVLine(lines[i]);
+    if(!cols[0]) continue;
+    var key = cols[0]+'|'+stripQuotes(cols[2]);
+    if(deductions[key]){
+      var current = parseInt(cols[4])||0;
+      cols[4] = Math.max(0, current - deductions[key]).toString();
+    }
+    newLines.push(cols.map(function(c){
+      return c.indexOf(',')>=0||c.indexOf('"')>=0 ? '"'+c.replace(/"/g,'""')+'"' : c;
+    }).join(','));
+  }
+
+  var newCSV = newLines.join('\n')+'\n';
+  var payload = JSON.stringify({
+    message:'Inventory update after order',
+    content: btoa(unescape(encodeURIComponent(newCSV))),
+    branch:'main', sha:sha
+  });
+  var pr = await fetch(WORKER_URL+'/github/products.csv',{method:'PUT',headers:{'Content-Type':'application/json'},body:payload});
+  if(!pr.ok) throw new Error('Failed to update inventory');
+}
+
+function parseCSVLine(line){
+  var result=[],cur='',inQ=false;
+  for(var i=0;i<line.length;i++){
+    var c=line[i];
+    if(c==='"'){inQ=!inQ;}
+    else if(c===','&&!inQ){result.push(cur);cur='';}
+    else{cur+=c;}
+  }
+  result.push(cur);
+  return result;
+}
+function stripQuotes(s){ return (s||'').replace(/^"+|"+$/g,'').trim(); }
+
+// ── EMAIL NOTIFICATION ────────────────────────────────────────────
+async function sendNotification(order){
+  var itemLines = order.items.map(function(i){
+    return i.description+' '+i.size+' — '+i.qty+' pcs @ $'+i.unitPrice.toFixed(2)+' = $'+i.lineTotal.toFixed(2);
+  }).join('\n');
+
+  var params = {
+    to_email:    NOTIFY_EMAIL,
+    order_id:    order.id,
+    customer:    order.customer.name+' ('+order.customer.company+')',
+    phone:       order.customer.phone,
+    cust_email:  order.customer.email,
+    delivery:    order.delivery.method.toUpperCase()+': '+order.delivery.address,
+    po:          order.po||'N/A',
+    notes:       order.notes||'None',
+    items:       itemLines,
+    total:       '$'+order.total.toFixed(2),
+    placed_at:   new Date(order.placedAt).toLocaleString(),
+    admin_link:  'https://allprobuildingsupplies.com/admin.html'
+  };
+  // Send — if EmailJS not configured yet, fail silently
+  try{ await emailjs.send(EMAILJS_SVC, EMAILJS_TPL, params); }
+  catch(e){ console.warn('Email not sent (check EmailJS config):', e); }
+}
+</script>
+</body>
+</html>
