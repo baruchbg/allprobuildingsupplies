@@ -46,4 +46,13 @@ if(hamburger && mobileMenu){
       document.body.style.overflow = '';
     });
   });
+  // Close button
+  var mobClose = document.getElementById('mob-close');
+  if(mobClose){
+    mobClose.addEventListener('click',()=>{
+      hamburger.classList.remove('open');
+      mobileMenu.classList.remove('open');
+      document.body.style.overflow = '';
+    });
+  }
 }
