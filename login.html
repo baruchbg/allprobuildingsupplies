@@ -116,7 +116,7 @@ window.addEventListener('DOMContentLoaded',()=>{
   }
 });
 
-async function doLogin(){
+async async function doLogin(){
   const email=document.getElementById('l-email').value.trim().toLowerCase();
   const pw=document.getElementById('l-pw').value;
   if(!email||!pw){showErr('Please enter your email and password.');return;}
