@@ -255,6 +255,7 @@ button{font-family:inherit;cursor:pointer}input,select,textarea{font-family:inhe
         <div class="adm-page-header">
           <div class="adm-page-title">User Management</div>
           <div class="adm-page-sub">Approve or reject trade account requests.</div>
+          <button class="adm-btn adm-btn-add" style="margin-top:10px" onclick="openAddUserModal()">+ Add User</button>
         </div>
         <div class="adm-status-bar idle" id="users-status"><div class="status-dot"></div><span id="users-msg">Loading users...</span></div>
         <div class="users-tabs">
@@ -884,5 +885,139 @@ function setOrderStatus(id,status){
 }
 
 </script>
+<!-- ADD USER MODAL -->
+<div id="add-user-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:9999;align-items:center;justify-content:center;">
+  <div style="background:var(--ink2);border:1px solid rgba(200,152,31,.3);border-radius:8px;padding:32px;width:100%;max-width:480px;margin:16px;box-sizing:border-box;max-height:90vh;overflow-y:auto;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
+      <div style="font-family:'Oswald',sans-serif;font-size:18px;color:var(--white);letter-spacing:1.5px;text-transform:uppercase;">Add New User</div>
+      <button onclick="closeAddUserModal()" style="background:transparent;border:none;color:var(--silver);font-size:22px;cursor:pointer;padding:4px 8px;line-height:1;">&#10005;</button>
+    </div>
+    <div id="add-user-err" style="display:none;background:rgba(255,80,80,.08);border:1px solid rgba(255,80,80,.3);border-left:3px solid #ff6b6b;padding:12px 16px;margin-bottom:16px;color:#ff9999;font-size:13px;border-radius:3px;"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+      <div>
+        <label style="font-size:10px;color:var(--silver);font-family:'DM Mono',monospace;letter-spacing:1.5px;text-transform:uppercase;display:block;margin-bottom:5px;">First Name *</label>
+        <input id="nu-fname" type="text" placeholder="First" class="cell-input" style="width:100%;box-sizing:border-box;padding:10px 12px;font-size:14px;"/>
+      </div>
+      <div>
+        <label style="font-size:10px;color:var(--silver);font-family:'DM Mono',monospace;letter-spacing:1.5px;text-transform:uppercase;display:block;margin-bottom:5px;">Last Name *</label>
+        <input id="nu-lname" type="text" placeholder="Last" class="cell-input" style="width:100%;box-sizing:border-box;padding:10px 12px;font-size:14px;"/>
+      </div>
+      <div style="grid-column:1/-1;">
+        <label style="font-size:10px;color:var(--silver);font-family:'DM Mono',monospace;letter-spacing:1.5px;text-transform:uppercase;display:block;margin-bottom:5px;">Company *</label>
+        <input id="nu-company" type="text" placeholder="Company name" class="cell-input" style="width:100%;box-sizing:border-box;padding:10px 12px;font-size:14px;"/>
+      </div>
+      <div style="grid-column:1/-1;">
+        <label style="font-size:10px;color:var(--silver);font-family:'DM Mono',monospace;letter-spacing:1.5px;text-transform:uppercase;display:block;margin-bottom:5px;">Email *</label>
+        <input id="nu-email" type="email" placeholder="email@company.com" class="cell-input" style="width:100%;box-sizing:border-box;padding:10px 12px;font-size:14px;"/>
+      </div>
+      <div>
+        <label style="font-size:10px;color:var(--silver);font-family:'DM Mono',monospace;letter-spacing:1.5px;text-transform:uppercase;display:block;margin-bottom:5px;">Phone</label>
+        <input id="nu-phone" type="tel" placeholder="(732) 000-0000" class="cell-input" style="width:100%;box-sizing:border-box;padding:10px 12px;font-size:14px;"/>
+      </div>
+      <div>
+        <label style="font-size:10px;color:var(--silver);font-family:'DM Mono',monospace;letter-spacing:1.5px;text-transform:uppercase;display:block;margin-bottom:5px;">Status</label>
+        <select id="nu-status" class="cell-input" style="width:100%;box-sizing:border-box;padding:10px 12px;font-size:14px;cursor:pointer;background:var(--ink3);color:var(--white);">
+          <option value="approved">Approved</option>
+          <option value="pending">Pending</option>
+        </select>
+      </div>
+      <div style="grid-column:1/-1;">
+        <label style="font-size:10px;color:var(--silver);font-family:'DM Mono',monospace;letter-spacing:1.5px;text-transform:uppercase;display:block;margin-bottom:5px;">Password *</label>
+        <input id="nu-pw" type="password" placeholder="Minimum 6 characters" class="cell-input" style="width:100%;box-sizing:border-box;padding:10px 12px;font-size:14px;"/>
+      </div>
+      <div style="grid-column:1/-1;display:flex;align-items:center;gap:10px;background:var(--ink3);border:1px solid rgba(139,160,178,.1);padding:12px 14px;border-radius:3px;">
+        <input type="checkbox" id="nu-pieces" checked style="accent-color:var(--gold);width:16px;height:16px;cursor:pointer;flex-shrink:0;"/>
+        <label for="nu-pieces" style="font-size:13px;color:var(--smoke);cursor:pointer;line-height:1.4;">Allow ordering by <strong style="color:var(--white)">piece</strong> &nbsp;(uncheck = cases only)</label>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:22px;">
+      <button onclick="closeAddUserModal()" style="flex:1;background:var(--ink3);border:1px solid rgba(139,160,178,.2);color:var(--silver);font-family:'Oswald',sans-serif;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;padding:12px;cursor:pointer;transition:all .2s;">Cancel</button>
+      <button id="nu-save-btn" onclick="saveNewUser()" style="flex:2;background:var(--gold);border:none;color:var(--ink);font-family:'Oswald',sans-serif;font-size:13px;font-weight:600;letter-spacing:2px;text-transform:uppercase;padding:12px;cursor:pointer;transition:all .2s;">Save User &#8594;</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function openAddUserModal(){
+  document.getElementById('add-user-modal').style.display='flex';
+  document.getElementById('add-user-err').style.display='none';
+  ['nu-fname','nu-lname','nu-company','nu-email','nu-phone','nu-pw'].forEach(function(id){
+    document.getElementById(id).value='';
+  });
+  document.getElementById('nu-status').value='approved';
+  document.getElementById('nu-pieces').checked=true;
+  document.getElementById('nu-save-btn').disabled=false;
+  document.getElementById('nu-save-btn').innerHTML='Save User &#8594;';
+}
+function closeAddUserModal(){
+  document.getElementById('add-user-modal').style.display='none';
+}
+document.addEventListener('click',function(e){
+  if(e.target===document.getElementById('add-user-modal')) closeAddUserModal();
+});
+async function sha256Admin(str){
+  var buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(function(b){return b.toString(16).padStart(2,'0');}).join('');
+}
+async function saveNewUser(){
+  var fname   = document.getElementById('nu-fname').value.trim();
+  var lname   = document.getElementById('nu-lname').value.trim();
+  var company = document.getElementById('nu-company').value.trim();
+  var email   = document.getElementById('nu-email').value.trim().toLowerCase();
+  var phone   = document.getElementById('nu-phone').value.trim();
+  var status  = document.getElementById('nu-status').value;
+  var pw      = document.getElementById('nu-pw').value;
+  var pieces  = document.getElementById('nu-pieces').checked;
+  var errEl   = document.getElementById('add-user-err');
+  errEl.style.display = 'none';
+
+  if(!fname||!lname||!company||!email||!pw){
+    errEl.textContent='Please fill in all required fields (First, Last, Company, Email, Password).';
+    errEl.style.display='block'; return;
+  }
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+    errEl.textContent='Please enter a valid email address.';
+    errEl.style.display='block'; return;
+  }
+  if(pw.length < 6){
+    errEl.textContent='Password must be at least 6 characters.';
+    errEl.style.display='block'; return;
+  }
+  if(allUsers.find(function(u){ return u.email===email; })){
+    errEl.textContent='A user with this email already exists.';
+    errEl.style.display='block'; return;
+  }
+
+  var btn = document.getElementById('nu-save-btn');
+  btn.textContent='Saving...'; btn.disabled=true;
+
+  try{
+    var pwHash = await sha256Admin(pw);
+    var newUser = {
+      id: Date.now().toString(),
+      fname: fname, lname: lname, company: company,
+      email: email, phone: phone,
+      password: pwHash, status: status,
+      canOrderPieces: pieces,
+      registeredAt: new Date().toISOString(),
+      approvedAt: status==='approved' ? new Date().toISOString() : null,
+      addedByAdmin: true
+    };
+    allUsers.push(newUser);
+    await saveUsers('Admin added user: '+fname+' '+lname+' ('+company+')');
+    renderUsers();
+    updateUserCounts();
+    closeAddUserModal();
+    setUsersStatus('success', 'User '+fname+' '+lname+' added successfully.');
+    setTimeout(function(){ setUsersStatus('',''); }, 3000);
+  } catch(e){
+    errEl.textContent = 'Failed to save: '+e.message;
+    errEl.style.display = 'block';
+    btn.innerHTML = 'Save User &#8594;';
+    btn.disabled = false;
+  }
+}
+</script>
+
 </body>
 </html>
