@@ -608,7 +608,7 @@ function buildProductsHTML(prods){
   return '<!DOCTYPE html><html lang="en"><head>'
     +'<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>'
     +'<title>Products \u2014 All Pro Building Supplies LLC</title>'
-    +'<meta name="description" content="All Pro Building Supplies product catalog. Call 732-887-5854."/>'
+    +'<meta name="description" content="All Pro Building Supplies product catalog. Call 732-829-1940."/>'
     +'<link rel="stylesheet" href="assets/style.css"/>'
     +'<style>'+css+'</style>'
     +'</head><body>'
@@ -662,12 +662,13 @@ function renderUsers(){
   tbody.innerHTML=filtered.map(function(u){
     var ab=u.status!=='approved'?'<button class="u-btn u-btn-approve" onclick="setUserStatus(\''+u.id+'\',\'approved\')">&#10003; Approve</button>':'';
     var rb=u.status!=='rejected'?'<button class="u-btn u-btn-reject" onclick="setUserStatus(\''+u.id+'\',\'rejected\')">&#10007; Reject</button>':'';
+    var eb='<button class="u-btn" style="background:rgba(200,152,31,.1);border:1px solid rgba(200,152,31,.3);color:var(--gold)" onclick="openEditUserModal(\''+u.id+'\')" title="Edit user">&#9998; Edit</button>';
     var piecesAllowed = u.canOrderPieces !== false; // default true
     var toggleLabel = piecesAllowed ? '✓ Pieces &amp; Cases' : 'Cases Only';
     var toggleCls   = piecesAllowed ? 'u-btn u-btn-approve' : 'u-btn';
     var toggleStyle = piecesAllowed ? '' : 'background:rgba(139,160,178,.1);color:var(--silver);';
     var toggleBtn   = '<button class="'+toggleCls+'" style="'+toggleStyle+'font-size:10px;letter-spacing:1px;min-width:100px" onclick="togglePieceOrders(\''+u.id+'\')">'+ toggleLabel +'</button>';
-    return '<tr><td><strong style="color:var(--white)">'+u.fname+' '+u.lname+'</strong></td><td>'+u.company+'</td><td class="mono">'+u.email+'</td><td class="mono">'+(u.phone||'-')+'</td><td class="mono" style="font-size:11px">'+new Date(u.registeredAt||u.registered||Date.now()).toLocaleDateString()+'</td><td><span class="badge badge-'+u.status+'">'+u.status+'</span></td><td style="text-align:center">'+toggleBtn+'</td><td><div class="u-acts">'+ab+rb+'<button class="u-btn u-btn-delete" onclick="deleteUser(\''+u.id+'\')">Delete</button></div></td></tr>';
+    return '<tr><td><strong style="color:var(--white)">'+u.fname+' '+u.lname+'</strong></td><td>'+u.company+'</td><td class="mono">'+u.email+'</td><td class="mono">'+(u.phone||'-')+'</td><td class="mono" style="font-size:11px">'+new Date(u.registeredAt||u.registered||Date.now()).toLocaleDateString()+'</td><td><span class="badge badge-'+u.status+'">'+u.status+'</span></td><td style="text-align:center">'+toggleBtn+'</td><td><div class="u-acts">'+ab+rb+eb+'<button class="u-btn u-btn-delete" onclick="deleteUser(\''+u.id+'\')">Delete</button></div></td></tr>';
   }).join('');
 }
 function saveUsers(msg){
@@ -742,7 +743,7 @@ function buildStatusEmail(order, status){
     ? 'Your order has been confirmed and is being processed. We will contact you shortly to arrange delivery or pickup.'
     : 'Your order has been cancelled. If you have any questions or believe this was an error, please contact us right away.';
   var badgeColor = isConfirmed ? '#2ecc71' : '#e74c3c';
-  return '<!DOCTYPE html><html><head><meta charset="UTF-8"/></head><body style="margin:0;padding:0;background:#f4f4f4;font-family:Helvetica Neue,Arial,sans-serif;"><table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;padding:32px 0;"><tr><td align="center"><table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:4px;overflow:hidden;"><tr><td style="background:#0C1117;padding:28px 36px;border-bottom:4px solid #C8981F;"><table width="100%" cellpadding="0" cellspacing="0"><tr><td><div style="font-size:20px;font-weight:900;color:#FFFFFF;letter-spacing:2px;text-transform:uppercase;">ALL PRO BUILDING SUPPLIES</div><div style="font-size:11px;color:#C8981F;letter-spacing:3px;text-transform:uppercase;margin-top:3px;">LLC</div></td><td align="right"><div style="background:'+badgeColor+';color:#fff;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:6px 14px;border-radius:2px;">ORDER '+statusWord.toUpperCase()+'</div></td></tr></table></td></tr><tr><td style="padding:0;"><div style="background:#f8f8f8;border-left:4px solid '+badgeColor+';padding:20px 36px;font-size:15px;color:#444;">Hi <strong>'+order.customer.name+'</strong> &mdash; your order <strong style="color:#C8981F;font-family:monospace;">'+order.id+'</strong> has been <strong>'+statusWord+'</strong>.</div></td></tr><tr><td style="padding:28px 36px 0;"><p style="margin:0;font-size:15px;color:#444;line-height:1.7;">'+statusMsg+'</p></td></tr><tr><td style="padding:24px 36px 0;"><table width="100%" cellpadding="0" cellspacing="0" style="background:#f8f8f8;border-radius:4px;border:1px solid #e8e8e8;"><tr><td style="padding:16px 20px;border-right:1px solid #e8e8e8;"><div style="font-size:10px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Order ID</div><div style="font-size:14px;font-weight:700;color:#C8981F;font-family:monospace;">'+order.id+'</div></td><td style="padding:16px 20px;border-right:1px solid #e8e8e8;"><div style="font-size:10px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Order Total</div><div style="font-size:16px;font-weight:700;color:#222;">$'+order.total.toFixed(2)+'</div></td><td style="padding:16px 20px;"><div style="font-size:10px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Delivery</div><div style="font-size:13px;color:#222;">'+order.delivery.address+'</div></td></tr></table></td></tr><tr><td style="padding:24px 36px;"><p style="margin:0;font-size:14px;color:#444;">Questions? Call <a href="tel:17328875854" style="color:#C8981F;text-decoration:none;font-weight:600;">732-887-5854</a> or email <a href="mailto:baruch@allprobuildingsupplies.com" style="color:#C8981F;text-decoration:none;">baruch@allprobuildingsupplies.com</a></p></td></tr><tr><td style="background:#0C1117;padding:20px 36px;text-align:center;"><div style="font-size:12px;color:#888;">&copy; 2025 All Pro Building Supplies LLC &nbsp;&middot;&nbsp; <a href="https://allprobuildingsupplies.com" style="color:#C8981F;text-decoration:none;">allprobuildingsupplies.com</a></div></td></tr></table></td></tr></table></body></html>';
+  return '<!DOCTYPE html><html><head><meta charset="UTF-8"/></head><body style="margin:0;padding:0;background:#f4f4f4;font-family:Helvetica Neue,Arial,sans-serif;"><table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;padding:32px 0;"><tr><td align="center"><table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:4px;overflow:hidden;"><tr><td style="background:#0C1117;padding:28px 36px;border-bottom:4px solid #C8981F;"><table width="100%" cellpadding="0" cellspacing="0"><tr><td><div style="font-size:20px;font-weight:900;color:#FFFFFF;letter-spacing:2px;text-transform:uppercase;">ALL PRO BUILDING SUPPLIES</div><div style="font-size:11px;color:#C8981F;letter-spacing:3px;text-transform:uppercase;margin-top:3px;">LLC</div></td><td align="right"><div style="background:'+badgeColor+';color:#fff;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:6px 14px;border-radius:2px;">ORDER '+statusWord.toUpperCase()+'</div></td></tr></table></td></tr><tr><td style="padding:0;"><div style="background:#f8f8f8;border-left:4px solid '+badgeColor+';padding:20px 36px;font-size:15px;color:#444;">Hi <strong>'+order.customer.name+'</strong> &mdash; your order <strong style="color:#C8981F;font-family:monospace;">'+order.id+'</strong> has been <strong>'+statusWord+'</strong>.</div></td></tr><tr><td style="padding:28px 36px 0;"><p style="margin:0;font-size:15px;color:#444;line-height:1.7;">'+statusMsg+'</p></td></tr><tr><td style="padding:24px 36px 0;"><table width="100%" cellpadding="0" cellspacing="0" style="background:#f8f8f8;border-radius:4px;border:1px solid #e8e8e8;"><tr><td style="padding:16px 20px;border-right:1px solid #e8e8e8;"><div style="font-size:10px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Order ID</div><div style="font-size:14px;font-weight:700;color:#C8981F;font-family:monospace;">'+order.id+'</div></td><td style="padding:16px 20px;border-right:1px solid #e8e8e8;"><div style="font-size:10px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Order Total</div><div style="font-size:16px;font-weight:700;color:#222;">$'+order.total.toFixed(2)+'</div></td><td style="padding:16px 20px;"><div style="font-size:10px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Delivery</div><div style="font-size:13px;color:#222;">'+order.delivery.address+'</div></td></tr></table></td></tr><tr><td style="padding:24px 36px;"><p style="margin:0;font-size:14px;color:#444;">Questions? Call <a href="tel:17328291940" style="color:#C8981F;text-decoration:none;font-weight:600;">732-829-1940</a> or email <a href="mailto:orders@allprobuildingsupplies.com" style="color:#C8981F;text-decoration:none;">orders@allprobuildingsupplies.com</a></p></td></tr><tr><td style="background:#0C1117;padding:20px 36px;text-align:center;"><div style="font-size:12px;color:#888;">&copy; 2025 All Pro Building Supplies LLC &nbsp;&middot;&nbsp; <a href="https://allprobuildingsupplies.com" style="color:#C8981F;text-decoration:none;">allprobuildingsupplies.com</a></div></td></tr></table></td></tr></table></body></html>';
 }
 
 function sendStatusEmail(order, status){
@@ -1020,4 +1021,136 @@ async function saveNewUser(){
 </script>
 
 </body>
+
+<!-- EDIT USER MODAL -->
+<div id="edit-user-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:9999;align-items:center;justify-content:center;">
+  <div style="background:var(--ink2);border:1px solid rgba(200,152,31,.3);border-radius:8px;padding:32px;width:100%;max-width:480px;margin:16px;box-sizing:border-box;max-height:90vh;overflow-y:auto;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
+      <div style="font-family:'Oswald',sans-serif;font-size:18px;color:var(--white);letter-spacing:1.5px;text-transform:uppercase;">Edit User</div>
+      <button onclick="closeEditUserModal()" style="background:transparent;border:none;color:var(--silver);font-size:22px;cursor:pointer;padding:4px 8px;line-height:1;">&#10005;</button>
+    </div>
+    <div id="edit-user-err" style="display:none;background:rgba(255,80,80,.08);border:1px solid rgba(255,80,80,.3);border-left:3px solid #ff6b6b;padding:12px 16px;margin-bottom:16px;color:#ff9999;font-size:13px;border-radius:3px;"></div>
+    <input type="hidden" id="eu-id"/>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+      <div>
+        <label style="font-size:10px;color:var(--silver);font-family:'DM Mono',monospace;letter-spacing:1.5px;text-transform:uppercase;display:block;margin-bottom:5px;">First Name *</label>
+        <input id="eu-fname" type="text" class="cell-input" style="width:100%;box-sizing:border-box;padding:10px 12px;font-size:14px;"/>
+      </div>
+      <div>
+        <label style="font-size:10px;color:var(--silver);font-family:'DM Mono',monospace;letter-spacing:1.5px;text-transform:uppercase;display:block;margin-bottom:5px;">Last Name *</label>
+        <input id="eu-lname" type="text" class="cell-input" style="width:100%;box-sizing:border-box;padding:10px 12px;font-size:14px;"/>
+      </div>
+      <div style="grid-column:1/-1;">
+        <label style="font-size:10px;color:var(--silver);font-family:'DM Mono',monospace;letter-spacing:1.5px;text-transform:uppercase;display:block;margin-bottom:5px;">Company *</label>
+        <input id="eu-company" type="text" class="cell-input" style="width:100%;box-sizing:border-box;padding:10px 12px;font-size:14px;"/>
+      </div>
+      <div style="grid-column:1/-1;">
+        <label style="font-size:10px;color:var(--silver);font-family:'DM Mono',monospace;letter-spacing:1.5px;text-transform:uppercase;display:block;margin-bottom:5px;">Email *</label>
+        <input id="eu-email" type="email" class="cell-input" style="width:100%;box-sizing:border-box;padding:10px 12px;font-size:14px;"/>
+      </div>
+      <div>
+        <label style="font-size:10px;color:var(--silver);font-family:'DM Mono',monospace;letter-spacing:1.5px;text-transform:uppercase;display:block;margin-bottom:5px;">Phone</label>
+        <input id="eu-phone" type="tel" class="cell-input" style="width:100%;box-sizing:border-box;padding:10px 12px;font-size:14px;"/>
+      </div>
+      <div>
+        <label style="font-size:10px;color:var(--silver);font-family:'DM Mono',monospace;letter-spacing:1.5px;text-transform:uppercase;display:block;margin-bottom:5px;">Status</label>
+        <select id="eu-status" class="cell-input" style="width:100%;box-sizing:border-box;padding:10px 12px;font-size:14px;cursor:pointer;background:var(--ink3);color:var(--white);">
+          <option value="approved">Approved</option>
+          <option value="pending">Pending</option>
+          <option value="rejected">Rejected</option>
+        </select>
+      </div>
+      <div style="grid-column:1/-1;display:flex;align-items:center;gap:10px;background:var(--ink3);border:1px solid rgba(139,160,178,.1);padding:12px 14px;border-radius:3px;">
+        <input type="checkbox" id="eu-pieces" style="accent-color:var(--gold);width:16px;height:16px;cursor:pointer;flex-shrink:0;"/>
+        <label for="eu-pieces" style="font-size:13px;color:var(--smoke);cursor:pointer;line-height:1.4;">Allow ordering by <strong style="color:var(--white)">piece</strong> &nbsp;(uncheck = cases only)</label>
+      </div>
+      <div style="grid-column:1/-1;background:rgba(200,152,31,.05);border:1px solid rgba(200,152,31,.15);padding:10px 14px;border-radius:3px;font-size:12px;color:var(--silver);">
+        &#128274; Password cannot be changed here. The user can reset it by contacting you.
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:22px;">
+      <button onclick="closeEditUserModal()" style="flex:1;background:var(--ink3);border:1px solid rgba(139,160,178,.2);color:var(--silver);font-family:'Oswald',sans-serif;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;padding:12px;cursor:pointer;">Cancel</button>
+      <button id="eu-save-btn" onclick="saveEditUser()" style="flex:2;background:var(--gold);border:none;color:var(--ink);font-family:'Oswald',sans-serif;font-size:13px;font-weight:600;letter-spacing:2px;text-transform:uppercase;padding:12px;cursor:pointer;">Save Changes &#8594;</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function openEditUserModal(id){
+  var user = allUsers.find(function(u){ return u.id===id; });
+  if(!user) return;
+  document.getElementById('eu-id').value    = id;
+  document.getElementById('eu-fname').value   = user.fname||'';
+  document.getElementById('eu-lname').value   = user.lname||'';
+  document.getElementById('eu-company').value = user.company||'';
+  document.getElementById('eu-email').value   = user.email||'';
+  document.getElementById('eu-phone').value   = user.phone||'';
+  document.getElementById('eu-status').value  = user.status||'approved';
+  document.getElementById('eu-pieces').checked = user.canOrderPieces !== false;
+  document.getElementById('edit-user-err').style.display = 'none';
+  document.getElementById('eu-save-btn').disabled = false;
+  document.getElementById('eu-save-btn').innerHTML = 'Save Changes &#8594;';
+  document.getElementById('edit-user-modal').style.display = 'flex';
+}
+function closeEditUserModal(){
+  document.getElementById('edit-user-modal').style.display = 'none';
+}
+document.addEventListener('click', function(e){
+  if(e.target === document.getElementById('edit-user-modal')) closeEditUserModal();
+});
+async function saveEditUser(){
+  var id      = document.getElementById('eu-id').value;
+  var fname   = document.getElementById('eu-fname').value.trim();
+  var lname   = document.getElementById('eu-lname').value.trim();
+  var company = document.getElementById('eu-company').value.trim();
+  var email   = document.getElementById('eu-email').value.trim().toLowerCase();
+  var phone   = document.getElementById('eu-phone').value.trim();
+  var status  = document.getElementById('eu-status').value;
+  var pieces  = document.getElementById('eu-pieces').checked;
+  var errEl   = document.getElementById('edit-user-err');
+  errEl.style.display = 'none';
+
+  if(!fname||!lname||!company||!email){
+    errEl.textContent = 'First name, last name, company and email are required.';
+    errEl.style.display = 'block'; return;
+  }
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+    errEl.textContent = 'Please enter a valid email address.';
+    errEl.style.display = 'block'; return;
+  }
+  var dupe = allUsers.find(function(u){ return u.email===email && u.id!==id; });
+  if(dupe){
+    errEl.textContent = 'Another user already has this email address.';
+    errEl.style.display = 'block'; return;
+  }
+
+  var btn = document.getElementById('eu-save-btn');
+  btn.textContent = 'Saving...'; btn.disabled = true;
+
+  var user = allUsers.find(function(u){ return u.id===id; });
+  if(!user){ errEl.textContent='User not found.'; errEl.style.display='block'; btn.disabled=false; return; }
+
+  var prev = {fname:user.fname,lname:user.lname,company:user.company,email:user.email,phone:user.phone,status:user.status,canOrderPieces:user.canOrderPieces};
+  user.fname = fname; user.lname = lname; user.company = company;
+  user.email = email; user.phone = phone; user.status = status;
+  user.canOrderPieces = pieces;
+  if(status==='approved' && !user.approvedAt) user.approvedAt = new Date().toISOString();
+
+  try{
+    await saveUsers('Edit user: '+fname+' '+lname);
+    renderUsers(); updateUserCounts();
+    closeEditUserModal();
+    setUsersStatus('success', fname+' '+lname+' updated successfully.');
+    setTimeout(function(){ setUsersStatus('',''); }, 3000);
+  } catch(e){
+    // Revert on failure
+    Object.assign(user, prev);
+    renderUsers();
+    errEl.textContent = 'Failed to save: '+e.message;
+    errEl.style.display = 'block';
+    btn.innerHTML = 'Save Changes &#8594;';
+    btn.disabled = false;
+  }
+}
+</script>
 </html>

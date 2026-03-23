@@ -42,8 +42,8 @@
 <body>
 <div class="topbar">
   <div class="topbar-links">
-    <a href="tel:17328875854">📞 732-887-5854</a>
-    <a href="mailto:baruch@allprobuildingsupplies">✉ baruch@allprobuildingsupplies</a>
+    <a href="tel:17328291940">📞 732-829-1940</a>
+    <a href="/cdn-cgi/l/email-protection#395b584b4c5a5179585555494b565b4c50555d50575e4a4c494955505c4a">✉ baruch@allprobuildingsupplies</a>
   </div>
   <div class="topbar-badge">Contractor-Grade · Fast Response · NJ &amp; Surrounding Areas</div>
 </div>
@@ -59,7 +59,7 @@
     <li><a href="contact.html">Contact</a></li>
   </ul>
   <div class="nav-actions">
-    <a href="tel:17328875854" class="nav-tel">732-887-5854</a>
+    <a href="tel:17328291940" class="nav-tel">732-829-1940</a>
     <a href="login.html" class="nav-cta">Log In →</a>
   </div>
   <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
@@ -67,7 +67,7 @@
 <div class="mobile-menu">
   <a href="index.html">Home</a><a href="products.html">Products</a>
   <a href="about.html">About</a><a href="contact.html">Contact</a>
-  <a href="tel:17328875854" class="mob-tel">📞 732-887-5854</a>
+  <a href="tel:17328291940" class="mob-tel">📞 732-829-1940</a>
   <a href="login.html" class="mob-cta">Log In →</a>
 </div>
 
@@ -122,7 +122,7 @@
         <button class="auth-btn" id="reg-btn" onclick="submitReg()">
           <span id="reg-txt">Submit Request →</span>
         </button>
-        <p class="auth-note">Questions? Call <a href="tel:17328875854">732-887-5854</a> or email <a href="mailto:baruch@allprobuildingsupplies">baruch@allprobuildingsupplies</a></p>
+        <p class="auth-note">Questions? Call <a href="tel:17328291940">732-829-1940</a> or email <a href="/cdn-cgi/l/email-protection#86e4e7f4f3e5eec6e7eaeaf6f4e9e4f3efeae2efe8e1f5f3f6f6eaefe3f5">baruch@allprobuildingsupplies</a></p>
       </div>
       <div class="success-screen" id="reg-success">
         <div class="success-icon">✅</div>
@@ -138,7 +138,7 @@
 </div>
 
 <div id="cursor"></div><div id="cursor-ring"></div>
-<script src="assets/main.js"></script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="assets/main.js"></script>
 <script>
 const WORKER_URL = 'https://allpro-github-proxy.baruch-6d5.workers.dev';
 
@@ -212,12 +212,8 @@ async function submitReg(){
     document.getElementById('s-email').textContent=newUser.email;
     document.getElementById('reg-success').style.display='block';
   }catch(e){
-    showErr('Something went wrong — please try again or call 732-887-5854.');
+    showErr('Something went wrong — please try again or call 732-829-1940.');
     btn.disabled=false;txt.textContent='Submit Request →';
   }
 }
-function showErr(msg){const el=document.getElementById('global-err');el.innerHTML=msg;el.style.display='block';}
-document.querySelectorAll('.fi').forEach(i=>i.addEventListener('input',()=>{i.classList.remove('err');document.getElementById('global-err').style.display='none';}));
-</script>
-</body>
-</html>
+function showErr(msg){const el=document.getElementById('global-err');el.innerHTML=msg;el.styl
