@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Login — All Pro Building Supplies LLC</title>
+<link rel="stylesheet" href="assets/style.css"/>
+<style>
+.auth-wrap{min-height:80vh;display:flex;align-items:center;justify-content:center;padding:60px 24px;position:relative}
+.auth-wrap::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 50% 60% at 50% 40%,rgba(200,152,31,.06) 0%,transparent 65%)}
+.auth-box{position:relative;z-index:1;width:100%;max-width:420px}
+.auth-logo{text-align:center;margin-bottom:36px}
+.auth-logo img{height:70px;margin:0 auto 14px}
+.auth-title{font-family:'Oswald',sans-serif;font-size:26px;font-weight:600;color:var(--white);letter-spacing:1px;text-align:center}
+.auth-sub{font-size:14px;color:var(--silver);text-align:center;margin-top:6px;line-height:1.6}
+.auth-card{background:var(--ink2);border:1px solid rgba(200,152,31,.15);padding:40px}
+.fg{display:flex;flex-direction:column;gap:7px;margin-bottom:16px}
+.fl{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--silver)}
+.fi{width:100%;background:var(--ink3);border:1px solid rgba(139,160,178,.18);color:var(--smoke);font-family:'DM Sans',sans-serif;font-size:15px;padding:13px 16px;outline:none;transition:border-color .2s}
+.fi:focus{border-color:var(--gold)}
+.fi::placeholder{color:rgba(139,160,178,.35)}
+.auth-btn{width:100%;background:var(--gold);color:var(--ink);font-family:'Oswald',sans-serif;font-size:15px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;padding:16px;border:none;margin-top:8px;transition:background .2s,transform .2s;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px}
+.auth-btn:hover{background:var(--gold2);transform:translateY(-1px)}
+.auth-btn:disabled{background:var(--ink3);color:var(--silver);transform:none;cursor:not-allowed}
+.auth-note{font-size:12px;color:var(--silver);text-align:center;margin-top:16px;line-height:1.6}
+.auth-note a{color:var(--gold)}
+.global-err{display:none;background:rgba(231,76,60,.1);border:1px solid rgba(231,76,60,.3);color:#E74C3C;padding:12px 16px;font-size:13px;margin-bottom:14px;line-height:1.5}
+.pending-box{display:none;background:rgba(200,152,31,.08);border:1px solid rgba(200,152,31,.25);color:var(--gold);padding:16px;font-size:13px;margin-bottom:14px;line-height:1.6}
+.register-bar{background:var(--ink3);border:1px solid rgba(139,160,178,.1);padding:14px 18px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;font-size:14px;color:var(--silver)}
+.register-bar a{color:var(--gold);font-weight:500}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media(max-width:600px){.auth-card{padding:24px 18px}}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="topbar-links">
+    <a href="tel:7328291940">📞 732-829-1940</a>
+    <a href="mailto:info@allprobuildingsupplies.com">✉ info@allprobuildingsupplies.com</a>
+  </div>
+  <div class="topbar-badge">Contractor-Grade · Fast Response · NJ &amp; Surrounding Areas</div>
+</div>
+<nav>
+  <div class="nav-logo">
+    <img src="assets/logo.png" alt="All Pro Building Supplies"/>
+    <div class="nav-brand-text">All Pro Building Supplies <span>LLC</span></div>
+  </div>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="products.html">Products</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+  <div class="nav-actions">
+    <a href="tel:7328291940" class="nav-tel">732-829-1940</a>
+    <a href="register.html" class="nav-cta">Register →</a>
+  </div>
+  <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+</nav>
+<div class="mobile-menu">
+  <a href="index.html">Home</a><a href="products.html">Products</a>
+  <a href="about.html">About</a><a href="contact.html">Contact</a>
+  <a href="tel:7328291940" class="mob-tel">📞 732-829-1940</a>
+  <a href="register.html" class="mob-cta">Register →</a>
+</div>
+
+<div class="auth-wrap">
+  <div class="auth-box">
+    <div class="auth-logo">
+      <img src="assets/logo.png" onerror="this.style.display='none'"/>
+      <div class="auth-title">Dealer / Trade Login</div>
+      <div class="auth-sub">Log in to view full pricing on all products.</div>
+    </div>
+    <div class="auth-card">
+      <div class="register-bar">Don't have an account? <a href="register.html">Request access →</a></div>
+      <div class="global-err" id="global-err"></div>
+      <div class="pending-box" id="pending-box">
+        ⏳ Your account is <strong>pending approval</strong>. Baruch will review and approve it shortly. Questions? Call <a href="tel:7328291940" style="color:var(--gold)">732-829-1940</a>.
+      </div>
+      <div class="fg">
+        <label class="fl">Email Address</label>
+        <input class="fi" id="l-email" type="email" placeholder="john@company.com" onkeydown="if(event.key==='Enter')doLogin()"/>
+      </div>
+      <div class="fg">
+        <label class="fl">Password</label>
+        <input class="fi" id="l-pw" type="password" placeholder="Your password" onkeydown="if(event.key==='Enter')doLogin()"/>
+      </div>
+      <button class="auth-btn" id="login-btn" onclick="doLogin()">
+        <span id="login-txt">Log In →</span>
+      </button>
+      <p class="auth-note">
+        No account? <a href="register.html">Request access here</a><br/>
+        Need help? Call <a href="tel:7328291940">732-829-1940</a>
+      </p>
+    </div>
+  </div>
+</div>
+
+<div id="cursor"></div><div id="cursor-ring"></div>
+<script src="assets/main.js"></script>
+<script>
+async function sha256(str){
+  const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+// Check if already logged in
+window.addEventListener('DOMContentLoaded',()=>{
+  const u=sessionStorage.getItem('apbs_user');
+  if(u){
+    const user=JSON.parse(u);
+    if(user.status==='approved') window.location.href='products.html';
+  }
+});
+
+async function doLogin(){
+  const email=document.getElementById('l-email').value.trim().toLowerCase();
+  const pw=document.getElementById('l-pw').value;
+  if(!email||!pw){showErr('Please enter your email and password.');return;}
+
+  const btn=document.getElementById('login-btn'),txt=document.getElementById('login-txt');
+  btn.disabled=true;txt.innerHTML='<span style="display:inline-block;animation:spin .8s linear infinite">⟳</span> Logging in...';
+  document.getElementById('global-err').style.display='none';
+  document.getElementById('pending-box').style.display='none';
+
+  try{
+    const res=await fetch('https://allpro-github-proxy.baruch-6d5.workers.dev/github/users.json');
+    if(!res.ok)throw new Error('Could not load user data');
+    const data=await res.json();
+    const {users}=JSON.parse(atob(data.content.replace(/\n/g,'')));
+    const user=users.find(u=>u.email===email);
+
+    if(!user){showErr('No account found with that email. <a href="register.html" style="color:var(--gold)">Register here →</a>');btn.disabled=false;txt.textContent='Log In →';return;}
+
+    const hashed=await sha256(pw);
+    if(user.password!==hashed){showErr('Incorrect password. Please try again.');btn.disabled=false;txt.textContent='Log In →';return;}
+
+    if(user.status==='pending'){
+      document.getElementById('pending-box').style.display='block';
+      btn.disabled=false;txt.textContent='Log In →';return;
+    }
+    if(user.status==='rejected'){
+      showErr('Your account access was not approved. Please contact <a href="tel:7328291940" style="color:var(--gold)">732-829-1940</a> for assistance.');
+      btn.disabled=false;txt.textContent='Log In →';return;
+    }
+
+    // Approved - save session and redirect
+    sessionStorage.setItem('apbs_user', JSON.stringify({
+      id: user.id,
+      fname: user.fname,
+      lname: user.lname,
+      name: (user.fname||'') + ' ' + (user.lname||''),
+      company: user.company,
+      email: user.email,
+      status: user.status,
+      canOrderPieces: user.canOrderPieces !== false
+    }));
+    window.location.href = 'products.html';
+
+  } catch(e){
+    showErr('Login error: ' + e.message + '. Please try again.');
+    btn.disabled=false;
+    txt.textContent='Log In →';
+  }
+}
+
+function showErr(msg){
+  var el = document.getElementById('global-err');
+  el.innerHTML = msg;
+  el.style.display = 'block';
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>My Account — All Pro Building Supplies LLC</title>
+<link rel="stylesheet" href="assets/style.css"/>
+<style>
+.acct-grid{display:grid;grid-template-columns:240px 1fr;gap:28px;align-items:start;width:100%;max-width:1100px;margin:0 auto;}
+.acct-sidebar{background:var(--ink2);border:1px solid rgba(200,152,31,.15);padding:24px;min-width:200px;}
+.acct-user-name{font-family:"Oswald",sans-serif;font-size:20px;color:var(--white);margin-bottom:4px;}
+.acct-user-co{font-size:13px;color:var(--gold);margin-bottom:20px;}
+.acct-nav a{display:block;padding:10px 14px;color:var(--silver);font-family:"Oswald",sans-serif;font-size:13px;letter-spacing:1.5px;text-transform:uppercase;text-decoration:none;border-left:3px solid transparent;transition:all .2s;margin-bottom:4px;white-space:nowrap;}
+.acct-nav a:hover,.acct-nav a.active{color:var(--white);border-left-color:var(--gold);background:rgba(200,152,31,.06);}
+.acct-content{background:var(--ink2);border:1px solid rgba(200,152,31,.15);padding:28px;}
+.acct-section-title{font-family:"Oswald",sans-serif;font-size:15px;color:var(--gold);letter-spacing:2px;text-transform:uppercase;margin:0 0 20px;padding-bottom:10px;border-bottom:1px solid rgba(200,152,31,.15);}
+.order-row{background:var(--ink3);border:1px solid rgba(200,152,31,.1);border-radius:5px;margin-bottom:12px;overflow:hidden;}
+.order-row-hdr{display:flex;align-items:center;gap:16px;padding:12px 16px;cursor:pointer;}
+.order-row-hdr:hover{background:rgba(200,152,31,.04);}
+.order-id{font-family:"DM Mono",monospace;font-size:12px;color:var(--gold);}
+.order-date{font-size:12px;color:var(--silver);}
+.order-status-pill{font-size:10px;font-family:"DM Mono",monospace;letter-spacing:1px;padding:2px 8px;border-radius:2px;}
+.pill-pending{background:rgba(255,159,67,.15);color:#ff9f43;border:1px solid rgba(255,159,67,.3);}
+.pill-confirmed{background:rgba(46,204,113,.12);color:#2ecc71;border:1px solid rgba(46,204,113,.25);}
+.pill-cancelled{background:rgba(255,107,107,.1);color:#ff6b6b;border:1px solid rgba(255,107,107,.2);}
+.order-total{font-family:"DM Mono",monospace;font-size:13px;color:var(--white);margin-left:auto;}
+.order-row-body{display:none;padding:12px 16px;border-top:1px solid rgba(255,255,255,.05);}
+.order-row.open .order-row-body{display:block;}
+.order-items-mini{width:100%;border-collapse:collapse;font-size:12px;}
+.order-items-mini td{padding:5px 8px;border-bottom:1px solid rgba(255,255,255,.04);color:var(--smoke);}
+.order-items-mini tr:last-child td{border-bottom:none;}
+.order-delivery{font-size:12px;color:var(--silver);margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.04);}
+.btn-logout{background:transparent;border:1px solid rgba(139,160,178,.2);color:var(--silver);font-family:"Oswald",sans-serif;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;padding:8px 18px;cursor:pointer;transition:all .2s;width:100%;margin-top:12px;}
+.btn-logout:hover{border-color:#ff6b6b;color:#ff6b6b;}
+@media(max-width:700px){.acct-grid{grid-template-columns:1fr;}.acct-sidebar{padding:18px;}}
+</style>
+</head>
+<body>
+<div id="cursor"></div><div id="cursor-ring"></div>
+
+<div class="topbar">
+  <div class="topbar-links">
+    <a href="tel:7328291940"><svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.27-.27.67-.36 1.02-.22 1.12.45 2.32.68 3.58.68.55 0 1 .45 1 1V20c0 .55-.45 1-1 1C10.29 21 3 13.71 3 4.5c0-.55.45-1 1-1H8c.55 0 1 .45 1 1 0 1.27.2 2.48.57 3.62.1.32.03.68-.22.96L6.6 10.8z"/></svg>732-829-1940</a>
+    <a href="mailto:info@allprobuildingsupplies.com"><svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>info@allprobuildingsupplies.com</a>
+  </div>
+  <div class="topbar-badge">Contractor-Grade · Fast Response · NJ &amp; Surrounding Areas</div>
+</div>
+<nav>
+  <div class="nav-logo">
+    <img src="assets/logo.png" alt="All Pro Building Supplies"/>
+    <div class="nav-brand-text">All Pro Building Supplies <span>LLC</span></div>
+  </div>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="products.html" class="active">Products</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+  <div class="nav-actions">
+    <a href="tel:7328291940" class="nav-tel"><svg viewBox="0 0 24 24" width="16" height="16" fill="var(--gold)"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.27-.27.67-.36 1.02-.22 1.12.45 2.32.68 3.58.68.55 0 1 .45 1 1V20c0 .55-.45 1-1 1C10.29 21 3 13.71 3 4.5c0-.55.45-1 1-1H8c.55 0 1 .45 1 1 0 1.27.2 2.48.57 3.62.1.32.03.68-.22.96L6.6 10.8z"/></svg>732-829-1940</a>
+    <a href="cart.html" class="nav-cta" id="nav-cart-btn">🛒 Cart <span id="nav-cart-count" class="cart-nav-badge"></span></a>
+    <a href="account.html" class="nav-cta" id="nav-account-btn" style="display:inline-flex;background:var(--ink3);border:1px solid rgba(200,152,31,.3);margin-left:6px;">👤 My Account</a>
+  </div>
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobile-menu"><button class="mobile-menu-close" id="mob-close" aria-label="Close">&#10005;</button>
+  <a href="index.html">Home</a>
+  <a href="products.html">Products</a>
+  <a href="about.html">About</a>
+  <a href="contact.html">Contact</a>
+  <a href="tel:7328291940" class="mob-tel">📞 732-829-1940</a>
+  <a href="cart.html" class="mob-cta">🛒 Cart →</a>
+</div>
+
+<div class="page-hero">
+  <div class="page-hero-inner">
+    <div class="page-breadcrumb"><a href="index.html">Home</a> › Account</div>
+    <div class="page-title" data-r>My <span>Account</span></div>
+  </div>
+</div>
+<div class="ticker" aria-hidden="true"><div class="ticker-track">
+  <div class="t-item g">Building Materials <span class="t-dia">◆</span></div><div class="t-item">Plumbing Supplies <span class="t-dia">◆</span></div>
+  <div class="t-item g">PVC Pipe &amp; Fittings <span class="t-dia">◆</span></div><div class="t-item">Fast Response <span class="t-dia">◆</span></div>
+  <div class="t-item g">Building Materials <span class="t-dia">◆</span></div><div class="t-item">Plumbing Supplies <span class="t-dia">◆</span></div>
+</div></div>
+<div class="section">
+  <div class="container">
+    <div id="auth-gate" style="display:none;background:var(--ink2);border:1px solid rgba(200,152,31,.25);border-left:4px solid var(--gold);padding:24px 28px;">
+      <strong style="color:var(--white);display:block;margin-bottom:8px;">Please log in to view your account</strong>
+      <a href="login.html" style="color:var(--gold);">Log in →</a>
+    </div>
+    <div id="acct-wrap" style="display:none;">
+      <div class="acct-grid">
+        <!-- Sidebar -->
+        <div>
+          <div class="acct-sidebar">
+            <div class="acct-user-name" id="acct-name"></div>
+            <div class="acct-user-co" id="acct-co"></div>
+            <nav class="acct-nav">
+              <a href="#orders" class="active" onclick="showTab('orders',this)">📋 My Orders</a>
+              <a href="#info" onclick="showTab('info',this)">👤 Account Info</a>
+            </nav>
+            <button class="btn-logout" onclick="doLogout()">Log Out</button>
+          </div>
+        </div>
+        <!-- Main content -->
+        <div>
+          <!-- Orders tab -->
+          <div id="tab-orders" class="acct-content">
+            <div class="acct-section-title">Order History</div>
+            <div id="orders-loading" style="color:var(--silver);padding:20px 0;">Loading your orders...</div>
+            <div id="orders-container"></div>
+          </div>
+          <!-- Info tab -->
+          <div id="tab-info" class="acct-content" style="display:none;">
+            <div class="acct-section-title">Account Details</div>
+            <div style="display:grid;gap:14px;">
+              <div><div style="font-size:11px;color:var(--silver);font-family:DM Mono,monospace;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px;">Name</div><div id="info-name" style="color:var(--smoke);font-size:14px;"></div></div>
+              <div><div style="font-size:11px;color:var(--silver);font-family:DM Mono,monospace;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px;">Company</div><div id="info-co" style="color:var(--smoke);font-size:14px;"></div></div>
+              <div><div style="font-size:11px;color:var(--silver);font-family:DM Mono,monospace;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px;">Email</div><div id="info-email" style="color:var(--smoke);font-size:14px;"></div></div>
+              <div><div style="font-size:11px;color:var(--silver);font-family:DM Mono,monospace;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px;">Account Status</div><div style="color:#2ecc71;font-size:13px;font-family:DM Mono,monospace;">✓ Approved Trade Account</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="footer"><div class="footer-inner"><span>© 2025 All Pro Building Supplies LLC</span></div></footer>
+<script src="assets/main.js"></script>
+<script>
+const WORKER_URL = 'https://allpro-github-proxy.baruch-6d5.workers.dev';
+var currentUser = null;
+try{ currentUser = JSON.parse(sessionStorage.getItem('apbs_user')); }catch(e){}
+
+if(!currentUser || currentUser.status !== 'approved'){
+  document.getElementById('auth-gate').style.display = 'block';
+} else {
+  document.getElementById('acct-wrap').style.display = 'block';
+  var name = currentUser.name || ((currentUser.fname||'')+' '+(currentUser.lname||'')).trim();
+  document.getElementById('acct-name').textContent = name;
+  document.getElementById('acct-co').textContent   = currentUser.company||'';
+  document.getElementById('info-name').textContent  = name;
+  document.getElementById('info-co').textContent    = currentUser.company||'';
+  document.getElementById('info-email').textContent = currentUser.email||'';
+  loadOrders();
+}
+
+function showTab(tab, link){
+  document.querySelectorAll('.acct-nav a').forEach(function(a){ a.classList.remove('active'); });
+  link.classList.add('active');
+  document.getElementById('tab-orders').style.display = tab==='orders' ? 'block' : 'none';
+  document.getElementById('tab-info').style.display   = tab==='info'   ? 'block' : 'none';
+  return false;
+}
+
+function toggleOrderRow(el){el.closest('.order-row').classList.toggle('open');}
+async function loadOrders(){
+  try{
+    var r = await fetch(WORKER_URL+'/github/orders.json');
+    var d = await r.json();
+    var data = JSON.parse(atob(d.content.replace(/\n/g,'')));
+    var myOrders = (data.orders||[]).filter(function(o){
+      return o.customer && o.customer.id === currentUser.id;
+    }).sort(function(a,b){ return new Date(b.placedAt)-new Date(a.placedAt); });
+
+    document.getElementById('orders-loading').style.display = 'none';
+    var container = document.getElementById('orders-container');
+
+    if(!myOrders.length){
+      container.innerHTML = '<p style="color:var(--silver);font-size:14px;">No orders yet. <a href="products.html" style="color:var(--gold);">Browse products →</a></p>';
+      return;
+    }
+
+    container.innerHTML = myOrders.map(function(o){
+      var pillCls = 'pill-'+(o.status||'pending');
+      var items = (o.items||[]).map(function(i){
+        return '<tr><td><a href="products.html#'+i.code+'" style="color:var(--smoke);text-decoration:none" onmouseover="this.style.color=\'var(--gold)\'" onmouseout="this.style.color=\'var(--smoke)\'">'+i.description+' '+i.size+'</a></td><td style="text-align:center">'+i.qty+' pcs</td><td style="text-align:right;font-family:DM Mono,monospace">$'+parseFloat(i.lineTotal).toFixed(2)+'</td></tr>';
+      }).join('');
+      return '<div class="order-row" id="or-'+o.id+'">'
+        +'<div class="order-row-hdr" onclick="toggleOrderRow(this)">'
+        +'<span class="order-id">'+o.id+'</span>'
+        +'<span class="order-date">'+new Date(o.placedAt).toLocaleDateString()+'</span>'
+        +'<span class="order-status-pill '+pillCls+'">'+((o.status||'pending').toUpperCase())+'</span>'
+        +'<span class="order-total">$'+parseFloat(o.total).toFixed(2)+'</span>'
+        +'</div>'
+        +'<div class="order-row-body">'
+        +'<table class="order-items-mini"><thead><tr><th>Product</th><th style="text-align:center">Qty</th><th style="text-align:right">Total</th></tr></thead>'    +'<th style="text-align:right">Total</th></tr></thead>'
+        +'<tbody>'+items+'</tbody></table>'
+        +'<div class="order-delivery">'+o.delivery.method.toUpperCase()+': '+o.delivery.address
+        +(o.po ? ' &nbsp;|&nbsp; PO: '+o.po : '')+'</div>'
+        +'</div></div>';
+    }).join('');
+  }catch(e){
+    document.getElementById('orders-loading').textContent = 'Could not load orders. Please try again.';
+  }
+}
+
+function doLogout(){
+  sessionStorage.removeItem('apbs_user');
+  window.location.href = 'index.html';
+}
+</script>
+<script src="assets/main.js"></script>
+</body>
+</html>
