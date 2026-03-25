@@ -35,7 +35,7 @@
 <div class="topbar">
   <div class="topbar-links">
     <a href="tel:17328291940">📞 732-829-1940</a>
-    <a href="/cdn-cgi/l/email-protection#4a282b383f29220a2b26263a3825283f23262e23242d393f3a3a26232f39">✉ baruch@allprobuildingsupplies</a>
+    <a href="mailto:info@allprobuildingsupplies.com">✉ info@allprobuildingsupplies.com</a>
   </div>
   <div class="topbar-badge">Contractor-Grade · Fast Response · NJ &amp; Surrounding Areas</div>
 </div>
@@ -98,9 +98,7 @@
 <div id="cursor"></div><div id="cursor-ring"></div>
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="assets/main.js"></script>
 <script>
-const WORKER_URL = 'https://allpro-github-proxy.baruch-6d5.workers.dev';
-
-
+const GH_USER='baruchbg',GH_REPO='allprobuildingsupplies.com',GH_BRANCH='main',GH_TOKEN='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';
 
 async function sha256(str){
   const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str));
@@ -116,7 +114,7 @@ window.addEventListener('DOMContentLoaded',()=>{
   }
 });
 
-async async function doLogin(){
+async function doLogin(){
   const email=document.getElementById('l-email').value.trim().toLowerCase();
   const pw=document.getElementById('l-pw').value;
   if(!email||!pw){showErr('Please enter your email and password.');return;}
@@ -127,7 +125,7 @@ async async function doLogin(){
   document.getElementById('pending-box').style.display='none';
 
   try{
-    const res=await fetch(WORKER_URL+'/github/users.json');
+    const res=await fetch(`https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/users.json`,{headers:{'Authorization':`Bearer ${GH_TOKEN}`,'Accept':'application/vnd.github+json'}});
     if(!res.ok)throw new Error('Could not load user data');
     const data=await res.json();
     const {users}=JSON.parse(atob(data.content.replace(/\n/g,'')));
@@ -148,9 +146,9 @@ async async function doLogin(){
     }
 
     // Approved — save session and redirect
-    sessionStorage.setItem('apbs_user',JSON.stringify({id:user.id,fname:user.fname,lname:user.lname,name:user.fname+' '+user.lname,company:user.company,email:user.email,status:user.status,canOrderPieces:user.canOrderPieces!==false}));
+    sessionStorage.setItem('apbs_user',JSON.stringify({id:user.id,fname:user.fname,lname:user.lname,company:user.company,email:user.email,status:user.status}));
     window.location.href='products.html';
 
-  }catch(e){
-    showErr('Something went wrong — please try again.');
-    btn.disabled=false;txt.textContent
+  }
+</body>
+</html>

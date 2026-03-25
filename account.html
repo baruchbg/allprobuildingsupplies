@@ -41,7 +41,7 @@
 <div class="topbar">
   <div class="topbar-links">
     <a href="tel:17328291940"><svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.27-.27.67-.36 1.02-.22 1.12.45 2.32.68 3.58.68.55 0 1 .45 1 1V20c0 .55-.45 1-1 1C10.29 21 3 13.71 3 4.5c0-.55.45-1 1-1H8c.55 0 1 .45 1 1 0 1.27.2 2.48.57 3.62.1.32.03.68-.22.96L6.6 10.8z"/></svg>732-829-1940</a>
-    <a href="/cdn-cgi/l/email-protection#7d1f1c0f081e153d1c11110d0f121f0814111914131a0e080d0d1114180e531e1210"><svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg><span class="__cf_email__" data-cfemail="86e4e7f4f3e5eec6e7eaeaf6f4e9e4f3efeae2efe8e1f5f3f6f6eaefe3f5a8e5e9eb">[email&#160;protected]</span></a>
+    <a href="mailto:info@allprobuildingsupplies.com"><svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>info@allprobuildingsupplies.com</a>
   </div>
   <div class="topbar-badge">Contractor-Grade · Fast Response · NJ &amp; Surrounding Areas</div>
 </div>
@@ -190,8 +190,22 @@ async function loadOrders(){
         +'<span class="order-total">$'+parseFloat(o.total).toFixed(2)+'</span>'
         +'</div>'
         +'<div class="order-row-body">'
-        +'<table class="order-items-mini"><thead><tr><th>Product</th><th style="text-align:center">Qty</th><th style="text-align:right">Total</th></tr></thead>'
+        +'<table class="order-items-mini"><thead><tr><th>Product</th><th style="text-align:center">Qty</th><th style="text-align:right">Total</th></tr></thead>'    +'<th style="text-align:right">Total</th></tr></thead>'
         +'<tbody>'+items+'</tbody></table>'
         +'<div class="order-delivery">'+o.delivery.method.toUpperCase()+': '+o.delivery.address
         +(o.po ? ' &nbsp;|&nbsp; PO: '+o.po : '')+'</div>'
         +'</div></div>';
+    }).join('');
+  }catch(e){
+    document.getElementById('orders-loading').textContent = 'Could not load orders. Please try again.';
+  }
+}
+
+function doLogout(){
+  sessionStorage.removeItem('apbs_user');
+  window.location.href = 'index.html';
+}
+</script>
+<script src="assets/main.js"></script>
+</body>
+</html>
