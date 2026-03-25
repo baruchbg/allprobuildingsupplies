@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Checkout — All Pro Building Supplies LLC</title>
+<link rel="stylesheet" href="assets/style.css"/>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<style>
+.checkout-grid{display:grid;grid-template-columns:1fr 380px;gap:32px;align-items:start;}
+.checkout-form-wrap{background:var(--ink2);border:1px solid rgba(200,152,31,.15);padding:32px;}
+.checkout-section-title{font-family:'Oswald',sans-serif;font-size:16px;color:var(--gold);letter-spacing:2px;text-transform:uppercase;margin:0 0 20px;padding-bottom:10px;border-bottom:1px solid rgba(200,152,31,.2);}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
+.form-row.full{grid-template-columns:1fr;}
+.form-group{display:flex;flex-direction:column;gap:6px;}
+.form-label{font-size:11px;color:var(--silver);font-family:'DM Mono',monospace;letter-spacing:1.5px;text-transform:uppercase;}
+.form-input,.form-select,.form-textarea{background:var(--ink3);border:1px solid rgba(139,160,178,.2);color:var(--white);font-family:'DM Sans',sans-serif;font-size:14px;padding:11px 14px;outline:none;transition:border-color .2s;width:100%;box-sizing:border-box;}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--gold);}
+.form-textarea{resize:vertical;min-height:90px;}
+.form-select option{background:var(--ink3);}
+.form-input.err,.form-select.err{border-color:#ff6b6b;}
+.err-msg{font-size:11px;color:#ff6b6b;display:none;font-family:'DM Mono',monospace;}
+/* delivery toggle */
+.delivery-toggle{display:flex;gap:0;margin-bottom:20px;}
+.del-opt{flex:1;padding:12px;text-align:center;border:1px solid rgba(139,160,178,.2);cursor:pointer;font-family:'Oswald',sans-serif;font-size:13px;letter-spacing:1.5px;color:var(--silver);transition:all .2s;user-select:none;}
+.del-opt:first-child{border-right:none;}
+.del-opt.active{background:rgba(200,152,31,.12);border-color:var(--gold);color:var(--gold);}
+/* order summary sidebar */
+.order-summary{background:var(--ink2);border:1px solid rgba(200,152,31,.2);padding:28px;position:sticky;top:100px;}
+.order-summary-title{font-family:'Oswald',sans-serif;font-size:15px;color:var(--white);margin-bottom:18px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,.06);}
+.order-line{display:flex;justify-content:space-between;align-items:flex-start;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:13px;}
+.order-line:last-of-type{border-bottom:none;}
+.order-line-name{color:var(--smoke);max-width:200px;}
+.order-line-sub{font-size:11px;color:var(--silver);font-family:'DM Mono',monospace;margin-top:2px;}
+.order-line-price{font-family:'DM Mono',monospace;color:var(--gold);white-space:nowrap;padding-left:12px;}
+.order-total-row{display:flex;justify-content:space-between;align-items:center;padding-top:16px;margin-top:8px;border-top:1px solid rgba(200,152,31,.2);}
+.order-total-label{font-family:'Oswald',sans-serif;font-size:16px;color:var(--white);}
+.order-total-val{font-family:'Oswald',sans-serif;font-size:24px;color:var(--gold);}
+/* place order btn */
+.place-order-btn{width:100%;background:var(--gold);color:var(--ink);font-family:'Oswald',sans-serif;font-size:15px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;padding:18px;border:none;cursor:pointer;margin-top:20px;transition:background .2s,transform .2s;display:flex;align-items:center;justify-content:center;gap:10px;}
+.place-order-btn:hover:not(:disabled){background:var(--gold2);transform:translateY(-1px);}
+.place-order-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+/* success screen */
+#success-screen{display:none;text-align:center;padding:60px 20px;}
+.success-icon{font-size:64px;margin-bottom:20px;}
+.success-title{font-family:'Oswald',sans-serif;font-size:36px;color:var(--white);margin-bottom:12px;}
+.success-sub{color:var(--silver);font-size:15px;line-height:1.7;max-width:480px;margin:0 auto 32px;}
+.success-order-num{font-family:'DM Mono',monospace;font-size:18px;color:var(--gold);background:rgba(200,152,31,.08);border:1px solid rgba(200,152,31,.2);padding:12px 24px;display:inline-block;margin-bottom:24px;}
+/* global error */
+#global-err{display:none;background:rgba(255,80,80,.08);border:1px solid rgba(255,80,80,.3);border-left:3px solid #ff6b6b;padding:14px 18px;margin-bottom:20px;color:#ff9999;font-size:13px;}
+@media(max-width:900px){
+  .checkout-grid{grid-template-columns:1fr;}
+  .order-summary{position:static;}
+  .form-row{grid-template-columns:1fr;}
+}
+@media(max-width:600px){
+  .checkout-form-wrap{padding:20px;}
+  .order-summary{padding:20px;}
+}
+</style>
+</head>
+<body>
+<div id="cursor"></div><div id="cursor-ring"></div>
+
+<div class="topbar">
+  <div class="topbar-links">
+    <a href="tel:17328291940"><svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.27-.27.67-.36 1.02-.22 1.12.45 2.32.68 3.58.68.55 0 1 .45 1 1V20c0 .55-.45 1-1 1C10.29 21 3 13.71 3 4.5c0-.55.45-1 1-1H8c.55 0 1 .45 1 1 0 1.27.2 2.48.57 3.62.1.32.03.68-.22.96L6.6 10.8z"/></svg>732-829-1940</a>
+    <a href="mailto:info@allprobuildingsupplies.com"><svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>info@allprobuildingsupplies.com</a>
+  </div>
+  <div class="topbar-badge">Contractor-Grade · Fast Response · NJ &amp; Surrounding Areas</div>
+</div>
+<nav>
+  <div class="nav-logo">
+    <img src="assets/logo.png" alt="All Pro Building Supplies"/>
+    <div class="nav-brand-text">All Pro Building Supplies <span>LLC</span></div>
+  </div>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="products.html" class="active">Products</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+  <div class="nav-actions">
+    <a href="tel:17328291940" class="nav-tel"><svg viewBox="0 0 24 24" width="16" height="16" fill="var(--gold)"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.27-.27.67-.36 1.02-.22 1.12.45 2.32.68 3.58.68.55 0 1 .45 1 1V20c0 .55-.45 1-1 1C10.29 21 3 13.71 3 4.5c0-.55.45-1 1-1H8c.55 0 1 .45 1 1 0 1.27.2 2.48.57 3.62.1.32.03.68-.22.96L6.6 10.8z"/></svg>732-829-1940</a>
+    <a href="cart.html" class="nav-cta" id="nav-cart-btn">🛒 Cart <span id="nav-cart-count" class="cart-nav-badge"></span></a>
+    <a href="account.html" class="nav-cta" id="nav-account-btn" style="display:none;background:var(--ink3);border:1px solid rgba(200,152,31,.3);margin-left:6px;">👤 My Account</a>
+  </div>
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobile-menu"><button class="mobile-menu-close" id="mob-close" aria-label="Close">&#10005;</button>
+  <a href="index.html">Home</a>
+  <a href="products.html">Products</a>
+  <a href="about.html">About</a>
+  <a href="contact.html">Contact</a>
+  <a href="tel:17328291940" class="mob-tel">📞 732-829-1940</a>
+  <a href="cart.html" class="mob-cta">🛒 Cart →</a>
+</div>
+
+<div class="page-hero">
+  <div class="page-hero-inner">
+    <div class="page-breadcrumb"><a href="index.html">Home</a> › <a href="cart.html">Cart</a> › Checkout</div>
+    <div class="page-title" data-r>Check<span>out</span></div>
+    <p class="page-subtitle" data-r>Complete your order details below.</p>
+  </div>
+</div>
+<div class="ticker" aria-hidden="true"><div class="ticker-track">
+  <div class="t-item g">Building Materials <span class="t-dia">◆</span></div><div class="t-item">Plumbing Supplies <span class="t-dia">◆</span></div>
+  <div class="t-item g">PVC Pipe &amp; Fittings <span class="t-dia">◆</span></div><div class="t-item">Fast Response <span class="t-dia">◆</span></div>
+  <div class="t-item g">Building Materials <span class="t-dia">◆</span></div><div class="t-item">Plumbing Supplies <span class="t-dia">◆</span></div>
+</div></div>
+<div class="section">
+  <div class="container">
+
+    <!-- Auth gate -->
+    <div id="auth-gate" style="display:none;background:var(--ink2);border:1px solid rgba(200,152,31,.25);border-left:4px solid var(--gold);padding:24px 28px;margin-bottom:32px;max-width:600px;">
+      <strong style="color:var(--white);font-size:15px;display:block;margin-bottom:6px;">Trade account required</strong>
+      <a href="login.html" style="color:var(--gold);">Log in →</a>
+    </div>
+
+    <!-- Empty cart redirect -->
+    <div id="empty-gate" style="display:none;text-align:center;padding:60px;">
+      <p style="color:var(--silver);margin-bottom:20px;">Your cart is empty.</p>
+      <a href="products.html" class="btn-gold" style="background:var(--gold);color:var(--ink);font-family:Oswald,sans-serif;font-size:13px;letter-spacing:2px;padding:12px 28px;text-decoration:none;">Browse Products →</a>
+    </div>
+
+    <!-- Success screen -->
+    <div id="success-screen">
+      <div class="success-icon">✅</div>
+      <h2 class="success-title">Order Placed!</h2>
+      <div class="success-order-num" id="success-order-num"></div>
+      <p class="success-sub">Thank you! Your order has been received. Baruch will review and confirm it shortly. You'll be contacted at <strong id="success-email"></strong> with confirmation details.</p>
+      <a href="products.html" style="background:var(--gold);color:var(--ink);font-family:Oswald,sans-serif;font-size:13px;letter-spacing:2px;padding:14px 32px;text-decoration:none;display:inline-block;">Continue Shopping</a>
+    </div>
+
+    <!-- Checkout form -->
+    <div id="checkout-wrap">
+      <div id="global-err"></div>
+      <div class="checkout-grid">
+
+        <!-- LEFT: Form -->
+        <div>
+          <!-- Delivery Method -->
+          <div class="checkout-form-wrap" style="margin-bottom:24px;">
+            <div class="checkout-section-title">Delivery Method</div>
+            <div class="delivery-toggle">
+              <div class="del-opt active" id="opt-delivery" onclick="setDelivery('delivery')">🚚 Delivery</div>
+              <div class="del-opt" id="opt-pickup" onclick="setDelivery('pickup')">🏭 Pickup</div>
+            </div>
+            <div id="delivery-fields">
+              <div class="form-row full"><div class="form-group">
+                <label class="form-label">Delivery Address *</label>
+                <input class="form-input" id="f-address" placeholder="Street address" type="text"/>
+                <span class="err-msg" id="e-address">Required</span>
+              </div></div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">City *</label>
+                  <input class="form-input" id="f-city" placeholder="City" type="text"/>
+                  <span class="err-msg" id="e-city">Required</span>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">State / ZIP *</label>
+                  <input class="form-input" id="f-statzip" placeholder="NJ  07001" type="text"/>
+                  <span class="err-msg" id="e-statzip">Required</span>
+                </div>
+              </div>
+            </div>
+            <div id="pickup-note" style="display:none;background:rgba(200,152,31,.06);border:1px solid rgba(200,152,31,.2);padding:14px 16px;font-size:13px;color:var(--silver);">
+              📍 Pickup at our warehouse. We'll contact you to confirm a pickup time.
+            </div>
+          </div>
+
+          <!-- Contact Info -->
+          <div class="checkout-form-wrap" style="margin-bottom:24px;">
+            <div class="checkout-section-title">Contact &amp; Company</div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Contact Name *</label>
+                <input class="form-input" id="f-name" placeholder="Your name" type="text"/>
+                <span class="err-msg" id="e-name">Required</span>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Phone *</label>
+                <input class="form-input" id="f-phone" placeholder="(732) 000-0000" type="tel"/>
+                <span class="err-msg" id="e-phone">Required</span>
+              </div>
+            </div>
+            <div class="form-row full">
+              <div class="form-group">
+                <label class="form-label">Company</label>
+                <input class="form-input" id="f-company" type="text" readonly style="opacity:.6;"/>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">PO Number <span style="color:var(--silver);font-size:10px;">(optional)</span></label>
+                <input class="form-input" id="f-po" placeholder="PO-0000" type="text"/>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Email</label>
+                <input class="form-input" id="f-email" type="text" readonly style="opacity:.6;"/>
+              </div>
+            </div>
+            <div class="form-row full">
+              <div class="form-group">
+                <label class="form-label">Special Notes <span style="color:var(--silver);font-size:10px;">(optional)</span></label>
+                <textarea class="form-textarea" id="f-notes" placeholder="Delivery instructions, special requirements, etc."></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: Order Summary -->
+        <div>
+          <div class="order-summary">
+            <div class="order-summary-title">Order Summary</div>
+            <div id="order-lines"></div>
+            <div class="order-total-row">
+              <span class="order-total-label">Total</span>
+              <span class="order-total-val" id="order-total">$0.00</span>
+            </div>
+            <button class="place-order-btn" id="place-btn" onclick="placeOrder()">
+              Place Order →
+            </button>
+            <p style="font-size:11px;color:var(--silver);margin-top:12px;text-align:center;font-family:'DM Mono',monospace;line-height:1.6;">By placing this order you agree to our standard trade terms. Payment due on delivery.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="footer"><div class="footer-inner"><span>© 2025 All Pro Building Supplies LLC</span></div></footer><script src="assets/main.js"></script>
+<script>
+// ── CONFIG ────────────────────────────────────────────────────────
+const WORKER_URL   = 'https://allpro-github-proxy.baruch-6d5.workers.dev';
+const EMAILJS_SVC  = 'service_qefaa3x';   // ← fill in after EmailJS setup
+const EMAILJS_TPL  = 'template_nh3iqob';  // ← fill in after EmailJS setup
+const EMAILJS_KEY  = 'MNDXK3JgE890yvoA6';   // ← fill in after EmailJS setup
+const NOTIFY_EMAIL = 'orders@allprobuildingsupplies.com';
+
+// ── AUTH & CART ───────────────────────────────────────────────────
+var currentUser = null;
+try{ currentUser = JSON.parse(sessionStorage.getItem('apbs_user')); }catch(e){}
+
+function getCart(){ try{ return JSON.parse(localStorage.getItem('apbs_cart')||'[]'); }catch(e){return [];} }
+function saveCart(c){ localStorage.setItem('apbs_cart', JSON.stringify(c)); }
+
+(function init(){
+  if(!currentUser || currentUser.status !== 'approved'){
+    document.getElementById('auth-gate').style.display = 'block';
+    document.getElementById('checkout-wrap').style.display = 'none';
+    return;
+  }
+  var cart = getCart();
+  if(!cart.length){
+    document.getElementById('empty-gate').style.display = 'block';
+    document.getElementById('checkout-wrap').style.display = 'none';
+    return;
+  }
+  // Pre-fill user info
+  document.getElementById('f-name').value    = (currentUser.fname||'')+' '+(currentUser.lname||'');
+  document.getElementById('f-email').value   = currentUser.email||'';
+  document.getElementById('f-company').value = currentUser.company||'';
+
+  renderSummary(cart);
+  emailjs.init(EMAILJS_KEY);
+})();
+
+// ── DELIVERY TOGGLE ───────────────────────────────────────────────
+var deliveryMethod = 'delivery';
+function setDelivery(method){
+  deliveryMethod = method;
+  document.getElementById('opt-delivery').classList.toggle('active', method==='delivery');
+  document.getElementById('opt-pickup').classList.toggle('active', method==='pickup');
+  document.getElementById('delivery-fields').style.display = method==='delivery'?'block':'none';
+  document.getElementById('pickup-note').style.display     = method==='pickup'?'block':'none';
+}
+
+// ── ORDER SUMMARY RENDER ──────────────────────────────────────────
+function renderSummary(cart){
+  var linesEl = document.getElementById('order-lines');
+  var total = 0;
+  linesEl.innerHTML = '';
+  cart.forEach(function(item){
+    var lineTotal = parseFloat(item.unitPrice) * item.qty;
+    total += lineTotal;
+    var unitLabel = item.unit==='carton'
+      ? Math.ceil(item.qty/item.pcsPerCtn)+' ctn ('+item.qty+' pcs)'
+      : item.qty+' pcs';
+    linesEl.innerHTML +=
+      '<div class="order-line">'
+      +'<div><div class="order-line-name">'+item.description+' '+item.size+'</div>'
+      +'<div class="order-line-sub">'+unitLabel+' × $'+parseFloat(item.unitPrice).toFixed(2)+'</div></div>'
+      +'<div class="order-line-price">$'+lineTotal.toFixed(2)+'</div>'
+      +'</div>';
+  });
+  document.getElementById('order-total').textContent = '$'+total.toFixed(2);
+}
+
+// ── VALIDATION ────────────────────────────────────────────────────
+function req(id, errId){ 
+  var val = document.getElementById(id).value.trim();
+  var ok = val.length > 0;
+  document.getElementById(id).classList.toggle('err',!ok);
+  document.getElementById(errId).style.display = ok?'none':'block';
+  return ok;
+}
+
+// ── PLACE ORDER ───────────────────────────────────────────────────
+async function placeOrder(){
+  // Validate
+  var valid = true;
+  if(deliveryMethod==='delivery'){
+    valid = req('f-address','e-address') & req('f-city','e-city') & req('f-statzip','e-statzip') & valid;
+  }
+  valid = req('f-name','e-name') & req('f-phone','e-phone') & valid;
+  if(!valid){ document.getElementById('global-err').style.display='none'; return; }
+
+  var btn = document.getElementById('place-btn');
+  btn.disabled = true;
+  btn.textContent = 'Placing Order...';
+  document.getElementById('global-err').style.display = 'none';
+
+  var cart = getCart();
+  var orderId = 'APB-'+Date.now().toString(36).toUpperCase();
+  var now = new Date().toISOString();
+  var total = cart.reduce(function(s,i){return s+parseFloat(i.unitPrice)*i.qty;},0);
+
+  var deliveryAddr = deliveryMethod==='pickup' ? 'PICKUP'
+    : [document.getElementById('f-address').value.trim(),
+       document.getElementById('f-city').value.trim(),
+       document.getElementById('f-statzip').value.trim()].join(', ');
+
+  var order = {
+    id: orderId,
+    placedAt: now,
+    status: 'pending',
+    customer: {
+      id: currentUser.id,
+      name: document.getElementById('f-name').value.trim(),
+      email: currentUser.email,
+      company: currentUser.company,
+      phone: document.getElementById('f-phone').value.trim()
+    },
+    delivery: {
+      method: deliveryMethod,
+      address: deliveryAddr
+    },
+    po: document.getElementById('f-po').value.trim(),
+    notes: document.getElementById('f-notes').value.trim(),
+    items: cart.map(function(item){
+      return {
+        code: item.code,
+        description: item.description,
+        size: item.size,
+        qty: item.qty,
+        unit: item.unit,
+        pcsPerCtn: item.pcsPerCtn,
+        unitPrice: parseFloat(item.unitPrice),
+        lineTotal: parseFloat(item.unitPrice)*item.qty
+      };
+    }),
+    total: total,
+    confirmedAt: null,
+    cancelledAt: null
+  };
+
+  try{
+    // 1. Save order to orders.json
+    await saveOrder(order);
+    // 2. Deduct inventory from products.csv
+    await deductInventory(cart);
+    // 3. Send email notification
+    await sendNotification(order);
+    // 4. Clear cart & show success
+    saveCart([]);
+    document.getElementById('checkout-wrap').style.display = 'none';
+    document.getElementById('success-screen').style.display = 'block';
+    document.getElementById('success-order-num').textContent = orderId;
+    document.getElementById('success-email').textContent = currentUser.email;
+  }catch(e){
+    console.error(e);
+    document.getElementById('global-err').textContent = 'Something went wrong — please try again or call 732-829-1940.';
+    document.getElementById('global-err').style.display = 'block';
+    btn.disabled = false;
+    btn.textContent = 'Place Order →';
+  }
+}
+
+// ── SAVE ORDER ────────────────────────────────────────────────────
+async function saveOrder(order){
+  var r = await fetch(WORKER_URL+'/github/orders.json');
+  var d = await r.json();
+  var sha = d.sha;
+  var data = JSON.parse(atob(d.content.replace(/\n/g,'')));
+  data.orders.push(order);
+  var payload = JSON.stringify({
+    message:'New order: '+order.id,
+    content: btoa(unescape(encodeURIComponent(JSON.stringify(data,null,2)))),
+    branch:'main', sha:sha
+  });
+  var pr = await fetch(WORKER_URL+'/github/orders.json',{method:'PUT',headers:{'Content-Type':'application/json'},body:payload});
+  if(!pr.ok){ var e=await pr.json(); throw new Error(e.message||'Failed to save order'); }
+}
+
+// ── DEDUCT INVENTORY ──────────────────────────────────────────────
+async function deductInventory(cart){
+  var r = await fetch(WORKER_URL+'/github/products.csv');
+  var d = await r.json();
+  var sha = d.sha;
+  var csv = atob(d.content.replace(/\n/g,''));
+  var lines = csv.trim().split('\n');
+  var headers = lines[0];
+
+  // Build deduction map: "code|size" -> qty to deduct (normalize quotes)
+  var deductions = {};
+  cart.forEach(function(item){
+    var key = item.code+'|'+item.size.replace(/"/g,'');
+    deductions[key] = (deductions[key]||0) + item.qty;
+  });
+
+  // Update CSV lines
+  var newLines = [headers];
+  for(var i=1;i<lines.length;i++){
+    var cols = parseCSVLine(lines[i]);
+    if(!cols[0]) continue;
+    var key = cols[0]+'|'+stripQuotes(cols[2]).replace(/"/g,'');
+    if(deductions[key]){
+      var current = parseInt(cols[4])||0;
+      cols[4] = Math.max(0, current - deductions[key]).toString();
+    }
+    newLines.push(cols.map(function(c){
+      return c.indexOf(',')>=0||c.indexOf('"')>=0 ? '"'+c.replace(/"/g,'""')+'"' : c;
+    }).join(','));
+  }
+
+  var newCSV = newLines.join('\n')+'\n';
+  var payload = JSON.stringify({
+    message:'Inventory update after order',
+    content: btoa(unescape(encodeURIComponent(newCSV))),
+    branch:'main', sha:sha
+  });
+  var pr = await fetch(WORKER_URL+'/github/products.csv',{method:'PUT',headers:{'Content-Type':'application/json'},body:payload});
+  if(!pr.ok) throw new Error('Failed to update inventory');
+}
+
+function parseCSVLine(line){
+  var result=[],cur='',inQ=false;
+  for(var i=0;i<line.length;i++){
+    var c=line[i];
+    if(c==='"'){inQ=!inQ;}
+    else if(c===','&&!inQ){result.push(cur);cur='';}
+    else{cur+=c;}
+  }
+  result.push(cur);
+  return result;
+}
+function stripQuotes(s){ return (s||'').replace(/^"+|"+$/g,'').trim(); }
+
+// ── EMAIL NOTIFICATION ────────────────────────────────────────────
+function buildConfirmEmail(order){
+  var itemLines = order.items.map(function(i){
+    return i.description+' '+i.size+' — '+i.qty+' pcs @ $'+i.unitPrice.toFixed(2)+' = $'+i.lineTotal.toFixed(2);
+  }).join('\n');
+  var html = `<!DOCTYPE html><html><head><meta charset="UTF-8"/></head><body style="margin:0;padding:0;background:#f4f4f4;font-family:'Helvetica Neue',Arial,sans-serif;"><table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;padding:32px 0;"><tr><td align="center"><table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:4px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);"><tr><td style="background:#0C1117;padding:28px 36px;border-bottom:4px solid #C8981F;"><table width="100%" cellpadding="0" cellspacing="0"><tr><td><div style="font-family:'Arial Black',Arial,sans-serif;font-size:20px;font-weight:900;color:#FFFFFF;letter-spacing:2px;text-transform:uppercase;">ALL PRO BUILDING SUPPLIES</div><div style="font-size:11px;color:#C8981F;letter-spacing:3px;text-transform:uppercase;margin-top:3px;">LLC</div></td><td align="right"><div style="background:#C8981F;color:#0C1117;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:6px 14px;border-radius:2px;">ORDER RECEIVED</div></td></tr></table></td></tr><tr><td style="padding:32px 36px 0;"><p style="margin:0;font-size:16px;color:#222;">Hi <strong>${order.customer.name}</strong>,</p><p style="margin:12px 0 0;font-size:15px;color:#444;line-height:1.6;">Thank you for your order! We've received it and will be in touch shortly to confirm availability and arrange delivery or pickup.</p></td></tr><tr><td style="padding:24px 36px 0;"><table width="100%" cellpadding="0" cellspacing="0" style="background:#f8f8f8;border-radius:4px;border:1px solid #e8e8e8;"><tr><td style="padding:16px 20px;border-right:1px solid #e8e8e8;"><div style="font-size:10px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Order ID</div><div style="font-size:14px;font-weight:700;color:#C8981F;font-family:monospace;">${order.id}</div></td><td style="padding:16px 20px;border-right:1px solid #e8e8e8;"><div style="font-size:10px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Date</div><div style="font-size:14px;color:#222;">${new Date(order.placedAt).toLocaleDateString()}</div></td><td style="padding:16px 20px;"><div style="font-size:10px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Delivery</div><div style="font-size:13px;color:#222;">${order.delivery.address}</div></td></tr></table></td></tr><tr><td style="padding:24px 36px 0;"><div style="font-size:11px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;font-weight:700;">Items Ordered</div><table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #e8e8e8;border-radius:4px;overflow:hidden;"><tr style="background:#0C1117;"><td style="padding:10px 14px;font-size:11px;color:#C8981F;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;">Product</td><td style="padding:10px 14px;font-size:11px;color:#C8981F;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;text-align:right;">Total</td></tr>${order.items.map(function(i){return '<tr><td style="padding:10px 14px;font-size:13px;color:#333;border-bottom:1px solid #f0f0f0;">'+i.description+' '+i.size+'<br/><span style=\"font-size:11px;color:#888\">'+i.qty+' pcs @ $'+i.unitPrice.toFixed(2)+'</span></td><td style="padding:10px 14px;font-size:13px;color:#333;text-align:right;border-bottom:1px solid #f0f0f0;">$'+i.lineTotal.toFixed(2)+'</td></tr>';}).join('')}</table></td></tr><tr><td style="padding:0 36px;"><table width="100%" cellpadding="0" cellspacing="0"><tr><td></td><td style="padding:16px 0;border-top:2px solid #C8981F;width:220px;" align="right"><span style="font-size:13px;color:#888;text-transform:uppercase;letter-spacing:1px;">Order Total&nbsp;&nbsp;</span><span style="font-size:22px;font-weight:700;color:#0C1117;">$${order.total.toFixed(2)}</span></td></tr></table></td></tr>${order.po||order.notes?'<tr><td style="padding:0 36px 24px;"><table width="100%" cellpadding="0" cellspacing="0" style="background:#fffbf0;border:1px solid #f0e0a0;border-radius:4px;"><tr><td style="padding:14px 18px;"><div style="font-size:12px;color:#666;margin-bottom:4px;"><strong style=\"color:#333\">PO Number:</strong> '+(order.po||'N/A')+'</div><div style="font-size:12px;color:#666;"><strong style=\"color:#333\">Notes:</strong> '+(order.notes||'None')+'</div></td></tr></table></td></tr>':''}<tr><td style="padding:0 36px;"><hr style="border:none;border-top:1px solid #eee;margin:0;"/></td></tr><tr><td style="padding:24px 36px;"><p style="margin:0;font-size:14px;color:#444;line-height:1.7;">Questions about your order?</p><p style="margin:10px 0 0;font-size:14px;color:#444;">📞 <a href="tel:17328291940" style="color:#C8981F;text-decoration:none;font-weight:600;">732-829-1940</a></p><p style="margin:4px 0 0;font-size:14px;color:#444;">✉️ <a href="mailto:info@allprobuildingsupplies.com" style="color:#C8981F;text-decoration:none;">info@allprobuildingsupplies.com</a></p></td></tr><tr><td style="background:#0C1117;padding:20px 36px;text-align:center;"><div style="font-size:12px;color:#888;">© 2025 All Pro Building Supplies LLC &nbsp;·&nbsp; <a href="https://allprobuildingsupplies.com" style="color:#C8981F;text-decoration:none;">allprobuildingsupplies.com</a></div></td></tr></table></td></tr></table></body></html>`;
+  return html;
+}
+
+function buildStatusEmail(order, status){
+  var isConfirmed = status === 'confirmed';
+  var statusWord = isConfirmed ? 'Confirmed' : 'Cancelled';
+  var statusMsg  = isConfirmed
+    ? 'Your order has been confirmed and is being processed. We will contact you shortly to arrange delivery or pickup.'
+    : 'Your order has been cancelled. If you have any questions or believe this was an error, please contact us right away.';
+  var badgeColor = isConfirmed ? '#2ecc71' : '#e74c3c';
+
+  return `<!DOCTYPE html><html><head><meta charset="UTF-8"/></head><body style="margin:0;padding:0;background:#f4f4f4;font-family:'Helvetica Neue',Arial,sans-serif;"><table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;padding:32px 0;"><tr><td align="center"><table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:4px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);"><tr><td style="background:#0C1117;padding:28px 36px;border-bottom:4px solid #C8981F;"><table width="100%" cellpadding="0" cellspacing="0"><tr><td><div style="font-family:'Arial Black',Arial,sans-serif;font-size:20px;font-weight:900;color:#FFFFFF;letter-spacing:2px;text-transform:uppercase;">ALL PRO BUILDING SUPPLIES</div><div style="font-size:11px;color:#C8981F;letter-spacing:3px;text-transform:uppercase;margin-top:3px;">LLC</div></td><td align="right"><div style="background:${badgeColor};color:#fff;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:6px 14px;border-radius:2px;">ORDER ${statusWord.toUpperCase()}</div></td></tr></table></td></tr><tr><td style="padding:0;"><div style="background:#f8f8f8;border-left:4px solid ${badgeColor};padding:20px 36px;font-size:15px;color:#444;">Hi <strong>${order.customer.name}</strong> — your order <strong style="color:#C8981F;font-family:monospace;">${order.id}</strong> has been <strong>${statusWord}</strong>.</div></td></tr><tr><td style="padding:28px 36px 0;"><p style="margin:0;font-size:15px;color:#444;line-height:1.7;">${statusMsg}</p></td></tr><tr><td style="padding:24px 36px 0;"><table width="100%" cellpadding="0" cellspacing="0" style="background:#f8f8f8;border-radius:4px;border:1px solid #e8e8e8;"><tr><td style="padding:16px 20px;border-right:1px solid #e8e8e8;"><div style="font-size:10px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Order ID</div><div style="font-size:14px;font-weight:700;color:#C8981F;font-family:monospace;">${order.id}</div></td><td style="padding:16px 20px;border-right:1px solid #e8e8e8;"><div style="font-size:10px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Order Total</div><div style="font-size:16px;font-weight:700;color:#222;">$${order.total.toFixed(2)}</div></td><td style="padding:16px 20px;"><div style="font-size:10px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Delivery</div><div style="font-size:13px;color:#222;">${order.delivery.address}</div></td></tr></table></td></tr><tr><td style="padding:24px 36px 8px;"><hr style="border:none;border-top:1px solid #eee;margin:0;"/></td></tr><tr><td style="padding:8px 36px 28px;"><p style="margin:0;font-size:14px;color:#444;line-height:1.7;">Questions? We're here to help:</p><p style="margin:10px 0 0;font-size:14px;color:#444;">📞 <a href="tel:17328291940" style="color:#C8981F;text-decoration:none;font-weight:600;">732-829-1940</a></p><p style="margin:4px 0 0;font-size:14px;color:#444;">✉️ <a href="mailto:info@allprobuildingsupplies.com" style="color:#C8981F;text-decoration:none;">info@allprobuildingsupplies.com</a></p></td></tr><tr><td style="background:#0C1117;padding:20px 36px;text-align:center;"><div style="font-size:12px;color:#888;">© 2025 All Pro Building Supplies LLC &nbsp;·&nbsp; <a href="https://allprobuildingsupplies.com" style="color:#C8981F;text-decoration:none;">allprobuildingsupplies.com</a></div></td></tr></table></td></tr></table></body></html>`;
+}
+
+async function sendNotification(order){
+  var params = {
+    to_email:    NOTIFY_EMAIL,
+    cust_email:  order.customer.email,
+    email_subject: 'New Order ' + order.id + ' — ' + order.customer.name + ' (' + order.customer.company + ')',
+    email_body:  buildConfirmEmail(order),
+    order_id:    order.id,
+    customer:    order.customer.name + ' (' + order.customer.company + ')',
+    phone:       order.customer.phone,
+    cust_email:  order.customer.email,
+    delivery:    order.delivery.method.toUpperCase() + ': ' + order.delivery.address,
+    po:          order.po || 'N/A',
+    notes:       order.notes || 'None',
+    total:       '$' + order.total.toFixed(2),
+    placed_at:   new Date(order.placedAt).toLocaleString(),
+    admin_link:  'https://allprobuildingsupplies.com/admin.html',
+    cust_name:   order.customer.name,
+    items:       order.items.map(function(i){ return i.description+' '+i.size+' — '+i.qty+' pcs = $'+i.lineTotal.toFixed(2); }).join('\n')
+  };
+  // Send to admin
+  try{
+    await emailjs.send(EMAILJS_SVC, EMAILJS_TPL, Object.assign({}, params, {
+      cust_email: NOTIFY_EMAIL,
+      email_subject: 'New Order ' + order.id + ' — ' + order.customer.name + ' (' + order.customer.company + ')',
+      email_body: buildConfirmEmail(order)
+    }));
+  } catch(e){ console.warn('Admin email failed:', e); }
+  // Send to customer
+  try{
+    await emailjs.send(EMAILJS_SVC, EMAILJS_TPL, Object.assign({}, params, {
+      cust_email: order.customer.email,
+      email_subject: 'Order Received — ' + order.id + ' | All Pro Building Supplies',
+      email_body: buildConfirmEmail(order)
+    }));
+  } catch(e){ console.warn('Customer email failed:', e); }
+}
+</script>
+<script src="assets/main.js"></script>
+</body>
+</html>

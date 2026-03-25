@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <linearGradient id="pipeBody" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#e8e8e8"/>
+      <stop offset="30%" stop-color="#ffffff"/>
+      <stop offset="70%" stop-color="#d0d0d0"/>
+      <stop offset="100%" stop-color="#a0a0a0"/>
+    </linearGradient>
+    <linearGradient id="pipeEnd" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#b0b0b0"/>
+      <stop offset="50%" stop-color="#e0e0e0"/>
+      <stop offset="100%" stop-color="#909090"/>
+    </linearGradient>
+    <linearGradient id="pipeInner" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#555"/>
+      <stop offset="40%" stop-color="#333"/>
+      <stop offset="100%" stop-color="#111"/>
+    </linearGradient>
+  </defs>
+  <!-- pipe body -->
+  <rect x="20" y="72" width="160" height="56" rx="2" fill="url(#pipeBody)"/>
+  <!-- highlight stripe -->
+  <rect x="20" y="78" width="160" height="10" rx="1" fill="rgba(255,255,255,0.5)"/>
+  <!-- left end cap -->
+  <ellipse cx="20" cy="100" rx="8" ry="28" fill="url(#pipeEnd)"/>
+  <ellipse cx="20" cy="100" rx="5" ry="18" fill="url(#pipeInner)"/>
+  <!-- right end cap -->
+  <ellipse cx="180" cy="100" rx="8" ry="28" fill="url(#pipeEnd)"/>
+  <ellipse cx="180" cy="100" rx="5" ry="18" fill="url(#pipeInner)"/>
+  <!-- label -->
+  <text x="100" y="170" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="bold" fill="#C8981F">SCH 40 PVC</text>
+  <text x="100" y="185" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#888">Solid Core</text>
+</svg>

@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Request Pricing Access — All Pro Building Supplies LLC</title>
+<link rel="stylesheet" href="assets/style.css"/>
+<style>
+.auth-wrap{min-height:80vh;display:flex;align-items:center;justify-content:center;padding:60px 24px;position:relative}
+.auth-wrap::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 50% 60% at 50% 40%,rgba(200,152,31,.06) 0%,transparent 65%)}
+.auth-box{position:relative;z-index:1;width:100%;max-width:520px}
+.auth-logo{text-align:center;margin-bottom:36px}
+.auth-logo img{height:70px;margin:0 auto 14px}
+.auth-title{font-family:'Oswald',sans-serif;font-size:26px;font-weight:600;color:var(--white);letter-spacing:1px;text-align:center}
+.auth-sub{font-size:14px;color:var(--silver);text-align:center;margin-top:6px;line-height:1.6}
+.auth-card{background:var(--ink2);border:1px solid rgba(200,152,31,.15);padding:40px}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.fg{display:flex;flex-direction:column;gap:7px;margin-bottom:14px}
+.fl{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--silver);display:flex;align-items:center;gap:4px}
+.req{color:var(--gold)}
+.fi{width:100%;background:var(--ink3);border:1px solid rgba(139,160,178,.18);color:var(--smoke);font-family:'DM Sans',sans-serif;font-size:15px;padding:13px 16px;outline:none;transition:border-color .2s}
+.fi:focus{border-color:var(--gold)}
+.fi::placeholder{color:rgba(139,160,178,.35)}
+.fi.err{border-color:#E74C3C!important}
+.ferr{font-size:11px;color:#E74C3C;margin-top:2px;display:none}
+.auth-btn{width:100%;background:var(--gold);color:var(--ink);font-family:'Oswald',sans-serif;font-size:15px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;padding:16px;border:none;margin-top:8px;transition:background .2s,transform .2s;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px}
+.auth-btn:hover{background:var(--gold2);transform:translateY(-1px)}
+.auth-btn:disabled{background:var(--ink3);color:var(--silver);transform:none;cursor:not-allowed}
+.auth-note{font-size:12px;color:var(--silver);text-align:center;margin-top:16px;line-height:1.6}
+.auth-note a{color:var(--gold)}
+.login-bar{background:var(--ink3);border:1px solid rgba(139,160,178,.1);padding:14px 18px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;font-size:14px;color:var(--silver)}
+.login-bar a{color:var(--gold);font-weight:500}
+.global-err{display:none;background:rgba(231,76,60,.1);border:1px solid rgba(231,76,60,.3);color:#E74C3C;padding:12px 16px;font-size:13px;margin-bottom:14px}
+.success-screen{display:none;text-align:center;padding:10px 0}
+.success-icon{font-size:56px;margin-bottom:16px}
+.success-title{font-family:'Oswald',sans-serif;font-size:26px;font-weight:600;color:var(--white);margin-bottom:12px}
+.success-body{font-size:15px;color:var(--silver);line-height:1.75;margin-bottom:28px}
+.success-body strong{color:var(--smoke)}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media(max-width:600px){.auth-card{padding:24px 18px}.frow{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="topbar-links">
+    <a href="tel:17328291940">📞 732-829-1940</a>
+    <a href="mailto:info@allprobuildingsupplies.com">✉ info@allprobuildingsupplies.com</a>
+  </div>
+  <div class="topbar-badge">Contractor-Grade · Fast Response · NJ &amp; Surrounding Areas</div>
+</div>
+<nav>
+  <div class="nav-logo">
+    <img src="assets/logo.png" alt="All Pro Building Supplies"/>
+    <div class="nav-brand-text">All Pro Building Supplies <span>LLC</span></div>
+  </div>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="products.html">Products</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+  <div class="nav-actions">
+    <a href="tel:17328291940" class="nav-tel">732-829-1940</a>
+    <a href="login.html" class="nav-cta">Log In →</a>
+  </div>
+  <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+</nav>
+<div class="mobile-menu">
+  <a href="index.html">Home</a><a href="products.html">Products</a>
+  <a href="about.html">About</a><a href="contact.html">Contact</a>
+  <a href="tel:17328291940" class="mob-tel">📞 732-829-1940</a>
+  <a href="login.html" class="mob-cta">Log In →</a>
+</div>
+
+<div class="auth-wrap">
+  <div class="auth-box">
+    <div class="auth-logo">
+      <img src="assets/logo.png" onerror="this.style.display='none'"/>
+      <div class="auth-title">Request Pricing Access</div>
+      <div class="auth-sub">Fill in your details below. Baruch will review<br/>and approve your account — usually within 1 business day.</div>
+    </div>
+    <div class="auth-card">
+      <div class="login-bar">Already have an account? <a href="login.html">Log in here →</a></div>
+      <div id="reg-form">
+        <div class="global-err" id="global-err"></div>
+        <div class="frow">
+          <div class="fg">
+            <label class="fl">First Name <span class="req">*</span></label>
+            <input class="fi" id="r-fname" type="text" placeholder="John"/>
+            <div class="ferr" id="e-fname">Required</div>
+          </div>
+          <div class="fg">
+            <label class="fl">Last Name <span class="req">*</span></label>
+            <input class="fi" id="r-lname" type="text" placeholder="Smith"/>
+            <div class="ferr" id="e-lname">Required</div>
+          </div>
+        </div>
+        <div class="fg">
+          <label class="fl">Company Name <span class="req">*</span></label>
+          <input class="fi" id="r-company" type="text" placeholder="ABC Plumbing LLC"/>
+          <div class="ferr" id="e-company">Required</div>
+        </div>
+        <div class="fg">
+          <label class="fl">Email Address <span class="req">*</span></label>
+          <input class="fi" id="r-email" type="email" placeholder="john@company.com"/>
+          <div class="ferr" id="e-email">Enter a valid email address</div>
+        </div>
+        <div class="fg">
+          <label class="fl">Phone Number <span class="req">*</span></label>
+          <input class="fi" id="r-phone" type="tel" placeholder="(555) 000-0000"/>
+          <div class="ferr" id="e-phone">Required</div>
+        </div>
+        <div class="fg">
+          <label class="fl">Password <span class="req">*</span></label>
+          <input class="fi" id="r-pw" type="password" placeholder="Choose a password (min 6 characters)"/>
+          <div class="ferr" id="e-pw">Minimum 6 characters</div>
+        </div>
+        <div class="fg">
+          <label class="fl">Confirm Password <span class="req">*</span></label>
+          <input class="fi" id="r-pw2" type="password" placeholder="Repeat password"/>
+          <div class="ferr" id="e-pw2">Passwords do not match</div>
+        </div>
+        <button class="auth-btn" id="reg-btn" onclick="submitReg()">
+          <span id="reg-txt">Submit Request →</span>
+        </button>
+        <p class="auth-note">Questions? Call <a href="tel:17328291940">732-829-1940</a> or email <a href="mailto:info@allprobuildingsupplies.com">info@allprobuildingsupplies.com</a></p>
+      </div>
+      <div class="success-screen" id="reg-success">
+        <div class="success-icon">✅</div>
+        <div class="success-title">Request Submitted!</div>
+        <div class="success-body">
+          Thanks, <strong id="s-name"></strong>!<br/><br/>
+          Your pricing access request is pending review. You'll receive an email at <strong id="s-email"></strong> once your account is approved — usually within 1 business day.
+        </div>
+        <a href="products.html" class="btn-ghost" style="display:inline-flex">← Browse Products</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="cursor"></div><div id="cursor-ring"></div>
+<script src="assets/main.js"></script>
+<script>
+const GH_USER='baruchbg',GH_REPO='allprobuildingsupplies.com',GH_BRANCH='main',GH_TOKEN='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';
+
+async function sha256(str){
+  const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+async function ghGet(p){
+  const r=await fetch(`https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/${p}`,{headers:{'Authorization':`Bearer ${GH_TOKEN}`,'Accept':'application/vnd.github+json'}});
+  if(!r.ok)throw new Error(r.status);return r.json();
+}
+async function ghPut(p,content,sha,msg){
+  const r=await fetch(`https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/${p}`,{method:'PUT',headers:{'Authorization':`Bearer ${GH_TOKEN}`,'Accept':'application/vnd.github+json','Content-Type':'application/json'},body:JSON.stringify({message:msg,content:btoa(unescape(encodeURIComponent(content))),branch:GH_BRANCH,...(sha?{sha}:{})})});
+  if(!r.ok){const d=await r.json();throw new Error(d.message);}return r.json();
+}
+
+function v(id,errId,test){
+  const el=document.getElementById(id),err=document.getElementById(errId);
+  const ok=test(el.value.trim());
+  el.classList.toggle('err',!ok);err.style.display=ok?'none':'block';return ok;
+}
+
+async function submitReg(){
+  const ok=[
+    v('r-fname','e-fname',x=>x.length>0),
+    v('r-lname','e-lname',x=>x.length>0),
+    v('r-company','e-company',x=>x.length>0),
+    v('r-email','e-email',x=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(x)),
+    v('r-phone','e-phone',x=>x.length>5),
+    v('r-pw','e-pw',x=>x.length>=6),
+    v('r-pw2','e-pw2',x=>x===document.getElementById('r-pw').value),
+  ].every(Boolean);
+  if(!ok)return;
+
+  const btn=document.getElementById('reg-btn'),txt=document.getElementById('reg-txt');
+  btn.disabled=true;txt.innerHTML='<span style="display:inline-block;animation:spin .8s linear infinite">⟳</span> Submitting...';
+
+  try{
+    let users=[],fileSha='';
+    try{
+      const d=await ghGet('users.json');
+      fileSha=d.sha;
+      users=JSON.parse(atob(d.content.replace(/\n/g,''))).users||[];
+    }catch(e){}
+
+    const email=document.getElementById('r-email').value.trim().toLowerCase();
+    if(users.find(u=>u.email===email)){
+      showErr('An account with this email already exists. <a href="login.html" style="color:var(--gold)">Log in →</a>');
+      btn.disabled=false;txt.textContent='Submit Request →';return;
+    }
+
+    const newUser={
+      id:Date.now().toString(),
+      fname:document.getElementById('r-fname').value.trim(),
+      lname:document.getElementById('r-lname').value.trim(),
+      company:document.getElementById('r-company').value.trim(),
+      email,
+      phone:document.getElementById('r-phone').value.trim(),
+      password:await sha256(document.getElementById('r-pw').value),
+      status:'pending',
+      registered:new Date().toISOString(),
+      approved:null
+    };
+    users.push(newUser);
+    await ghPut('users.json',JSON.stringify({users},null,2),fileSha,`New registration: ${newUser.fname} ${newUser.lname} (${newUser.company})`);
+
+    document.getElementById('reg-form').style.display='none';
+    document.getElementById('s-name').textContent=newUser.fname;
+    document.getElementById('s-email').textContent=newUser.email;
+    document.getElementById('reg-success').style.display='block';
+  }catch(e){
+    showErr('Something went wrong — please try again or call 732-829-1940.');
+    btn.disabled=false;txt.textContent='Submit Request →';
+  }
+}
+function showErr(msg){const el=document.getElementById('global-err');el.innerHTML=msg;el.style.display='block';}
+document.querySelectorAll('.fi').forEach(i=>i.addEventListener('input',()=>{i.classList.remove('err');document.getElementById('global-err').style.display='none';}));
+</script>
+</body>
+</html>
