@@ -35,7 +35,7 @@
 <div class="topbar">
   <div class="topbar-links">
     <a href="tel:17328291940">📞 732-829-1940</a>
-    <a href="mailto:info@allprobuildingsupplies.com">✉ info@allprobuildingsupplies.com</a>
+    <a href="/cdn-cgi/l/email-protection#4c25222a230c2d20203c3e232e3925202825222b3f393c3c2025293f622f2321">✉ <span class="__cf_email__" data-cfemail="244d4a424b6445484854564b46514d48404d4a4357515454484d41570a474b49">[email&#160;protected]</span></a>
   </div>
   <div class="topbar-badge">Contractor-Grade · Fast Response · NJ &amp; Surrounding Areas</div>
 </div>
@@ -96,10 +96,8 @@
 </div>
 
 <div id="cursor"></div><div id="cursor-ring"></div>
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="assets/main.js"></script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="assets/main.js"></script>
 <script>
-const GH_USER='baruchbg',GH_REPO='allprobuildingsupplies.com',GH_BRANCH='main',GH_TOKEN='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';
-
 async function sha256(str){
   const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str));
   return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
@@ -125,7 +123,7 @@ async function doLogin(){
   document.getElementById('pending-box').style.display='none';
 
   try{
-    const res=await fetch(`https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/users.json`,{headers:{'Authorization':`Bearer ${GH_TOKEN}`,'Accept':'application/vnd.github+json'}});
+    const res=await fetch('https://allpro-github-proxy.baruch-6d5.workers.dev/github/users.json');
     if(!res.ok)throw new Error('Could not load user data');
     const data=await res.json();
     const {users}=JSON.parse(atob(data.content.replace(/\n/g,'')));
@@ -145,10 +143,31 @@ async function doLogin(){
       btn.disabled=false;txt.textContent='Log In →';return;
     }
 
-    // Approved — save session and redirect
-    sessionStorage.setItem('apbs_user',JSON.stringify({id:user.id,fname:user.fname,lname:user.lname,company:user.company,email:user.email,status:user.status}));
-    window.location.href='products.html';
+    // Approved - save session and redirect
+    sessionStorage.setItem('apbs_user', JSON.stringify({
+      id: user.id,
+      fname: user.fname,
+      lname: user.lname,
+      name: (user.fname||'') + ' ' + (user.lname||''),
+      company: user.company,
+      email: user.email,
+      status: user.status,
+      canOrderPieces: user.canOrderPieces !== false
+    }));
+    window.location.href = 'products.html';
 
+  } catch(e){
+    showErr('Login error: ' + e.message + '. Please try again.');
+    btn.disabled=false;
+    txt.textContent='Log In →';
   }
+}
+
+function showErr(msg){
+  var el = document.getElementById('global-err');
+  el.innerHTML = msg;
+  el.style.display = 'block';
+}
+</script>
 </body>
 </html>
