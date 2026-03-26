@@ -13,20 +13,6 @@
       "registeredAt": "2026-03-25T18:50:46.153Z",
       "approvedAt": "2026-03-25T18:50:46.153Z",
       "addedByAdmin": true
-    },
-    {
-      "id": "1774535943279",
-      "fname": "Tim",
-      "lname": "P",
-      "company": "NJPD",
-      "email": "tim@njpd.com",
-      "phone": "7328909960",
-      "password": "15eccc82b6c677271ed755b78c57b877951411cd25442fdde1b9ced75ff9d669",
-      "status": "approved",
-      "canOrderPieces": true,
-      "registeredAt": "2026-03-26T14:39:03.279Z",
-      "approvedAt": "2026-03-26T14:39:03.279Z",
-      "addedByAdmin": true
     }
   ]
 }
