@@ -56,7 +56,7 @@
 <div class="topbar">
   <div class="topbar-links">
     <a href="tel:17328291940"><svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.27-.27.67-.36 1.02-.22 1.12.45 2.32.68 3.58.68.55 0 1 .45 1 1V20c0 .55-.45 1-1 1C10.29 21 3 13.71 3 4.5c0-.55.45-1 1-1H8c.55 0 1 .45 1 1 0 1.27.2 2.48.57 3.62.1.32.03.68-.22.96L6.6 10.8z"/></svg>732-829-1940</a>
-    <a href="mailto:info@allprobuildingsupplies.com"><svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>info@allprobuildingsupplies.com</a>
+    <a href="/cdn-cgi/l/email-protection#a4cdcac2cbe4c5c8c8d4d6cbc6d1cdc8c0cdcac3d7d1d4d4c8cdc1d78ac7cbc9"><svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg><span class="__cf_email__" data-cfemail="573e39313817363b3b27253835223e3b333e3930242227273b3e32247934383a">[email&#160;protected]</span></a>
   </div>
   <div class="topbar-badge">Contractor-Grade · Fast Response · NJ &amp; Surrounding Areas</div>
 </div>
@@ -174,7 +174,8 @@
 </div>
 
 <footer class="footer"><div class="footer-inner"><span>© 2025 All Pro Building Supplies LLC</span></div></footer>
-<script src="assets/main.js"></script>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="assets/main.js"></script>
 <script>
 // ── CART ENGINE ───────────────────────────────────────────────────
 const WORKER_URL = 'https://allpro-github-proxy.baruch-6d5.workers.dev';
@@ -340,7 +341,7 @@ function setUnit(idx, unit){
   // If switching to carton, snap qty to nearest carton
   if(unit === 'carton'){
     var pcs = cart[idx].pcsPerCtn || 1;
-    cart[idx].qty = Math.max(pcs(pcs, Math.round(cart[idx].qty / pcs) * pcs);
+cs(pcs, Math.round(cart[idx].qty / pcs) * pcs);
   }
   saveCart(cart);
   renderCart();
@@ -348,18 +349,21 @@ function setUnit(idx, unit){
 
 function removeItem(idx){
   var cart = getCart();
-  cart.splice(idx,1);
+  cart.splice(idx, 1);
   saveCart(cart);
   renderCart();
 }
 
+// ── INIT ──────────────────────────────────────────────────────────
 updateNavCount();
 (function(){
   try{
     var u = JSON.parse(sessionStorage.getItem('apbs_user'));
     if(u && u.status==='approved'){
       var btn = document.getElementById('nav-account-btn');
-      if(btn) btn.style.display='inline-flex';
+      if(btn){ btn.style.display='inline-flex'; }
+      var nameEl = document.getElementById('nav-logged-in-name');
+      if(nameEl){ nameEl.textContent = u.name || ((u.fname||'') + ' ' + (u.lname||'')).trim(); }
     }
   }catch(e){}
 })();
