@@ -1,5 +1,5 @@
 code,description,size,pcs_per_ctn,qty_on_hand,unit_price,image_url
-PIPE-SOLID,ASTM D1785 SCH40 PVC,2,20,459,16.20,images/Sch40Solid.png
+PIPE-SOLID,ASTM D1785 SCH40 PVC,2,20,458,16.20,images/Sch40Solid.png
 PIPE-SOLID,ASTM D1785 SCH40 PVC,3,20,460,30.00,images/Sch40Solid.png
 PIPE-SOLID,ASTM D1785 SCH40 PVC,4,20,460,54.80,images/Sch40Solid.png
 PIPE-FOAM,ASTM F891 PVC Foam Core DWV Pipe,1-1/2,20,,7.70,images/Sch40Foam.png
