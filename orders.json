@@ -3,7 +3,7 @@
     {
       "id": "APB-MN7SZJVA",
       "placedAt": "2026-03-26T18:25:55.030Z",
-      "status": "confirmed",
+      "status": "cancelled",
       "customer": {
         "id": "1774464646153",
         "name": "Baruch Grossman",
@@ -31,7 +31,7 @@
       ],
       "total": 16.2,
       "confirmedAt": "2026-03-26T18:35:29.906Z",
-      "cancelledAt": null
+      "cancelledAt": "2026-03-26T18:36:56.807Z"
     }
   ]
 }
