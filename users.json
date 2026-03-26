@@ -13,6 +13,19 @@
       "registeredAt": "2026-03-25T18:50:46.153Z",
       "approvedAt": "2026-03-25T18:50:46.153Z",
       "addedByAdmin": true
+    },
+    {
+      "id": "1774547143945",
+      "fname": "Tim",
+      "lname": "Papirnik",
+      "company": "NJPD Plumbing & Heating LLC",
+      "email": "tim@njpdplumbing.com",
+      "phone": "7328909960",
+      "password": "c1af2b9d2d2b787ea406b14f4f2078465baa6a0a9a7a65ad93a5d83d76cf1087",
+      "status": "pending",
+      "canOrderPieces": true,
+      "registeredAt": "2026-03-26T17:45:43.946Z",
+      "approvedAt": null
     }
   ]
 }
