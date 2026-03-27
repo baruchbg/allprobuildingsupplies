@@ -71,23 +71,36 @@ tbody td.price{font-weight:500;color:var(--white)}
 /* AUTH BANNERS */
 #login-banner{background:var(--ink3);border:1px solid rgba(200,152,31,.2);border-left:3px solid var(--gold);padding:16px 20px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
 
-/* MOBILE */
-@media(max-width:900px){
-  .filter-bar{gap:6px}
-  .filter-btn{font-size:11px;padding:7px 14px;letter-spacing:1.5px}
-  .prod-table-wrap{border-radius:0}
-}
-@media(max-width:600px){
+/* --- THE MOBILE FIX --- */
+@media(max-width:768px){
   .filter-bar{display:none !important;}
   .mobile-filter-wrap{display:block;}
   .prod-section-thumb{width:50px;height:50px}
-  .prod-section-title{font-size:13px}
-  .prod-inner-table thead th:nth-child(2),.prod-inner-table tbody td:nth-child(2){display:none}
-  .mobile-pack{display:block;}
-  .prod-inner-table tbody td{padding:10px 12px;font-size:12px}
-  .add-to-cart-btn{font-size:11px;padding:8px 12px;}
+  .prod-section-title{font-size:13px;white-space:normal;line-height:1.4}
   .note-box{font-size:13px;padding:14px 16px}
   .search-input{font-size:14px;padding:12px 14px 12px 40px}
+
+  /* Convert Data Table to Mobile Cards */
+  .prod-inner-table thead{display:none}
+  .prod-inner-table tbody tr{display:flex;flex-wrap:wrap;padding:16px;border-bottom:1px solid rgba(139,160,178,.1);align-items:center}
+  .prod-inner-table tbody td{display:block;padding:0;border:none;text-align:left}
+
+  /* Row 1: Size */
+  .prod-inner-table tbody td:nth-child(1){width:100%;font-size:16px;font-weight:600;margin-bottom:4px}
+  /* Row 2: Pack (Hide original table column) */
+  .prod-inner-table tbody td:nth-child(2){display:none}
+  /* Row 3: Availability */
+  .prod-inner-table tbody td:nth-child(3){width:100%;margin-bottom:16px;font-size:13px}
+  /* Row 4: Price (Left 50%) */
+  .prod-inner-table tbody td:nth-child(4){width:50%;display:flex;align-items:center;text-align:left}
+  /* Row 4: Cart (Right 50%) */
+  .prod-inner-table tbody td:nth-child(5){width:50%;display:flex;justify-content:flex-end}
+
+  /* Append pack to size */
+  .mobile-pack{display:inline-block;margin-left:10px;font-size:11px;color:var(--silver);font-weight:normal;padding:2px 6px;background:rgba(255,255,255,.05);border-radius:4px}
+
+  /* Fat-Finger Touch Target Fix */
+  .add-to-cart-btn{font-size:13px;padding:12px 16px;width:100%;display:flex;justify-content:center}
 }
 </style>
 </head>
