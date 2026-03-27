@@ -360,3 +360,6 @@ footer{background:var(--ink);border-top:1px solid rgba(200,152,31,.12)}
   #img-lb-img{width:180px;height:180px}
   #img-lb-title{font-size:13px}
 }
+
+/* ── CursorPopups ────────────────────────────────────── */
+#cursor, #cursor-ring { z-index: 999999 !important; }
