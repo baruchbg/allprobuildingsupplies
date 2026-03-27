@@ -9,6 +9,12 @@
 .filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:40px}
 .filter-btn{font-family:"Oswald",sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;padding:9px 20px;border:1px solid rgba(139,160,178,.2);color:var(--silver);background:transparent;cursor:none;transition:all .2s}
 .filter-btn:hover,.filter-btn.on{border-color:var(--gold);color:var(--gold);background:rgba(200,152,31,.07)}
+
+/* Mobile Filter Dropdown */
+.mobile-filter-wrap{display:none;margin-bottom:24px;}
+.mobile-filter-sel{width:100%;background:var(--ink2);border:1px solid rgba(200,152,31,.3);color:var(--gold);font-family:'Oswald',sans-serif;font-size:14px;padding:12px 16px;outline:none;letter-spacing:1px;text-transform:uppercase;cursor:pointer;}
+.mobile-filter-sel option{background:var(--ink3);color:var(--white);}
+
 .prod-table-wrap{overflow-x:auto;border:1px solid rgba(139,160,178,.1)}
 table{width:100%;border-collapse:collapse;font-size:14px}
 thead tr{background:var(--gold)}
@@ -54,6 +60,8 @@ tbody td.price{font-weight:500;color:var(--white)}
 .add-to-cart-btn:hover:not([disabled]){background:rgba(200,152,31,.1);border-color:var(--gold)}
 .add-to-cart-btn[disabled]{cursor:not-allowed;opacity:.5}
 
+.mobile-pack{display:none;font-size:10px;color:var(--silver);margin-top:4px;font-family:'DM Mono',monospace;letter-spacing:0.5px;}
+
 /* IMAGE LIGHTBOX */
 #img-lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9999;align-items:center;justify-content:center;cursor:pointer}
 #img-lb-inner{background:var(--ink2);border:1px solid rgba(200,152,31,.2);padding:28px;text-align:center;max-width:480px;width:90%}
@@ -70,14 +78,14 @@ tbody td.price{font-weight:500;color:var(--white)}
   .prod-table-wrap{border-radius:0}
 }
 @media(max-width:600px){
-  .filter-bar{flex-wrap:nowrap;overflow-x:auto;padding-bottom:8px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
-  .filter-bar::-webkit-scrollbar{display:none}
-  .filter-btn{flex-shrink:0;font-size:10px;padding:6px 10px}
+  .filter-bar{display:none !important;}
+  .mobile-filter-wrap{display:block;}
   .prod-section-thumb{width:50px;height:50px}
   .prod-section-title{font-size:13px}
   .prod-inner-table thead th:nth-child(2),.prod-inner-table tbody td:nth-child(2){display:none}
-  .prod-inner-table tbody td{padding:8px 10px;font-size:12px}
-  .add-to-cart-btn{font-size:10px;padding:5px 8px}
+  .mobile-pack{display:block;}
+  .prod-inner-table tbody td{padding:10px 12px;font-size:12px}
+  .add-to-cart-btn{font-size:11px;padding:8px 12px;}
   .note-box{font-size:13px;padding:14px 16px}
   .search-input{font-size:14px;padding:12px 14px 12px 40px}
 }
@@ -158,6 +166,12 @@ tbody td.price{font-weight:500;color:var(--white)}
       <input class="search-input" type="text" id="prod-search" placeholder="Search by code, description, or size..."/>
     </div>
     
+    <div class="mobile-filter-wrap">
+      <select class="mobile-filter-sel" id="mobile-filter-select" onchange="setFilter(this.value, null)">
+        <option value="all">View All Categories</option>
+        </select>
+    </div>
+
     <div class="filter-bar" id="dynamic-filters">
       <button class="filter-btn on" onclick="setFilter('all',this)">All</button>
       </div>
@@ -292,15 +306,22 @@ async function fetchAndRenderProducts() {
 
     const container = document.getElementById('prod-sections');
     const filterBar = document.getElementById('dynamic-filters');
+    const mobileSelect = document.getElementById('mobile-filter-select');
     container.innerHTML = '';
     
     for (const [code, data] of Object.entries(groups)) {
-      // Build Dynamic Filters
+      // Build Desktop Filters
       let fBtn = document.createElement('button');
       fBtn.className = 'filter-btn';
       fBtn.textContent = code;
       fBtn.onclick = function() { setFilter(code, this); };
       filterBar.appendChild(fBtn);
+      
+      // Build Mobile Filter Dropdown
+      let fOpt = document.createElement('option');
+      fOpt.value = code;
+      fOpt.textContent = code;
+      mobileSelect.appendChild(fOpt);
       
       // Build Section
       let html = `
@@ -338,7 +359,10 @@ async function fetchAndRenderProducts() {
         
         html += `
           <tr data-code="${code}">
-            <td>${item.size}</td>
+            <td>
+              ${item.size}
+              <div class="mobile-pack">${item.pack}/CTN</div>
+            </td>
             <td><span class="qty-badge">${item.pack}/CTN</span></td>
             <td>${availHtml}</td>
             <td class="price">${priceHtml}</td>
@@ -365,8 +389,15 @@ function toggleSection(hdr){
 }
 
 function setFilter(code, btn){
+  // Handle Desktop Buttons
   document.querySelectorAll('.filter-btn').forEach(function(b){ b.classList.remove('on'); });
-  btn.classList.add('on');
+  if(btn) btn.classList.add('on');
+  
+  // Sync the Mobile Dropdown if triggered from desktop
+  let sel = document.getElementById('mobile-filter-select');
+  if(sel) sel.value = code;
+  
+  // Filter sections
   document.querySelectorAll('.prod-section').forEach(function(s){
     s.style.display = (code==='all' || s.dataset.code===code) ? '' : 'none';
   });
