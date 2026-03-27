@@ -198,7 +198,7 @@
     </div>
     
     <div class="action-bar">
-      <span style="font-size:11px;color:var(--silver);max-width:300px;">Changing status to Confirmed or Cancelled will automatically send an email update. Cancelling restores inventory.</span>
+      <span style="font-size:11px;color:var(--silver);max-width:300px;">Changing status or item quantities will automatically adjust inventory levels.</span>
       <button class="btn-gold" id="btn-save-order" onclick="saveOrderModal(this)">Save Order</button>
     </div>
   </div>
@@ -422,7 +422,9 @@ function openOrderModal(orderId) {
   document.getElementById('m-address').value = '';
   document.getElementById('m-notes').value = '';
   document.getElementById('m-cust').disabled = !isCreate;
-  document.getElementById('btn-add-item').style.display = isCreate ? 'inline-block' : 'none';
+  
+  // The 'Add Item' button is now ALWAYS visible
+  document.getElementById('btn-add-item').style.display = 'inline-block';
 
   if (isCreate) {
     modalItems = [];
@@ -434,9 +436,9 @@ function openOrderModal(orderId) {
     document.getElementById('m-del-method').value = o.delivery.method;
     document.getElementById('m-address').value = o.delivery.address || o.po || '';
     document.getElementById('m-notes').value = o.notes || '';
-    modalItems = JSON.parse(JSON.stringify(o.items));
     
-    // Set inputQty correctly based on unit selection for display
+    // Clone and prep existing items for full editing
+    modalItems = JSON.parse(JSON.stringify(o.items));
     modalItems.forEach(it => {
       if (!it.pcsPerCtn) it.pcsPerCtn = 1;
       it.inputQty = (it.unit === 'carton') ? (it.qty / it.pcsPerCtn) : it.qty;
@@ -455,10 +457,16 @@ function closeModal() {
 
 function getProductOptionsHtml(selectedCodeSize) {
   let opts = '<option value="">Select Item...</option>';
+  let found = false;
   masterProducts.forEach(p => {
     let val = p.code + '|' + p.size;
+    if(selectedCodeSize === val) found = true;
     opts += `<option value="${val}" ${selectedCodeSize===val?'selected':''}>${p.code} - ${p.desc} ${p.size} ($${p.price.toFixed(2)})</option>`;
   });
+  // Fallback if item was deleted from DB but is still on the order
+  if(selectedCodeSize && !found) {
+    opts += `<option value="${selectedCodeSize}" selected>${selectedCodeSize} (Archived Item)</option>`;
+  }
   return opts;
 }
 
@@ -487,41 +495,26 @@ function updateMItem(idx, field, val) {
 
 function renderModalItems() {
   const tbody = document.getElementById('m-items-tbody');
-  const isCreate = document.getElementById('m-mode').value === 'create';
   tbody.innerHTML = '';
   let grand = 0;
 
+  // Items are now ALWAYS rendered as editable rows
   modalItems.forEach((it, idx) => {
     grand += it.lineTotal;
-    
-    if (isCreate) {
-      tbody.innerHTML += `
-        <tr>
-          <td data-label="Product"><select class="data-input" onchange="updateMItem(${idx}, 'prod', this.value)">${getProductOptionsHtml(it.code+'|'+it.size)}</select></td>
-          <td data-label="Qty"><input type="number" class="data-input" value="${it.inputQty}" min="1" onchange="updateMItem(${idx}, 'qty', this.value)" style="width:60px"></td>
-          <td data-label="Unit">
-            <select class="data-input" onchange="updateMItem(${idx}, 'unit', this.value)">
-              <option value="piece" ${it.unit==='piece'?'selected':''}>Piece</option><option value="carton" ${it.unit==='carton'?'selected':''}>Carton</option>
-            </select>
-          </td>
-          <td data-label="Price">$${it.unitPrice.toFixed(2)}/pc<br><span style="font-size:10px;color:var(--silver)">(${it.pcsPerCtn || 1} pcs/ctn)</span></td>
-          <td data-label="Total">$${it.lineTotal.toFixed(2)}</td>
-          <td><button class="btn-del" onclick="modalItems.splice(${idx},1);renderModalItems()">X</button></td>
-        </tr>
-      `;
-    } else {
-      let unitLabel = it.unit === 'carton' ? (it.inputQty + ' ctn (' + it.qty + ' pcs)') : it.qty + ' pcs';
-      tbody.innerHTML += `
-        <tr>
-          <td data-label="Product">${it.description} ${it.size}<br><span style="font-size:10px;color:var(--silver)">${it.code}</span></td>
-          <td data-label="Qty">${unitLabel}</td>
-          <td data-label="Unit">${it.unit}</td>
-          <td data-label="Price">$${it.unitPrice.toFixed(2)}/pc</td>
-          <td data-label="Total">$${it.lineTotal.toFixed(2)}</td>
-          <td></td>
-        </tr>
-      `;
-    }
+    tbody.innerHTML += `
+      <tr>
+        <td data-label="Product"><select class="data-input" onchange="updateMItem(${idx}, 'prod', this.value)">${getProductOptionsHtml(it.code+'|'+it.size)}</select></td>
+        <td data-label="Qty"><input type="number" class="data-input" value="${it.inputQty}" min="1" onchange="updateMItem(${idx}, 'qty', this.value)" style="width:60px"></td>
+        <td data-label="Unit">
+          <select class="data-input" onchange="updateMItem(${idx}, 'unit', this.value)">
+            <option value="piece" ${it.unit==='piece'?'selected':''}>Piece</option><option value="carton" ${it.unit==='carton'?'selected':''}>Carton</option>
+          </select>
+        </td>
+        <td data-label="Price">$${it.unitPrice.toFixed(2)}/pc<br><span style="font-size:10px;color:var(--silver)">(${it.pcsPerCtn || 1} pcs/ctn)</span></td>
+        <td data-label="Total">$${it.lineTotal.toFixed(2)}</td>
+        <td><button class="btn-del" onclick="modalItems.splice(${idx},1);renderModalItems()">X</button></td>
+      </tr>
+    `;
   });
   document.getElementById('m-grand-total').textContent = '$' + grand.toFixed(2);
 }
@@ -536,7 +529,6 @@ async function saveOrderModal(btn) {
   }
 
   btn.textContent = 'Processing...'; btn.disabled = true;
-  
   let orderObj = null;
 
   if (isCreate) {
@@ -559,23 +551,37 @@ async function saveOrderModal(btn) {
     };
     masterOrders.push(orderObj);
     
-    await applyInventoryDelta(orderObj.items, -1);
+    // Inventory Sync for Creation
+    await syncInventory([], orderObj.items, 'cancelled', orderObj.status);
+    
     await sendEmails(orderObj, 'new');
     if (orderObj.status === 'confirmed') await sendEmails(orderObj, 'confirmed');
 
   } else {
     const oId = document.getElementById('m-order-id').value;
     orderObj = masterOrders.find(o => o.id === oId);
+    
     const oldStatus = orderObj.status;
     const newStatus = document.getElementById('m-status').value;
+    const oldItems = JSON.parse(JSON.stringify(orderObj.items)); // Snapshot the old items for math
     
     orderObj.status = newStatus;
     orderObj.delivery.method = document.getElementById('m-del-method').value;
     orderObj.delivery.address = document.getElementById('m-address').value;
     orderObj.notes = document.getElementById('m-notes').value;
 
+    // Apply the edited items to the order object
+    orderObj.items = modalItems.map(it => ({
+      code: it.code, description: it.description, size: it.size,
+      qty: it.qty, unit: it.unit, pcsPerCtn: it.pcsPerCtn,
+      unitPrice: it.unitPrice, lineTotal: it.lineTotal
+    }));
+    orderObj.total = modalItems.reduce((s,i)=>s+i.lineTotal, 0);
+
+    // Calculate EXACT inventory delta (Handles changes to qty, deletions, additions, AND status)
+    await syncInventory(oldItems, orderObj.items, oldStatus, newStatus);
+
     if (oldStatus !== 'cancelled' && newStatus === 'cancelled') {
-       await applyInventoryDelta(orderObj.items, 1);
        await sendEmails(orderObj, 'cancelled');
     } 
     else if (oldStatus !== 'confirmed' && newStatus === 'confirmed') {
@@ -583,6 +589,7 @@ async function saveOrderModal(btn) {
     }
   }
 
+  // Push to JSON DB
   const payload = { message: 'Admin: Update order ' + orderObj.id, content: btoa(unescape(encodeURIComponent(JSON.stringify({orders: masterOrders}, null, 2)))), branch: 'main', sha: currentOrderSha };
   try {
     const r = await fetch(WORKER_URL + '/github/orders.json', { method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
@@ -597,26 +604,47 @@ async function saveOrderModal(btn) {
   btn.textContent = 'Save Order'; btn.disabled = false;
 }
 
-// --- INVENTORY SYNC ---
-async function applyInventoryDelta(items, direction) {
-  let deductions = {};
-  items.forEach(i => { let k = i.code+'|'+i.size.replace(/"/g,''); deductions[k] = (deductions[k]||0) + (i.qty * direction); });
-
-  await loadProducts(); 
+// --- SMART INVENTORY SYNC ENGINE ---
+async function syncInventory(oldItems, newItems, oldStatus, newStatus) {
+  let changes = {};
   
+  // 1. Add back ALL old items to the temporary delta pool (if it wasn't cancelled)
+  if (oldStatus !== 'cancelled' && oldItems) {
+    oldItems.forEach(i => { 
+      let k = i.code+'|'+i.size.replace(/"/g,''); 
+      changes[k] = (changes[k]||0) + i.qty; 
+    });
+  }
+  
+  // 2. Subtract ALL new items from the temporary delta pool (if it isn't being cancelled)
+  if (newStatus !== 'cancelled' && newItems) {
+    newItems.forEach(i => { 
+      let k = i.code+'|'+i.size.replace(/"/g,''); 
+      changes[k] = (changes[k]||0) - i.qty; 
+    });
+  }
+  
+  await loadProducts(); 
+  let needsSave = false;
+  
+  // Apply the NET DIFFERENCE to the live database inputs
   const trs = document.querySelectorAll('#prod-tbody tr');
   trs.forEach(tr => {
     const inputs = tr.querySelectorAll('input');
+    if(!inputs.length) return;
+    
     let code = inputs[0].value.trim();
     let size = inputs[2].value.trim().replace(/"/g,'');
     let k = code+'|'+size;
-    if(deductions[k]) {
+    
+    if(changes[k]) { // If there is a net change != 0
       let current = parseInt(inputs[4].value)||0;
-      inputs[4].value = Math.max(0, current + deductions[k]); 
+      inputs[4].value = Math.max(0, current + changes[k]); 
+      needsSave = true;
     }
   });
   
-  await saveProducts(null);
+  if(needsSave) await saveProducts(null);
 }
 
 // --- EMAILJS INTEGRATION ---
