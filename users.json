@@ -26,6 +26,19 @@
       "canOrderPieces": true,
       "registeredAt": "2026-03-26T17:45:43.946Z",
       "approvedAt": null
+    },
+    {
+      "id": "1774643872585",
+      "fname": "Peleg",
+      "lname": "Ovadia",
+      "company": "EZ FullRehab LLC",
+      "email": "ovadiapelegrealestate@gmail.com",
+      "phone": "4102050486",
+      "password": "7d253a9cc147166ad858ad86835a3b49b4a7c5097c8e3041e2d78503021726e5",
+      "status": "pending",
+      "canOrderPieces": true,
+      "registeredAt": "2026-03-27T20:37:52.585Z",
+      "approvedAt": null
     }
   ]
 }
