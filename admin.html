@@ -27,7 +27,7 @@
 .btn-save{background:var(--gold);color:var(--ink);font-family:'Oswald',sans-serif;font-size:14px;letter-spacing:2px;text-transform:uppercase;padding:12px 24px;border:none;cursor:pointer;font-weight:600;}
 .btn-add{background:transparent;border:1px dashed rgba(139,160,178,.4);color:var(--silver);padding:10px 20px;cursor:pointer;font-family:'DM Mono',monospace;font-size:12px;}
 .btn-add:hover{border-color:var(--white);color:var(--white);}
-.btn-del{background:rgba(255,80,80,.1);border:1px solid rgba(255,80,80,.2);color:#ff6b6b;cursor:pointer;padding:6px 10px;font-weight:bold;}
+.btn-del{background:rgba(255,80,80,.1);border:1px solid rgba(255,80,80,.2);color:#ff6b6b;cursor:pointer;padding:8px 12px;font-weight:bold;}
 .btn-view{background:rgba(200,152,31,.1);border:1px solid var(--gold);color:var(--gold);cursor:pointer;padding:6px 14px;font-family:'DM Mono',monospace;font-size:11px;text-transform:uppercase;}
 
 /* Status Messaging */
@@ -45,13 +45,13 @@
 #order-modal-overlay{
   display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85);
   z-index:9999; overflow-y:auto; padding:40px 20px;
-  align-items:flex-start; /* FIX: allows scrolling to the top */
+  align-items:flex-start; 
   justify-content:center;
 }
 #order-modal{
   background:var(--ink2); border:1px solid rgba(200,152,31,.4);
   max-width:800px; width:100%; padding:32px;
-  margin:auto; /* Centers the modal vertically if it's shorter than the screen */
+  margin:auto; 
   position:relative;
 }
 .modal-close{position:absolute;top:20px;right:20px;background:none;border:none;color:var(--silver);font-size:24px;cursor:pointer;}
@@ -68,10 +68,26 @@
 .resend-btn{background:transparent;border:1px solid rgba(139,160,178,.3);color:var(--silver);padding:8px 14px;font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;transition:all .2s;}
 .resend-btn:hover{border-color:var(--gold);color:var(--gold);background:rgba(200,152,31,.1);}
 
+/* --- MOBILE OPTIMIZATIONS --- */
 @media(max-width:768px){
   .modal-grid{grid-template-columns:1fr;}
   #order-modal{padding:20px;}
   .resend-btn{flex:1;text-align:center;}
+  .admin-panel{padding:16px;}
+  .btn-save, .btn-add{width:100%; justify-content:center; text-align:center;}
+  
+  /* Convert Data Tables to Cards on Mobile */
+  .data-table, .data-table tbody, .data-table tr, .data-table td { display: block; width: 100%; }
+  .data-table thead { display: none; }
+  .data-table tr { background: var(--ink3); border: 1px solid rgba(200,152,31,.2); margin-bottom: 16px; padding: 16px; border-radius:4px; }
+  .data-table td { display: flex; flex-direction: column; padding: 6px 0; border: none; }
+  .data-table td::before { 
+    content: attr(data-label); 
+    font-family: 'DM Mono', monospace; font-size: 10px; color: var(--gold); 
+    text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; 
+  }
+  .btn-del { width: 100%; margin-top: 12px; }
+  .btn-view { width: 100%; text-align: center; margin-top: 8px;}
 }
 </style>
 </head>
@@ -92,50 +108,46 @@
   <div class="admin-header">
     <h1 class="admin-title">Database Manager</h1>
     <div class="admin-tabs">
-      <button class="admin-tab" onclick="switchTab('orders')">Orders</button>
-      <button class="admin-tab" onclick="switchTab('products')">Products (CSV)</button>
-      <button class="admin-tab" onclick="switchTab('users')">Users (JSON)</button>
+      <button class="admin-tab" onclick="switchTab('orders')" data-tab="orders">Orders</button>
+      <button class="admin-tab" onclick="switchTab('products')" data-tab="products">Products (CSV)</button>
+      <button class="admin-tab" onclick="switchTab('users')" data-tab="users">Users (JSON)</button>
     </div>
   </div>
 
   <div id="tab-orders" class="admin-panel">
     <p style="color:var(--silver);font-size:14px;margin-bottom:20px;">Manage customer orders. Click 'View' to see details, change status, and resend emails.</p>
-    <div style="overflow-x:auto;">
-      <table class="data-table" id="orders-table">
-        <thead>
-          <tr>
-            <th>Order ID</th>
-            <th>Date</th>
-            <th>Customer</th>
-            <th>Total</th>
-            <th>Status</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody id="orders-tbody"></tbody>
-      </table>
-    </div>
+    <table class="data-table" id="orders-table">
+      <thead>
+        <tr>
+          <th>Order ID</th>
+          <th>Date</th>
+          <th>Customer</th>
+          <th>Total</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="orders-tbody"></tbody>
+    </table>
   </div>
 
   <div id="tab-products" class="admin-panel">
     <p style="color:var(--silver);font-size:14px;margin-bottom:20px;">Edit your master inventory. This data feeds directly into the live Products and Checkout pages.</p>
-    <div style="overflow-x:auto;">
-      <table class="data-table" id="prod-table">
-        <thead>
-          <tr>
-            <th>Category Code</th>
-            <th>Description</th>
-            <th>Size</th>
-            <th>Pcs / Ctn</th>
-            <th>Inventory Qty</th>
-            <th>Unit Price ($)</th>
-            <th>Image URL</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody id="prod-tbody"></tbody>
-      </table>
-    </div>
+    <table class="data-table" id="prod-table">
+      <thead>
+        <tr>
+          <th>Category Code</th>
+          <th>Description</th>
+          <th>Size</th>
+          <th>Pcs / Ctn</th>
+          <th>Inventory Qty</th>
+          <th>Unit Price ($)</th>
+          <th>Image URL</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="prod-tbody"></tbody>
+    </table>
     <div class="action-bar">
       <button class="btn-add" onclick="addProductRow()">+ Add New Product Row</button>
       <button class="btn-save" onclick="saveProducts()">Save Products</button>
@@ -144,22 +156,20 @@
 
   <div id="tab-users" class="admin-panel">
     <p style="color:var(--silver);font-size:14px;margin-bottom:20px;">Approve or reject trade accounts. Only 'approved' users can view pricing and place orders.</p>
-    <div style="overflow-x:auto;">
-      <table class="data-table" id="users-table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Company</th>
-            <th>Status</th>
-            <th>Pieces Allowed</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody id="users-tbody"></tbody>
-      </table>
-    </div>
+    <table class="data-table" id="users-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Company</th>
+          <th>Status</th>
+          <th>Pieces Allowed</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="users-tbody"></tbody>
+    </table>
     <div class="action-bar">
       <div></div>
       <button class="btn-save" onclick="saveUsers()">Save Approvals</button>
@@ -245,7 +255,7 @@ let currentUserSha = null;
 let currentOrderSha = null;
 let masterUsers = [];
 let masterOrders = [];
-let activeOrderObj = null; // Holds the order currently open in the modal
+let activeOrderObj = null; 
 
 function showStatus(msg, isErr) {
   const el = document.getElementById('status-msg');
@@ -255,11 +265,16 @@ function showStatus(msg, isErr) {
   setTimeout(() => el.style.display = 'none', 4000);
 }
 
+// FIX: Bulletproof Tab Switching that doesn't rely on `event.target`
 function switchTab(tab) {
   document.querySelectorAll('.admin-tab').forEach(b => b.classList.remove('active'));
   document.querySelectorAll('.admin-panel').forEach(p => p.classList.remove('active'));
-  event.target.classList.add('active');
-  document.getElementById('tab-' + tab).classList.add('active');
+  
+  const targetBtn = document.querySelector(`.admin-tab[data-tab="${tab}"]`);
+  if(targetBtn) targetBtn.classList.add('active');
+  
+  const targetPanel = document.getElementById('tab-' + tab);
+  if(targetPanel) targetPanel.classList.add('active');
 }
 
 // --- CSV PARSER UTILS ---
@@ -306,15 +321,16 @@ async function loadProducts() {
 
 function addProductRow(data = ['', '', '', '', '', '', '']) {
   const tr = document.createElement('tr');
+  // Added data-labels for mobile card rendering
   tr.innerHTML = `
-    <td><input class="data-input" value="${data[0]||''}" placeholder="PIPE-SOLID"></td>
-    <td><input class="data-input" value="${data[1]||''}" placeholder="ASTM D1785 SCH40 PVC"></td>
-    <td><input class="data-input" value="${data[2]||''}" placeholder='2"'></td>
-    <td><input class="data-input" value="${data[3]||''}" placeholder="20"></td>
-    <td><input class="data-input" value="${data[4]||''}" placeholder="100"></td>
-    <td><input class="data-input" value="${data[5]||''}" placeholder="16.20"></td>
-    <td><input class="data-input" value="${data[6]||''}" placeholder="images/Sch40Solid.png"></td>
-    <td><button class="btn-del" onclick="this.closest('tr').remove()">X</button></td>
+    <td data-label="Category Code"><input class="data-input" value="${data[0]||''}" placeholder="PIPE-SOLID"></td>
+    <td data-label="Description"><input class="data-input" value="${data[1]||''}" placeholder="ASTM D1785 SCH40 PVC"></td>
+    <td data-label="Size"><input class="data-input" value="${data[2]||''}" placeholder='2"'></td>
+    <td data-label="Pcs / Ctn"><input class="data-input" value="${data[3]||''}" placeholder="20"></td>
+    <td data-label="Inventory Qty"><input class="data-input" value="${data[4]||''}" placeholder="100"></td>
+    <td data-label="Unit Price ($)"><input class="data-input" value="${data[5]||''}" placeholder="16.20"></td>
+    <td data-label="Image URL"><input class="data-input" value="${data[6]||''}" placeholder="images/Sch40Solid.png"></td>
+    <td data-label="Action"><button class="btn-del" onclick="this.closest('tr').remove()">Delete Row</button></td>
   `;
   document.getElementById('prod-tbody').appendChild(tr);
 }
@@ -353,24 +369,24 @@ async function loadUsers() {
     masterUsers.forEach((u, i) => {
       const tr = document.createElement('tr');
       tr.innerHTML = `
-        <td style="font-family:monospace;color:var(--silver);">${u.id}</td>
-        <td>${u.fname} ${u.lname}</td>
-        <td>${u.email}</td>
-        <td>${u.company}</td>
-        <td>
+        <td data-label="ID" style="font-family:monospace;color:var(--silver);">${u.id}</td>
+        <td data-label="Name">${u.fname} ${u.lname}</td>
+        <td data-label="Email">${u.email}</td>
+        <td data-label="Company">${u.company}</td>
+        <td data-label="Status">
           <select class="data-input status-sel" data-idx="${i}" style="background:${u.status==='approved'?'rgba(46,204,113,.1)':'var(--ink3)'}">
             <option value="pending" ${u.status==='pending'?'selected':''}>Pending</option>
             <option value="approved" ${u.status==='approved'?'selected':''}>Approved</option>
             <option value="rejected" ${u.status==='rejected'?'selected':''}>Rejected</option>
           </select>
         </td>
-        <td>
+        <td data-label="Pieces Allowed">
           <select class="data-input pcs-sel" data-idx="${i}">
             <option value="true" ${u.canOrderPieces!==false?'selected':''}>Yes (Pieces & Cases)</option>
             <option value="false" ${u.canOrderPieces===false?'selected':''}>No (Cases Only)</option>
           </select>
         </td>
-        <td><button class="btn-del" onclick="deleteUser(${i})">Delete</button></td>
+        <td data-label="Action"><button class="btn-del" onclick="deleteUser(${i})">Delete</button></td>
       `;
       tbody.appendChild(tr);
     });
@@ -414,12 +430,12 @@ async function loadOrders() {
       const dDate = new Date(o.placedAt).toLocaleDateString();
       const tr = document.createElement('tr');
       tr.innerHTML = `
-        <td style="font-family:monospace;color:var(--gold);">${o.id}</td>
-        <td>${dDate}</td>
-        <td>${o.customer.name}<br><span style="font-size:10px;color:var(--silver)">${o.customer.company}</span></td>
-        <td style="font-family:monospace">$${(o.total||0).toFixed(2)}</td>
-        <td><span class="badge ${o.status}">${o.status}</span></td>
-        <td><button class="btn-view" onclick="openOrderModal('${o.id}')">View &rarr;</button></td>
+        <td data-label="Order ID" style="font-family:monospace;color:var(--gold);">${o.id}</td>
+        <td data-label="Date">${dDate}</td>
+        <td data-label="Customer">${o.customer.name}<br><span style="font-size:10px;color:var(--silver)">${o.customer.company}</span></td>
+        <td data-label="Total" style="font-family:monospace">$${(o.total||0).toFixed(2)}</td>
+        <td data-label="Status"><span class="badge ${o.status}">${o.status}</span></td>
+        <td data-label="Action"><button class="btn-view" onclick="openOrderModal('${o.id}')">View Details</button></td>
       `;
       tbody.appendChild(tr);
     });
@@ -448,10 +464,10 @@ function openOrderModal(orderId) {
   activeOrderObj.items.forEach(item => {
     let tr = document.createElement('tr');
     tr.innerHTML = `
-      <td>${item.description} ${item.size}<br><span style="font-size:10px;color:var(--silver)">${item.code}</span></td>
-      <td style="font-family:monospace">${item.qty} ${item.unit==='carton'?'ctn':'pcs'}</td>
-      <td style="font-family:monospace">$${(item.unitPrice||0).toFixed(2)}</td>
-      <td style="text-align:right;font-family:monospace;color:var(--white)">$${(item.lineTotal||0).toFixed(2)}</td>
+      <td data-label="Item">${item.description} ${item.size}<br><span style="font-size:10px;color:var(--silver)">${item.code}</span></td>
+      <td data-label="Qty" style="font-family:monospace">${item.qty} ${item.unit==='carton'?'ctn':'pcs'}</td>
+      <td data-label="Unit Price" style="font-family:monospace">$${(item.unitPrice||0).toFixed(2)}</td>
+      <td data-label="Line Total" style="text-align:right;font-family:monospace;color:var(--white)">$${(item.lineTotal||0).toFixed(2)}</td>
     `;
     tbody.appendChild(tr);
   });
@@ -489,7 +505,6 @@ async function saveOrderStatus() {
 
 // --- RESEND EMAIL LOGIC ---
 function buildConfirmEmail(order){
-  var itemLines = order.items.map(function(i){ return i.description+' '+i.size+' — '+i.qty+' pcs @ $'+i.unitPrice.toFixed(2)+' = $'+i.lineTotal.toFixed(2); }).join('\n');
   return `<!DOCTYPE html><html><head><meta charset="UTF-8"/></head><body style="margin:0;padding:0;background:#f4f4f4;font-family:'Helvetica Neue',Arial,sans-serif;"><table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;padding:32px 0;"><tr><td align="center"><table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:4px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);"><tr><td style="background:#0C1117;padding:28px 36px;border-bottom:4px solid #C8981F;"><table width="100%" cellpadding="0" cellspacing="0"><tr><td><div style="font-family:'Arial Black',Arial,sans-serif;font-size:20px;font-weight:900;color:#FFFFFF;letter-spacing:2px;text-transform:uppercase;">ALL PRO BUILDING SUPPLIES</div><div style="font-size:11px;color:#C8981F;letter-spacing:3px;text-transform:uppercase;margin-top:3px;">LLC</div></td><td align="right"><div style="background:#C8981F;color:#0C1117;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:6px 14px;border-radius:2px;">ORDER COPY</div></td></tr></table></td></tr><tr><td style="padding:32px 36px 0;"><p style="margin:0;font-size:16px;color:#222;">Hi <strong>${order.customer.name}</strong>,</p><p style="margin:12px 0 0;font-size:15px;color:#444;line-height:1.6;">Here is a copy of the order you placed. We are processing it and will be in touch shortly regarding availability and fulfillment.</p></td></tr><tr><td style="padding:24px 36px 0;"><table width="100%" cellpadding="0" cellspacing="0" style="background:#f8f8f8;border-radius:4px;border:1px solid #e8e8e8;"><tr><td style="padding:16px 20px;border-right:1px solid #e8e8e8;"><div style="font-size:10px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Order ID</div><div style="font-size:14px;font-weight:700;color:#C8981F;font-family:monospace;">${order.id}</div></td><td style="padding:16px 20px;border-right:1px solid #e8e8e8;"><div style="font-size:10px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Date</div><div style="font-size:14px;color:#222;">${new Date(order.placedAt).toLocaleDateString()}</div></td><td style="padding:16px 20px;"><div style="font-size:10px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Delivery</div><div style="font-size:13px;color:#222;">${order.delivery.address}</div></td></tr></table></td></tr><tr><td style="padding:24px 36px 0;"><div style="font-size:11px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;font-weight:700;">Items Ordered</div><table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #e8e8e8;border-radius:4px;overflow:hidden;"><tr style="background:#0C1117;"><td style="padding:10px 14px;font-size:11px;color:#C8981F;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;">Product</td><td style="padding:10px 14px;font-size:11px;color:#C8981F;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;text-align:right;">Total</td></tr>${order.items.map(function(i){return '<tr><td style="padding:10px 14px;font-size:13px;color:#333;border-bottom:1px solid #f0f0f0;">'+i.description+' '+i.size+'<br/><span style=\"font-size:11px;color:#888\">'+i.qty+' pcs @ $'+i.unitPrice.toFixed(2)+'</span></td><td style="padding:10px 14px;font-size:13px;color:#333;text-align:right;border-bottom:1px solid #f0f0f0;">$'+i.lineTotal.toFixed(2)+'</td></tr>';}).join('')}</table></td></tr><tr><td style="padding:0 36px;"><table width="100%" cellpadding="0" cellspacing="0"><tr><td></td><td style="padding:16px 0;border-top:2px solid #C8981F;width:220px;" align="right"><span style="font-size:13px;color:#888;text-transform:uppercase;letter-spacing:1px;">Order Total&nbsp;&nbsp;</span><span style="font-size:22px;font-weight:700;color:#0C1117;">$${order.total.toFixed(2)}</span></td></tr></table></td></tr>${order.po||order.notes?'<tr><td style="padding:0 36px 24px;"><table width="100%" cellpadding="0" cellspacing="0" style="background:#fffbf0;border:1px solid #f0e0a0;border-radius:4px;"><tr><td style="padding:14px 18px;"><div style="font-size:12px;color:#666;margin-bottom:4px;"><strong style=\"color:#333\">PO Number:</strong> '+(order.po||'N/A')+'</div><div style="font-size:12px;color:#666;"><strong style=\"color:#333\">Notes:</strong> '+(order.notes||'None')+'</div></td></tr></table></td></tr>':''}<tr><td style="padding:0 36px;"><hr style="border:none;border-top:1px solid #eee;margin:0;"/></td></tr><tr><td style="padding:24px 36px;"><p style="margin:0;font-size:14px;color:#444;line-height:1.7;">Questions about your order?</p><p style="margin:10px 0 0;font-size:14px;color:#444;">📞 <a href="tel:17328291940" style="color:#C8981F;text-decoration:none;font-weight:600;">732-829-1940</a></p><p style="margin:4px 0 0;font-size:14px;color:#444;">✉️ <a href="mailto:info@allprobuildingsupplies.com" style="color:#C8981F;text-decoration:none;">info@allprobuildingsupplies.com</a></p></td></tr><tr><td style="background:#0C1117;padding:20px 36px;text-align:center;"><div style="font-size:12px;color:#888;">© 2026 All Pro Building Supplies LLC</div></td></tr></table></td></tr></table></body></html>`;
 }
 
@@ -497,13 +512,13 @@ async function resendEmail(target) {
   if(!activeOrderObj) return;
   const msgEl = document.getElementById('resend-msg');
   msgEl.style.display = 'none';
-  msgEl.style.color = '#ff6b6b'; // Default to error color during processing
+  msgEl.style.color = '#ff6b6b'; 
   msgEl.textContent = 'Sending...';
   msgEl.style.display = 'block';
 
   let order = activeOrderObj;
   var params = {
-    to_email:    NOTIFY_EMAIL, // Fallback
+    to_email:    NOTIFY_EMAIL, 
     cust_email:  order.customer.email,
     email_subject: 'Order Copy ' + order.id + ' — ' + order.customer.name + ' (' + order.customer.company + ')',
     email_body:  buildConfirmEmail(order),
@@ -543,7 +558,6 @@ async function resendEmail(target) {
 
 // Init
 window.onload = () => { 
-  // Show orders tab by default
   switchTab('orders');
   loadOrders(); 
   loadProducts(); 
