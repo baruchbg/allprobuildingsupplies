@@ -56,32 +56,35 @@
 <div class="topbar">
   <div class="topbar-links">
     <a href="tel:17328291940"><svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.27-.27.67-.36 1.02-.22 1.12.45 2.32.68 3.58.68.55 0 1 .45 1 1V20c0 .55-.45 1-1 1C10.29 21 3 13.71 3 4.5c0-.55.45-1 1-1H8c.55 0 1 .45 1 1 0 1.27.2 2.48.57 3.62.1.32.03.68-.22.96L6.6 10.8z"/></svg>732-829-1940</a>
-    <a href="/cdn-cgi/l/email-protection#a4cdcac2cbe4c5c8c8d4d6cbc6d1cdc8c0cdcac3d7d1d4d4c8cdc1d78ac7cbc9"><svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg><span class="__cf_email__" data-cfemail="573e39313817363b3b27253835223e3b333e3930242227273b3e32247934383a">[email&#160;protected]</span></a>
+    <a href="mailto:info@allprobuildingsupplies.com"><svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>info@allprobuildingsupplies.com</a>
   </div>
   <div class="topbar-badge">Contractor-Grade · Fast Response · NJ &amp; Surrounding Areas</div>
 </div>
+
 <nav>
   <div class="nav-logo">
     <img src="assets/logo.png" alt="All Pro Building Supplies"/>
     <div class="nav-brand-text">All Pro Building Supplies <span>LLC</span></div>
   </div>
   <ul class="nav-links">
-    <li><a href="index.html">Home</a></li>
-    <li><a href="products.html" class="active">Products</a></li>
-    <li><a href="about.html">About</a></li>
-    <li><a href="contact.html">Contact</a></li>
+    <li><a href="index.html" class="">Home</a></li>
+    <li><a href="products.html" class="">Products</a></li>
+    <li><a href="about.html" class="">About</a></li>
+    <li><a href="contact.html" class="">Contact</a></li>
   </ul>
-  <div class="nav-actions">
+  <div class="nav-actions" id="nav-auth-container">
     <a href="tel:17328291940" class="nav-tel"><svg viewBox="0 0 24 24" width="16" height="16" fill="var(--gold)"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.27-.27.67-.36 1.02-.22 1.12.45 2.32.68 3.58.68.55 0 1 .45 1 1V20c0 .55-.45 1-1 1C10.29 21 3 13.71 3 4.5c0-.55.45-1 1-1H8c.55 0 1 .45 1 1 0 1.27.2 2.48.57 3.62.1.32.03.68-.22.96L6.6 10.8z"/></svg>732-829-1940</a>
-    <a href="cart.html" class="nav-cta" id="nav-cart-btn">🛒 Cart <span id="nav-cart-count" class="cart-nav-badge"></span></a>
-    <a href="account.html" class="nav-cta" id="nav-account-btn" style="display:none;background:var(--ink3);border:1px solid rgba(200,152,31,.3);margin-left:6px;">👤 My Account</a>
+    <span id="auth-buttons" style="display:inline-flex; align-items:center; gap:8px;">
+      <a href="login.html" class="nav-cta" id="nav-login-btn" style="background:transparent;border:1px solid var(--gold);color:var(--gold);">Login</a>
+      <a href="account.html" class="nav-cta" id="nav-account-btn" style="display:none;background:var(--ink3);border:1px solid rgba(200,152,31,.3);flex-direction:column;align-items:flex-start;padding:6px 12px;line-height:1.3;gap:2px;"><span style="font-size:9px;color:var(--silver);letter-spacing:1px;font-family:'DM Mono',monospace;">LOGGED IN AS</span><span id="nav-logged-in-name" style="font-size:12px;color:var(--white);">My Account</span></a>
+      <a href="cart.html" class="nav-cta" id="nav-cart-btn" style="background:var(--gold);color:var(--ink);border:none;">🛒 Cart <span id="nav-cart-count" class="cart-nav-badge"></span></a>
+    </span>
   </div>
-    <button class="hamburger" id="hamburger" aria-label="Menu">
-      <span></span><span></span><span></span>
-    </button>
+  <button class="hamburger" id="hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
 
-<!-- MOBILE MENU -->
 <div class="mobile-menu" id="mobile-menu"><button class="mobile-menu-close" id="mob-close" aria-label="Close">&#10005;</button>
   <a href="index.html">Home</a>
   <a href="products.html">Products</a>
@@ -89,6 +92,7 @@
   <a href="contact.html">Contact</a>
   <a href="tel:17328291940" class="mob-tel">📞 732-829-1940</a>
   <a href="cart.html" class="mob-cta">🛒 Cart →</a>
+  <a href="login.html" class="mob-cta" style="margin-top:10px;background:transparent;border:1px solid var(--gold);color:var(--gold);">Login / Register</a>
 </div>
 
 <div class="page-hero">
@@ -107,7 +111,6 @@
   <div class="container">
     <div class="cart-wrap">
 
-      <!-- Auth gate -->
       <div id="auth-gate" style="display:none;background:var(--ink2);border:1px solid rgba(200,152,31,.25);border-left:4px solid var(--gold);padding:24px 28px;margin-bottom:32px;">
         <strong style="color:var(--white);font-size:15px;display:block;margin-bottom:6px;">Trade account required to place orders</strong>
         <span style="color:var(--silver);font-size:13px;">Please log in or request access to use the cart.</span>
@@ -117,7 +120,6 @@
         </div>
       </div>
 
-      <!-- Empty cart -->
       <div id="cart-empty" style="display:none;" class="cart-empty">
         <div class="cart-empty-icon">🛒</div>
         <h2>Your cart is empty</h2>
@@ -125,7 +127,6 @@
         <a href="products.html" class="btn-gold">Browse Products →</a>
       </div>
 
-      <!-- Cart contents -->
       <div id="cart-contents" style="display:none;">
         <table class="cart-table" id="cart-table">
           <thead>
@@ -173,9 +174,40 @@
   </div>
 </div>
 
-<footer class="footer"><div class="footer-inner"><span>© 2025 All Pro Building Supplies LLC</span></div></footer>
+<footer>
+  <div class="ft-top">
+    <div>
+      <img src="assets/logo.png" alt="All Pro Building Supplies" class="ft-logo"/>
+      <p class="ft-txt">Contractor-grade building materials, plumbing, hardware, and contractor supplies. Fast response, real people, reliable service.</p>
+      <div class="ft-socials">
+        <a href="mailto:info@allprobuildingsupplies.com" class="soc">✉</a>
+        <a href="tel:17328291940" class="soc">📞</a>
+      </div>
+    </div>
+    <div class="ft-col">
+      <h4>Products</h4>
+      <ul>
+        <li><a href="products.html">Building Materials</a></li>
+        <li><a href="products.html">Plumbing</a></li>
+        <li><a href="products.html">Hardware</a></li>
+        <li><a href="products.html">Contractor Supplies</a></li>
+      </ul>
+    </div>
+    <div class="ft-col">
+      <h4>Company</h4>
+      <ul>
+        <li><a href="about.html">About Us</a></li>
+        <li><a href="contact.html">Contact</a></li>
+        <li><a href="login.html">Dealer Login</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="ft-bot">
+    <p>&copy; 2026 All Pro Building Supplies LLC. All rights reserved.</p>
+  </div>
+</footer>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="assets/main.js"></script>
+<script src="assets/main.js"></script>
 <script>
 // ── CART ENGINE ───────────────────────────────────────────────────
 const WORKER_URL = 'https://allpro-github-proxy.baruch-6d5.workers.dev';
@@ -341,7 +373,7 @@ function setUnit(idx, unit){
   // If switching to carton, snap qty to nearest carton
   if(unit === 'carton'){
     var pcs = cart[idx].pcsPerCtn || 1;
-cs(pcs, Math.round(cart[idx].qty / pcs) * pcs);
+    cart[idx].qty = Math.round(cart[idx].qty / pcs) * pcs;
   }
   saveCart(cart);
   renderCart();
@@ -360,8 +392,10 @@ updateNavCount();
   try{
     var u = JSON.parse(sessionStorage.getItem('apbs_user'));
     if(u && u.status==='approved'){
-      var btn = document.getElementById('nav-account-btn');
-      if(btn){ btn.style.display='inline-flex'; }
+      var acctBtn = document.getElementById('nav-account-btn');
+      var loginBtn = document.getElementById('nav-login-btn');
+      if(acctBtn) acctBtn.style.display='inline-flex';
+      if(loginBtn) loginBtn.style.display='none';
       var nameEl = document.getElementById('nav-logged-in-name');
       if(nameEl){ nameEl.textContent = u.name || ((u.fname||'') + ' ' + (u.lname||'')).trim(); }
     }
