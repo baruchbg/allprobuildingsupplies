@@ -1,41 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>My Account — All Pro Building Supplies LLC</title>
 <link rel="stylesheet" href="assets/style.css"/>
 <style>
-.acct-grid{display:grid;grid-template-columns:240px 1fr;gap:28px;align-items:start;width:100%;max-width:1100px;margin:0 auto;}
-.acct-sidebar{background:var(--ink2);border:1px solid rgba(200,152,31,.15);padding:24px;min-width:200px;}
-.acct-user-name{font-family:"Oswald",sans-serif;font-size:20px;color:var(--white);margin-bottom:4px;}
-.acct-user-co{font-size:13px;color:var(--gold);margin-bottom:20px;}
-.acct-nav a{display:block;padding:10px 14px;color:var(--silver);font-family:"Oswald",sans-serif;font-size:13px;letter-spacing:1.5px;text-transform:uppercase;text-decoration:none;border-left:3px solid transparent;transition:all .2s;margin-bottom:4px;white-space:nowrap;}
-.acct-nav a:hover,.acct-nav a.active{color:var(--white);border-left-color:var(--gold);background:rgba(200,152,31,.06);}
-.acct-content{background:var(--ink2);border:1px solid rgba(200,152,31,.15);padding:28px;}
-.acct-section-title{font-family:"Oswald",sans-serif;font-size:15px;color:var(--gold);letter-spacing:2px;text-transform:uppercase;margin:0 0 20px;padding-bottom:10px;border-bottom:1px solid rgba(200,152,31,.15);}
-.order-row{background:var(--ink3);border:1px solid rgba(200,152,31,.1);border-radius:5px;margin-bottom:12px;overflow:hidden;}
-.order-row-hdr{display:flex;align-items:center;gap:16px;padding:12px 16px;cursor:pointer;}
-.order-row-hdr:hover{background:rgba(200,152,31,.04);}
-.order-id{font-family:"DM Mono",monospace;font-size:12px;color:var(--gold);}
-.order-date{font-size:12px;color:var(--silver);}
-.order-status-pill{font-size:10px;font-family:"DM Mono",monospace;letter-spacing:1px;padding:2px 8px;border-radius:2px;}
-.pill-pending{background:rgba(255,159,67,.15);color:#ff9f43;border:1px solid rgba(255,159,67,.3);}
-.pill-confirmed{background:rgba(46,204,113,.12);color:#2ecc71;border:1px solid rgba(46,204,113,.25);}
-.pill-cancelled{background:rgba(255,107,107,.1);color:#ff6b6b;border:1px solid rgba(255,107,107,.2);}
-.order-total{font-family:"DM Mono",monospace;font-size:13px;color:var(--white);margin-left:auto;}
-.order-row-body{display:none;padding:12px 16px;border-top:1px solid rgba(255,255,255,.05);}
-.order-row.open .order-row-body{display:block;}
-.order-items-mini{width:100%;border-collapse:collapse;font-size:12px;}
-.order-items-mini td{padding:5px 8px;border-bottom:1px solid rgba(255,255,255,.04);color:var(--smoke);}
-.order-items-mini tr:last-child td{border-bottom:none;}
-.order-delivery{font-size:12px;color:var(--silver);margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.04);}
-.btn-logout{background:transparent;border:1px solid rgba(139,160,178,.2);color:var(--silver);font-family:"Oswald",sans-serif;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;padding:8px 18px;cursor:pointer;transition:all .2s;width:100%;margin-top:12px;}
-.btn-logout:hover{border-color:#ff6b6b;color:#ff6b6b;}
-@media(max-width:700px){.acct-grid{grid-template-columns:1fr;}.acct-sidebar{padding:18px;}}
+.account-layout{display:grid;grid-template-columns:300px 1fr;gap:40px;margin-top:48px;align-items:start;}
+.acct-sidebar{background:var(--ink2);border:1px solid rgba(200,152,31,.2);padding:32px 28px;}
+.acct-name{font-family:'Oswald',sans-serif;font-size:24px;color:var(--white);margin-bottom:4px;}
+.acct-company{font-family:'DM Mono',monospace;font-size:12px;color:var(--gold);letter-spacing:1px;text-transform:uppercase;margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,.05);}
+.acct-detail{margin-bottom:16px;}
+.acct-lbl{font-size:10px;color:var(--silver);letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;}
+.acct-val{font-size:14px;color:var(--smoke);}
+.btn-logout{width:100%;background:transparent;border:1px solid rgba(255,80,80,.3);color:#ff6b6b;font-family:'Oswald',sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;padding:12px;cursor:none;margin-top:24px;transition:all .2s;}
+.btn-logout:hover{background:rgba(255,80,80,.1);border-color:#ff6b6b;}
+
+.acct-main{background:var(--ink2);border:1px solid rgba(139,160,178,.15);padding:32px 40px;}
+.acct-section-title{font-family:'Oswald',sans-serif;font-size:20px;color:var(--white);margin-bottom:24px;}
+.orders-table{width:100%;border-collapse:collapse;font-size:14px;}
+.orders-table th{background:rgba(200,152,31,.1);color:var(--gold);font-family:'Oswald',sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;padding:14px 16px;text-align:left;}
+.orders-table td{padding:16px;border-bottom:1px solid rgba(255,255,255,.05);color:var(--smoke);vertical-align:middle;}
+.orders-table tr:hover td{background:rgba(255,255,255,.02);}
+.status-badge{display:inline-block;padding:4px 10px;border-radius:2px;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;text-transform:uppercase;}
+.status-pending{background:rgba(243,156,18,.1);border:1px solid #f39c12;color:#f39c12;}
+.status-confirmed{background:rgba(46,204,113,.1);border:1px solid #2ecc71;color:#2ecc71;}
+.status-cancelled{background:rgba(255,80,80,.1);border:1px solid #ff6b6b;color:#ff6b6b;}
+
+/* MOBILE FIX FOR TABLE SQUISH */
+@media(max-width:900px){
+  .account-layout{grid-template-columns:1fr;gap:32px;}
+  .acct-main{padding:24px 20px;}
+}
+@media(max-width:600px){
+  .orders-table thead{display:none;}
+  .orders-table tbody tr{display:flex;flex-direction:column;padding:16px;border-bottom:1px solid rgba(200,152,31,.2);background:var(--ink3);margin-bottom:12px;}
+  .orders-table tbody td{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border:none;}
+  /* Inject column labels via CSS */
+  .orders-table tbody td::before{content:attr(data-label);color:var(--silver);font-family:'DM Mono',monospace;font-size:11px;letter-spacing:1px;text-transform:uppercase;}
+  /* Highlight the Order ID */
+  .orders-table tbody td:first-child{border-bottom:1px solid rgba(255,255,255,.05);padding-bottom:12px;margin-bottom:8px;}
+}
 </style>
 </head>
 <body>
+
 <div id="cursor"></div><div id="cursor-ring"></div>
 
 <div class="topbar">
@@ -60,8 +68,7 @@
   <div class="nav-actions" id="nav-auth-container">
     <a href="tel:17328291940" class="nav-tel"><svg viewBox="0 0 24 24" width="16" height="16" fill="var(--gold)"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.27-.27.67-.36 1.02-.22 1.12.45 2.32.68 3.58.68.55 0 1 .45 1 1V20c0 .55-.45 1-1 1C10.29 21 3 13.71 3 4.5c0-.55.45-1 1-1H8c.55 0 1 .45 1 1 0 1.27.2 2.48.57 3.62.1.32.03.68-.22.96L6.6 10.8z"/></svg>732-829-1940</a>
     <span id="auth-buttons" style="display:inline-flex; align-items:center; gap:8px;">
-      <a href="login.html" class="nav-cta" id="nav-login-btn" style="background:transparent;border:1px solid var(--gold);color:var(--gold);">Login</a>
-      <a href="account.html" class="nav-cta" id="nav-account-btn" style="display:none;background:var(--ink3);border:1px solid rgba(200,152,31,.3);flex-direction:column;align-items:flex-start;padding:6px 12px;line-height:1.3;gap:2px;"><span style="font-size:9px;color:var(--silver);letter-spacing:1px;font-family:'DM Mono',monospace;">LOGGED IN AS</span><span id="nav-logged-in-name" style="font-size:12px;color:var(--white);">My Account</span></a>
+      <a href="account.html" class="nav-cta" id="nav-account-btn" style="background:var(--ink3);border:1px solid rgba(200,152,31,.3);flex-direction:column;align-items:flex-start;padding:6px 12px;line-height:1.3;gap:2px;"><span style="font-size:9px;color:var(--silver);letter-spacing:1px;font-family:'DM Mono',monospace;">LOGGED IN AS</span><span id="nav-logged-in-name" style="font-size:12px;color:var(--white);">My Account</span></a>
       <a href="cart.html" class="nav-cta" id="nav-cart-btn" style="background:var(--gold);color:var(--ink);border:none;">🛒 Cart <span id="nav-cart-count" class="cart-nav-badge"></span></a>
     </span>
   </div>
@@ -77,60 +84,61 @@
   <a href="contact.html">Contact</a>
   <a href="tel:17328291940" class="mob-tel">📞 732-829-1940</a>
   <a href="cart.html" class="mob-cta">🛒 Cart →</a>
-  <a href="login.html" class="mob-cta" style="margin-top:10px;background:transparent;border:1px solid var(--gold);color:var(--gold);">Login / Register</a>
 </div>
 
 <div class="page-hero">
   <div class="page-hero-inner">
-    <div class="page-breadcrumb"><a href="index.html">Home</a> › Account</div>
-    <div class="page-title" data-r>My <span>Account</span></div>
+    <div class="page-breadcrumb"><a href="index.html">Home</a> › My Account</div>
+    <div class="page-title" data-r>Trade <span>Account</span></div>
+    <p class="page-subtitle" data-r>Manage your details and view your order history.</p>
   </div>
 </div>
-<div class="ticker" aria-hidden="true"><div class="ticker-track">
-  <div class="t-item g">Building Materials <span class="t-dia">◆</span></div><div class="t-item">Plumbing Supplies <span class="t-dia">◆</span></div>
-  <div class="t-item g">PVC Pipe &amp; Fittings <span class="t-dia">◆</span></div><div class="t-item">Fast Response <span class="t-dia">◆</span></div>
-  <div class="t-item g">Building Materials <span class="t-dia">◆</span></div><div class="t-item">Plumbing Supplies <span class="t-dia">◆</span></div>
-</div></div>
 
-<div class="section">
-  <div class="container">
-    <div id="auth-gate" style="display:none;background:var(--ink2);border:1px solid rgba(200,152,31,.25);border-left:4px solid var(--gold);padding:24px 28px;">
-      <strong style="color:var(--white);display:block;margin-bottom:8px;">Please log in to view your account</strong>
-      <a href="login.html" style="color:var(--gold);">Log in →</a>
-    </div>
-    <div id="acct-wrap" style="display:none;">
-      <div class="acct-grid">
-        <div>
-          <div class="acct-sidebar">
-            <div class="acct-user-name" id="acct-name"></div>
-            <div class="acct-user-co" id="acct-co"></div>
-            <nav class="acct-nav">
-              <a href="#orders" class="active" onclick="showTab('orders',this)">📋 My Orders</a>
-              <a href="#info" onclick="showTab('info',this)">👤 Account Info</a>
-            </nav>
-            <button class="btn-logout" onclick="doLogout()">Log Out</button>
-          </div>
+<section class="sec" style="background:var(--ink);padding-top:20px;">
+  <div class="sec-inner">
+    <div class="account-layout">
+      
+      <div class="acct-sidebar">
+        <div class="acct-name" id="display-name">Loading...</div>
+        <div class="acct-company" id="display-company">-</div>
+        
+        <div class="acct-detail">
+          <div class="acct-lbl">Email Address</div>
+          <div class="acct-val" id="display-email">-</div>
         </div>
-        <div>
-          <div id="tab-orders" class="acct-content">
-            <div class="acct-section-title">Order History</div>
-            <div id="orders-loading" style="color:var(--silver);padding:20px 0;">Loading your orders...</div>
-            <div id="orders-container"></div>
-          </div>
-          <div id="tab-info" class="acct-content" style="display:none;">
-            <div class="acct-section-title">Account Details</div>
-            <div style="display:grid;gap:14px;">
-              <div><div style="font-size:11px;color:var(--silver);font-family:DM Mono,monospace;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px;">Name</div><div id="info-name" style="color:var(--smoke);font-size:14px;"></div></div>
-              <div><div style="font-size:11px;color:var(--silver);font-family:DM Mono,monospace;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px;">Company</div><div id="info-co" style="color:var(--smoke);font-size:14px;"></div></div>
-              <div><div style="font-size:11px;color:var(--silver);font-family:DM Mono,monospace;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px;">Email</div><div id="info-email" style="color:var(--smoke);font-size:14px;"></div></div>
-              <div><div style="font-size:11px;color:var(--silver);font-family:DM Mono,monospace;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px;">Account Status</div><div style="color:#2ecc71;font-size:13px;font-family:DM Mono,monospace;">✓ Approved Trade Account</div></div>
-            </div>
-          </div>
+        <div class="acct-detail">
+          <div class="acct-lbl">Account Status</div>
+          <div class="acct-val" id="display-status" style="color:#2ecc71;font-weight:bold;text-transform:capitalize;">-</div>
         </div>
+        <div class="acct-detail">
+          <div class="acct-lbl">Purchasing Rights</div>
+          <div class="acct-val" id="display-rights">-</div>
+        </div>
+
+        <button class="btn-logout" onclick="logout()">Sign Out</button>
       </div>
+
+      <div class="acct-main">
+        <h2 class="acct-section-title">Order History</h2>
+        <table class="orders-table">
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Date Placed</th>
+              <th>Items</th>
+              <th>Total</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="orders-tbody">
+            <tr><td colspan="5" style="text-align:center;padding:40px;color:var(--silver);">Loading orders...</td></tr>
+          </tbody>
+        </table>
+      </div>
+
     </div>
   </div>
-</div>
+</section>
 
 <footer>
   <div class="ft-top">
@@ -167,93 +175,84 @@
 
 <script src="assets/main.js"></script>
 <script>
-function updateNavCount(){
+const WORKER_URL = 'https://allpro-github-proxy.baruch-6d5.workers.dev';
+var currentUser = null;
+
+(function init() {
   try {
+    currentUser = JSON.parse(sessionStorage.getItem('apbs_user'));
+  } catch(e) {}
+  
+  if (!currentUser) {
+    window.location.href = 'login.html';
+    return;
+  }
+
+  // Populate User Info
+  document.getElementById('display-name').textContent = (currentUser.fname || '') + ' ' + (currentUser.lname || '');
+  document.getElementById('display-company').textContent = currentUser.company || 'N/A';
+  document.getElementById('display-email').textContent = currentUser.email || 'N/A';
+  document.getElementById('display-status').textContent = currentUser.status || 'Pending';
+  document.getElementById('display-rights').textContent = currentUser.canOrderPieces === false ? 'Cases Only' : 'Pieces & Cases';
+  document.getElementById('nav-logged-in-name').textContent = (currentUser.fname || '') + ' ' + (currentUser.lname || '');
+
+  loadOrders();
+})();
+
+async function loadOrders() {
+  try {
+    const r = await fetch(WORKER_URL + '/github/orders.json');
+    const d = await r.json();
+    const data = JSON.parse(atob(d.content.replace(/\n/g,'')));
+    
+    let myOrders = data.orders.filter(o => o.customer.email === currentUser.email);
+    myOrders.sort((a, b) => new Date(b.placedAt) - new Date(a.placedAt));
+    
+    const tbody = document.getElementById('orders-tbody');
+    
+    if (myOrders.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--silver);">You have not placed any orders yet.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = myOrders.map(o => {
+      let statusClass = 'status-pending';
+      if (o.status === 'confirmed') statusClass = 'status-confirmed';
+      if (o.status === 'cancelled') statusClass = 'status-cancelled';
+      
+      let itemsCount = o.items ? o.items.reduce((sum, i) => sum + i.qty, 0) : 0;
+
+      return `
+        <tr>
+          <td data-label="Order ID"><span style="color:var(--gold);font-family:'DM Mono',monospace;font-size:13px;">${o.id}</span></td>
+          <td data-label="Date Placed">${new Date(o.placedAt).toLocaleDateString()}</td>
+          <td data-label="Items">${itemsCount} pcs</td>
+          <td data-label="Total">$${(o.total || 0).toFixed(2)}</td>
+          <td data-label="Status"><span class="status-badge ${statusClass}">${o.status}</span></td>
+        </tr>
+      `;
+    }).join('');
+
+  } catch(e) {
+    document.getElementById('orders-tbody').innerHTML = '<tr><td colspan="5" style="color:#ff6b6b;padding:20px;">Failed to load order history.</td></tr>';
+  }
+}
+
+function logout() {
+  sessionStorage.removeItem('apbs_user');
+  window.location.href = 'login.html';
+}
+
+// Nav Cart Count
+function updateNavCount(){
+  try{
     var cart = JSON.parse(localStorage.getItem('apbs_cart')||'[]');
     var total = cart.reduce(function(s,i){ return s+i.qty; }, 0);
     var el = document.getElementById('nav-cart-count');
     if(el) el.textContent = total > 0 ? total : '';
-  } catch(e){}
+  }catch(e){}
 }
 updateNavCount();
-
-const WORKER_URL = 'https://allpro-github-proxy.baruch-6d5.workers.dev';
-var currentUser = null;
-try{ currentUser = JSON.parse(sessionStorage.getItem('apbs_user')); }catch(e){}
-
-if(!currentUser || currentUser.status !== 'approved'){
-  document.getElementById('auth-gate').style.display = 'block';
-  document.getElementById('nav-account-btn').style.display = 'none';
-  document.getElementById('nav-login-btn').style.display = 'inline-flex';
-} else {
-  document.getElementById('acct-wrap').style.display = 'block';
-  document.getElementById('nav-account-btn').style.display = 'inline-flex';
-  document.getElementById('nav-login-btn').style.display = 'none';
-  
-  var name = currentUser.name || ((currentUser.fname||'')+' '+(currentUser.lname||'')).trim();
-  document.getElementById('nav-logged-in-name').textContent = name;
-  document.getElementById('acct-name').textContent = name;
-  document.getElementById('acct-co').textContent   = currentUser.company||'';
-  document.getElementById('info-name').textContent  = name;
-  document.getElementById('info-co').textContent    = currentUser.company||'';
-  document.getElementById('info-email').textContent = currentUser.email||'';
-  loadOrders();
-}
-
-function showTab(tab, link){
-  document.querySelectorAll('.acct-nav a').forEach(function(a){ a.classList.remove('active'); });
-  link.classList.add('active');
-  document.getElementById('tab-orders').style.display = tab==='orders' ? 'block' : 'none';
-  document.getElementById('tab-info').style.display   = tab==='info'   ? 'block' : 'none';
-  return false;
-}
-
-function toggleOrderRow(el){el.closest('.order-row').classList.toggle('open');}
-async function loadOrders(){
-  try{
-    var r = await fetch(WORKER_URL+'/github/orders.json');
-    var d = await r.json();
-    var data = JSON.parse(atob(d.content.replace(/\n/g,'')));
-    var myOrders = (data.orders||[]).filter(function(o){
-      return o.customer && o.customer.id === currentUser.id;
-    }).sort(function(a,b){ return new Date(b.placedAt)-new Date(a.placedAt); });
-
-    document.getElementById('orders-loading').style.display = 'none';
-    var container = document.getElementById('orders-container');
-
-    if(!myOrders.length){
-      container.innerHTML = '<p style="color:var(--silver);font-size:14px;">No orders yet. <a href="products.html" style="color:var(--gold);">Browse products →</a></p>';
-      return;
-    }
-
-    container.innerHTML = myOrders.map(function(o){
-      var pillCls = 'pill-'+(o.status||'pending');
-      var items = (o.items||[]).map(function(i){
-        return '<tr><td><a href="products.html#'+i.code+'" style="color:var(--smoke);text-decoration:none" onmouseover="this.style.color=\'var(--gold)\'" onmouseout="this.style.color=\'var(--smoke)\'">'+i.description+' '+i.size+'</a></td><td style="text-align:center">'+i.qty+' pcs</td><td style="text-align:right;font-family:DM Mono,monospace">$'+parseFloat(i.lineTotal).toFixed(2)+'</td></tr>';
-      }).join('');
-      return '<div class="order-row" id="or-'+o.id+'">'
-        +'<div class="order-row-hdr" onclick="toggleOrderRow(this)">'
-        +'<span class="order-id">'+o.id+'</span>'
-        +'<span class="order-date">'+new Date(o.placedAt).toLocaleDateString()+'</span>'
-        +'<span class="order-status-pill '+pillCls+'">'+((o.status||'pending').toUpperCase())+'</span>'
-        +'<span class="order-total">$'+parseFloat(o.total).toFixed(2)+'</span>'
-        +'</div>'
-        +'<div class="order-row-body">'
-        +'<table class="order-items-mini"><thead><tr><th>Product</th><th style="text-align:center">Qty</th><th style="text-align:right">Total</th></tr></thead>'
-        +'<tbody>'+items+'</tbody></table>'
-        +'<div class="order-delivery">'+o.delivery.method.toUpperCase()+': '+o.delivery.address
-        +(o.po ? ' &nbsp;|&nbsp; PO: '+o.po : '')+'</div>'
-        +'</div></div>';
-    }).join('');
-  }catch(e){
-    document.getElementById('orders-loading').textContent = 'Could not load orders. Please try again.';
-  }
-}
-
-function doLogout(){
-  sessionStorage.removeItem('apbs_user');
-  window.location.href = 'index.html';
-}
 </script>
 </body>
 </html>
