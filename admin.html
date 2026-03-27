@@ -9,34 +9,36 @@
 .admin-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:32px;border-bottom:1px solid rgba(200,152,31,.2);padding-bottom:16px;}
 .admin-title{font-family:'Oswald',sans-serif;font-size:28px;color:var(--white);}
 .admin-tabs{display:flex;gap:8px;}
-.admin-tab{background:var(--ink2);border:1px solid rgba(139,160,178,.2);color:var(--silver);font-family:'DM Mono',monospace;font-size:13px;letter-spacing:1px;padding:10px 20px;cursor:pointer;transition:all .2s;}
+.admin-tab{background:var(--ink2);border:1px solid rgba(139,160,178,.2);color:var(--silver);font-family:'DM Mono',monospace;font-size:13px;letter-spacing:1px;padding:10px 20px;cursor:none;transition:all .2s;}
 .admin-tab.active{background:rgba(200,152,31,.1);border-color:var(--gold);color:var(--gold);}
 .admin-panel{display:none;background:var(--ink2);border:1px solid rgba(139,160,178,.15);padding:24px;}
 .admin-panel.active{display:block;}
 .data-table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:20px;}
 .data-table th{background:rgba(255,255,255,.03);color:var(--gold);font-family:'DM Mono',monospace;font-size:11px;letter-spacing:1px;text-transform:uppercase;padding:12px;text-align:left;border-bottom:1px solid rgba(200,152,31,.2);}
 .data-table td{padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.05);}
-.data-input{width:100%;background:var(--ink3);border:1px solid rgba(139,160,178,.2);color:var(--white);font-family:'DM Sans',sans-serif;font-size:13px;padding:8px 10px;outline:none;box-sizing:border-box;}
+.data-input{width:100%;background:var(--ink3);border:1px solid rgba(139,160,178,.2);color:var(--white);font-family:'DM Sans',sans-serif;font-size:13px;padding:8px 10px;outline:none;box-sizing:border-box;cursor:none;}
 .data-input:focus{border-color:var(--gold);}
 .action-bar{display:flex;justify-content:space-between;align-items:center;margin-top:20px;}
-.btn-save{background:var(--gold);color:var(--ink);font-family:'Oswald',sans-serif;font-size:14px;letter-spacing:2px;text-transform:uppercase;padding:12px 24px;border:none;cursor:pointer;font-weight:600;}
-.btn-add{background:transparent;border:1px dashed rgba(139,160,178,.4);color:var(--silver);padding:10px 20px;cursor:pointer;font-family:'DM Mono',monospace;font-size:12px;}
+.btn-save{background:var(--gold);color:var(--ink);font-family:'Oswald',sans-serif;font-size:14px;letter-spacing:2px;text-transform:uppercase;padding:12px 24px;border:none;cursor:none;font-weight:600;}
+.btn-add{background:transparent;border:1px dashed rgba(139,160,178,.4);color:var(--silver);padding:10px 20px;cursor:none;font-family:'DM Mono',monospace;font-size:12px;}
 .btn-add:hover{border-color:var(--white);color:var(--white);}
-.btn-del{background:rgba(255,80,80,.1);border:1px solid rgba(255,80,80,.2);color:#ff6b6b;cursor:pointer;padding:6px 10px;font-weight:bold;}
+.btn-del{background:rgba(255,80,80,.1);border:1px solid rgba(255,80,80,.2);color:#ff6b6b;cursor:none;padding:6px 10px;font-weight:bold;}
 #status-msg{font-family:'DM Mono',monospace;font-size:12px;padding:12px;margin-bottom:20px;display:none;}
 .status-success{background:rgba(46,204,113,.1);border:1px solid #2ecc71;color:#2ecc71;}
 .status-err{background:rgba(255,80,80,.1);border:1px solid #ff6b6b;color:#ff6b6b;}
 </style>
 </head>
 <body>
-  <div id="cursor"></div><div id="cursor-ring"></div>
+
+<div id="cursor"></div><div id="cursor-ring"></div>
+
 <nav>
   <div class="nav-logo">
     <img src="assets/logo.png" alt="All Pro Building Supplies"/>
     <div class="nav-brand-text">All Pro Admin <span>Control</span></div>
   </div>
   <div class="nav-actions">
-    <a href="index.html" class="nav-cta" style="background:transparent;border:1px solid var(--silver);color:var(--silver);">← Back to Site</a>
+    <a href="index.html" class="nav-cta" style="background:transparent;border:1px solid var(--silver);color:var(--silver);cursor:none;">← Back to Site</a>
   </div>
 </nav>
 
@@ -102,6 +104,7 @@
 
 </div>
 
+<script src="assets/main.js"></script>
 <script>
 const WORKER_URL = 'https://allpro-github-proxy.baruch-6d5.workers.dev';
 let currentProdSha = null;
@@ -159,7 +162,6 @@ async function loadProducts() {
     const tbody = document.getElementById('prod-tbody');
     tbody.innerHTML = '';
     
-    // Skip header row [0]
     for(let i=1; i<rows.length; i++) {
       if(!rows[i][0]) continue;
       addProductRow(rows[i]);
@@ -262,7 +264,6 @@ async function saveUsers() {
   btn.textContent = 'Save User Approvals'; btn.disabled = false;
 }
 
-// Init
 window.onload = () => { loadProducts(); loadUsers(); };
 </script>
 </body>
