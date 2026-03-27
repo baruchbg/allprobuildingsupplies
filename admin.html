@@ -10,72 +10,79 @@
 .admin-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:32px;border-bottom:1px solid rgba(200,152,31,.2);padding-bottom:16px;flex-wrap:wrap;gap:16px;}
 .admin-title{font-family:'Oswald',sans-serif;font-size:28px;color:var(--white);}
 .admin-tabs{display:flex;gap:8px;flex-wrap:wrap;}
-.admin-tab{background:var(--ink2);border:1px solid rgba(139,160,178,.2);color:var(--silver);font-family:'DM Mono',monospace;font-size:13px;letter-spacing:1px;padding:10px 20px;cursor:none;transition:all .2s;}
+.admin-tab{background:var(--ink2);border:1px solid rgba(139,160,178,.2);color:var(--silver);font-family:'DM Mono',monospace;font-size:13px;letter-spacing:1px;padding:10px 20px;cursor:pointer;transition:all .2s;}
 .admin-tab.active{background:rgba(200,152,31,.1);border-color:var(--gold);color:var(--gold);}
 .admin-panel{display:none;background:var(--ink2);border:1px solid rgba(139,160,178,.15);padding:24px;}
 .admin-panel.active{display:block;}
 
-/* Tables */
+/* Data Tables */
 .data-table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:20px;}
 .data-table th{background:rgba(255,255,255,.03);color:var(--gold);font-family:'DM Mono',monospace;font-size:11px;letter-spacing:1px;text-transform:uppercase;padding:12px;text-align:left;border-bottom:1px solid rgba(200,152,31,.2);}
-.data-table td{padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.05);color:var(--smoke);}
-.data-input{width:100%;background:var(--ink3);border:1px solid rgba(139,160,178,.2);color:var(--white);font-family:'DM Sans',sans-serif;font-size:13px;padding:8px 10px;outline:none;box-sizing:border-box;cursor:none;}
+.data-table td{padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.05);vertical-align:middle;}
+.data-input{width:100%;background:var(--ink3);border:1px solid rgba(139,160,178,.2);color:var(--white);font-family:'DM Sans',sans-serif;font-size:13px;padding:8px 10px;outline:none;box-sizing:border-box;}
 .data-input:focus{border-color:var(--gold);}
-.data-input:disabled{opacity:0.6;}
-.data-input option{background:var(--ink3);color:var(--white);}
 
 /* Buttons */
 .action-bar{display:flex;justify-content:space-between;align-items:center;margin-top:20px;flex-wrap:wrap;gap:12px;}
-.btn-gold{background:var(--gold);color:var(--ink);font-family:'Oswald',sans-serif;font-size:14px;letter-spacing:2px;text-transform:uppercase;padding:12px 24px;border:none;cursor:none;font-weight:600;transition:all .2s;}
-.btn-gold:hover:not(:disabled){background:var(--gold2);transform:translateY(-1px);}
-.btn-gold:disabled{opacity:0.5;}
-.btn-ghost{background:transparent;border:1px dashed rgba(139,160,178,.4);color:var(--silver);padding:10px 20px;cursor:none;font-family:'DM Mono',monospace;font-size:12px;}
-.btn-ghost:hover{border-color:var(--white);color:var(--white);}
-.btn-del{background:rgba(255,80,80,.1);border:1px solid rgba(255,80,80,.2);color:#ff6b6b;cursor:none;padding:6px 10px;font-weight:bold;}
+.btn-save{background:var(--gold);color:var(--ink);font-family:'Oswald',sans-serif;font-size:14px;letter-spacing:2px;text-transform:uppercase;padding:12px 24px;border:none;cursor:pointer;font-weight:600;}
+.btn-add{background:transparent;border:1px dashed rgba(139,160,178,.4);color:var(--silver);padding:10px 20px;cursor:pointer;font-family:'DM Mono',monospace;font-size:12px;}
+.btn-add:hover{border-color:var(--white);color:var(--white);}
+.btn-del{background:rgba(255,80,80,.1);border:1px solid rgba(255,80,80,.2);color:#ff6b6b;cursor:pointer;padding:6px 10px;font-weight:bold;}
+.btn-view{background:rgba(200,152,31,.1);border:1px solid var(--gold);color:var(--gold);cursor:pointer;padding:6px 14px;font-family:'DM Mono',monospace;font-size:11px;text-transform:uppercase;}
 
-/* Status Badges */
-.badge{padding:4px 8px;border-radius:2px;font-family:'DM Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:1px;}
-.b-pending{background:rgba(243,156,18,.1);border:1px solid #f39c12;color:#f39c12;}
-.b-confirmed{background:rgba(46,204,113,.1);border:1px solid #2ecc71;color:#2ecc71;}
-.b-cancelled{background:rgba(255,80,80,.1);border:1px solid #ff6b6b;color:#ff6b6b;}
+/* Status Messaging */
 #status-msg{font-family:'DM Mono',monospace;font-size:12px;padding:12px;margin-bottom:20px;display:none;}
 .status-success{background:rgba(46,204,113,.1);border:1px solid #2ecc71;color:#2ecc71;}
 .status-err{background:rgba(255,80,80,.1);border:1px solid #ff6b6b;color:#ff6b6b;}
 
-/* MODAL */
-.modal-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:999;align-items:center;justify-content:center;padding:20px;overflow-y:auto;}
-.modal-box{background:var(--ink2);border:1px solid var(--gold);width:100%;max-width:800px;padding:32px;position:relative;}
-.modal-close{position:absolute;top:20px;right:20px;background:transparent;border:none;color:var(--silver);font-size:24px;cursor:none;}
-.modal-title{font-family:'Oswald',sans-serif;font-size:22px;color:var(--white);margin-bottom:20px;border-bottom:1px solid rgba(200,152,31,.2);padding-bottom:10px;}
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;}
-.form-grp{display:flex;flex-direction:column;gap:6px;}
-.form-lbl{font-family:'DM Mono',monospace;font-size:10px;color:var(--silver);letter-spacing:1.5px;text-transform:uppercase;}
+/* Status Badges */
+.badge{padding:4px 8px;font-family:'DM Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:1px;}
+.badge.pending{background:rgba(255,159,67,.15);color:#ff9f43;border:1px solid rgba(255,159,67,.3);}
+.badge.confirmed{background:rgba(46,204,113,.15);color:#2ecc71;border:1px solid rgba(46,204,113,.3);}
+.badge.cancelled{background:rgba(255,107,107,.15);color:#ff6b6b;border:1px solid rgba(255,107,107,.3);}
 
-/* MOBILE FIXES */
+/* MODAL SCROLL FIX */
+#order-modal-overlay{
+  display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85);
+  z-index:9999; overflow-y:auto; padding:40px 20px;
+  align-items:flex-start; /* FIX: allows scrolling to the top */
+  justify-content:center;
+}
+#order-modal{
+  background:var(--ink2); border:1px solid rgba(200,152,31,.4);
+  max-width:800px; width:100%; padding:32px;
+  margin:auto; /* Centers the modal vertically if it's shorter than the screen */
+  position:relative;
+}
+.modal-close{position:absolute;top:20px;right:20px;background:none;border:none;color:var(--silver);font-size:24px;cursor:pointer;}
+.modal-close:hover{color:var(--white);}
+.modal-title{font-family:'Oswald',sans-serif;font-size:24px;color:var(--gold);margin-bottom:24px;border-bottom:1px solid rgba(255,255,255,.1);padding-bottom:12px;}
+.modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px;}
+.modal-box{background:var(--ink3);border:1px solid rgba(255,255,255,.05);padding:16px;}
+.modal-lbl{font-size:10px;color:var(--silver);font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;}
+.modal-val{font-size:14px;color:var(--white);margin-bottom:12px;word-break:break-word;}
+.modal-val:last-child{margin-bottom:0;}
+
+/* Resend Button Bar */
+.resend-bar{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;}
+.resend-btn{background:transparent;border:1px solid rgba(139,160,178,.3);color:var(--silver);padding:8px 14px;font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;transition:all .2s;}
+.resend-btn:hover{border-color:var(--gold);color:var(--gold);background:rgba(200,152,31,.1);}
+
 @media(max-width:768px){
-  .admin-panel{padding:16px 12px;}
-  .form-grid{grid-template-columns:1fr;}
-  
-  /* Cardify Tables */
-  .data-table thead{display:none;}
-  .data-table tbody tr{display:flex;flex-direction:column;padding:16px 0;border-bottom:1px solid rgba(200,152,31,.3);}
-  .data-table tbody td{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border:none;}
-  .data-table tbody td::before{content:attr(data-label);color:var(--silver);font-family:'DM Mono',monospace;font-size:10px;text-transform:uppercase;}
-  .data-input{width:60%;text-align:right;}
+  .modal-grid{grid-template-columns:1fr;}
+  #order-modal{padding:20px;}
+  .resend-btn{flex:1;text-align:center;}
 }
 </style>
 </head>
 <body>
-
-<div id="cursor"></div><div id="cursor-ring"></div>
-
 <nav>
   <div class="nav-logo">
     <img src="assets/logo.png" alt="All Pro Building Supplies"/>
     <div class="nav-brand-text">All Pro Admin <span>Control</span></div>
   </div>
   <div class="nav-actions">
-    <a href="index.html" class="nav-cta" style="background:transparent;border:1px solid var(--silver);color:var(--silver);cursor:none;">← Back to Site</a>
+    <a href="index.html" class="nav-cta" style="background:transparent;border:1px solid var(--silver);color:var(--silver);">← Back to Site</a>
   </div>
 </nav>
 
@@ -85,22 +92,24 @@
   <div class="admin-header">
     <h1 class="admin-title">Database Manager</h1>
     <div class="admin-tabs">
-      <button class="admin-tab active" onclick="switchTab('orders')">Orders</button>
-      <button class="admin-tab" onclick="switchTab('products')">Products (Catalog)</button>
-      <button class="admin-tab" onclick="switchTab('users')">Users (Accounts)</button>
+      <button class="admin-tab" onclick="switchTab('orders')">Orders</button>
+      <button class="admin-tab" onclick="switchTab('products')">Products (CSV)</button>
+      <button class="admin-tab" onclick="switchTab('users')">Users (JSON)</button>
     </div>
   </div>
 
-  <div id="tab-orders" class="admin-panel active">
-    <div class="action-bar" style="margin-top:0;margin-bottom:20px;">
-      <p style="color:var(--silver);font-size:14px;margin:0;">Manage existing orders or create a new order for a customer.</p>
-      <button class="btn-gold" onclick="openOrderModal(null)">+ Create New Order</button>
-    </div>
+  <div id="tab-orders" class="admin-panel">
+    <p style="color:var(--silver);font-size:14px;margin-bottom:20px;">Manage customer orders. Click 'View' to see details, change status, and resend emails.</p>
     <div style="overflow-x:auto;">
       <table class="data-table" id="orders-table">
         <thead>
           <tr>
-            <th>Order ID</th><th>Date</th><th>Customer</th><th>Total</th><th>Status</th><th>Actions</th>
+            <th>Order ID</th>
+            <th>Date</th>
+            <th>Customer</th>
+            <th>Total</th>
+            <th>Status</th>
+            <th>Action</th>
           </tr>
         </thead>
         <tbody id="orders-tbody"></tbody>
@@ -109,30 +118,43 @@
   </div>
 
   <div id="tab-products" class="admin-panel">
-    <p style="color:var(--silver);font-size:14px;margin-bottom:20px;">Edit your master inventory. Changes here instantly update the live site.</p>
+    <p style="color:var(--silver);font-size:14px;margin-bottom:20px;">Edit your master inventory. This data feeds directly into the live Products and Checkout pages.</p>
     <div style="overflow-x:auto;">
       <table class="data-table" id="prod-table">
         <thead>
           <tr>
-            <th>Category</th><th>Description</th><th>Size</th><th>Pack</th><th>Inventory Qty</th><th>Price ($)</th><th>Image URL</th><th></th>
+            <th>Category Code</th>
+            <th>Description</th>
+            <th>Size</th>
+            <th>Pcs / Ctn</th>
+            <th>Inventory Qty</th>
+            <th>Unit Price ($)</th>
+            <th>Image URL</th>
+            <th></th>
           </tr>
         </thead>
         <tbody id="prod-tbody"></tbody>
       </table>
     </div>
     <div class="action-bar">
-      <button class="btn-ghost" onclick="addProductRow()">+ Add New Product Row</button>
-      <button class="btn-gold" onclick="saveProducts(this)">Save Products</button>
+      <button class="btn-add" onclick="addProductRow()">+ Add New Product Row</button>
+      <button class="btn-save" onclick="saveProducts()">Save Products</button>
     </div>
   </div>
 
   <div id="tab-users" class="admin-panel">
-    <p style="color:var(--silver);font-size:14px;margin-bottom:20px;">Approve or reject trade accounts to grant pricing access.</p>
+    <p style="color:var(--silver);font-size:14px;margin-bottom:20px;">Approve or reject trade accounts. Only 'approved' users can view pricing and place orders.</p>
     <div style="overflow-x:auto;">
       <table class="data-table" id="users-table">
         <thead>
           <tr>
-            <th>ID</th><th>Name</th><th>Email</th><th>Company</th><th>Status</th><th>Pieces Allowed</th><th></th>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Company</th>
+            <th>Status</th>
+            <th>Pieces Allowed</th>
+            <th></th>
           </tr>
         </thead>
         <tbody id="users-tbody"></tbody>
@@ -140,101 +162,97 @@
     </div>
     <div class="action-bar">
       <div></div>
-      <button class="btn-gold" onclick="saveUsers(this)">Save User Approvals</button>
+      <button class="btn-save" onclick="saveUsers()">Save Approvals</button>
     </div>
   </div>
 
 </div>
 
-<div class="modal-ov" id="order-modal">
-  <div class="modal-box">
-    <button class="modal-close" onclick="closeModal()">×</button>
-    <h2 class="modal-title" id="modal-title">Order Details</h2>
+<div id="order-modal-overlay" onclick="closeOrderModal(event)">
+  <div id="order-modal" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="closeOrderModal(event)">&times;</button>
+    <div class="modal-title">Order Details: <span id="m-id" style="color:var(--white)"></span></div>
     
-    <input type="hidden" id="m-order-id"/>
-    <input type="hidden" id="m-mode"/> <div class="form-grid">
-      <div class="form-grp">
-        <label class="form-lbl">Customer</label>
-        <select class="data-input" id="m-cust"></select>
+    <div class="modal-grid">
+      <div class="modal-box">
+        <div class="modal-lbl">Customer</div>
+        <div class="modal-val" id="m-cust-name"></div>
+        <div class="modal-val" id="m-cust-company"></div>
+        <div class="modal-val" id="m-cust-email"></div>
+        <div class="modal-val" id="m-cust-phone"></div>
       </div>
-      <div class="form-grp">
-        <label class="form-lbl">Order Status</label>
-        <select class="data-input" id="m-status">
-          <option value="pending">Pending</option>
-          <option value="confirmed">Confirmed</option>
-          <option value="cancelled">Cancelled</option>
-        </select>
-      </div>
-      <div class="form-grp">
-        <label class="form-lbl">Delivery Method</label>
-        <select class="data-input" id="m-del-method">
-          <option value="delivery">Delivery</option>
-          <option value="pickup">Pickup</option>
-        </select>
-      </div>
-      <div class="form-grp">
-        <label class="form-lbl">Delivery Address / PO Number</label>
-        <input type="text" class="data-input" id="m-address" placeholder="Address or PO..."/>
+      <div class="modal-box">
+        <div class="modal-lbl">Delivery / Logistics</div>
+        <div class="modal-val" id="m-delivery"></div>
+        <div class="modal-lbl" style="margin-top:12px;">PO Number</div>
+        <div class="modal-val" id="m-po"></div>
+        <div class="modal-lbl" style="margin-top:12px;">Notes</div>
+        <div class="modal-val" id="m-notes"></div>
       </div>
     </div>
-    
-    <h3 style="font-family:'Oswald',sans-serif;font-size:16px;color:var(--gold);margin:24px 0 12px;border-bottom:1px solid rgba(200,152,31,.2);padding-bottom:6px;">Line Items</h3>
-    <div style="overflow-x:auto;">
-      <table class="data-table" id="m-items-table">
-        <thead>
-          <tr><th>Product</th><th>Qty</th><th>Unit</th><th>Price</th><th>Total</th><th></th></tr>
-        </thead>
+
+    <div class="modal-box" style="margin-bottom:24px; padding:0; overflow:hidden;">
+      <table class="data-table" style="margin:0;">
+        <thead><tr><th>Item</th><th>Qty</th><th>Unit Price</th><th style="text-align:right">Line Total</th></tr></thead>
         <tbody id="m-items-tbody"></tbody>
       </table>
+      <div style="padding:16px; text-align:right; font-family:'Oswald',sans-serif; font-size:20px; color:var(--gold); border-top:1px solid rgba(255,255,255,.05);">
+        Total: <span id="m-total" style="color:var(--white)"></span>
+      </div>
     </div>
-    <div class="action-bar" style="margin-top:10px;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,.05);">
-      <button class="btn-ghost" id="btn-add-item" onclick="addModalItem()">+ Add Item</button>
-      <div style="font-family:'Oswald',sans-serif;font-size:20px;color:var(--white);">Grand Total: <span style="color:var(--gold)" id="m-grand-total">$0.00</span></div>
+
+    <div style="background:var(--ink); border:1px solid rgba(200,152,31,.2); padding:20px; border-radius:4px;">
+      <div class="modal-grid" style="margin-bottom:0; gap:20px;">
+        
+        <div>
+          <div class="modal-lbl" style="color:var(--gold)">Update Order Status</div>
+          <select id="m-status-sel" class="data-input" style="margin-bottom:12px;">
+            <option value="pending">Pending</option>
+            <option value="confirmed">Confirmed</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+          <button class="btn-save" style="width:100%; font-size:12px; padding:10px;" onclick="saveOrderStatus()">Save Status</button>
+        </div>
+        
+        <div>
+          <div class="modal-lbl" style="color:var(--gold)">Resend Confirmation Email</div>
+          <div class="resend-bar">
+            <button class="resend-btn" onclick="resendEmail('customer')">✉ To Customer</button>
+            <button class="resend-btn" onclick="resendEmail('admin')">✉ To Admin</button>
+            <button class="resend-btn" style="border-color:var(--gold);color:var(--gold);" onclick="resendEmail('both')">✉ To Both</button>
+          </div>
+          <div id="resend-msg" style="font-size:11px; color:#2ecc71; font-family:'DM Mono',monospace; margin-top:8px; display:none;">Email sent successfully!</div>
+        </div>
+
+      </div>
     </div>
-    
-    <div class="form-grp" style="margin-top:20px;">
-      <label class="form-lbl">Admin Notes</label>
-      <textarea class="data-input" id="m-notes" style="min-height:80px;resize:vertical;"></textarea>
-    </div>
-    
-    <div class="action-bar">
-      <span style="font-size:11px;color:var(--silver);max-width:300px;">Changing status or item quantities will automatically adjust inventory levels.</span>
-      <button class="btn-gold" id="btn-save-order" onclick="saveOrderModal(this)">Save Order</button>
-    </div>
+
   </div>
 </div>
 
-<script src="assets/main.js"></script>
 <script>
-// --- CONFIG ---
-const WORKER_URL   = 'https://allpro-github-proxy.baruch-6d5.workers.dev';
-const EMAILJS_SVC  = 'service_qefaa3x';
-const EMAILJS_TPL  = 'template_nh3iqob';
-const EMAILJS_KEY  = 'MNDXK3JgE890yvoA6';
-const NOTIFY_EMAIL = 'orders@allprobuildingsupplies.com';
+const WORKER_URL = 'https://allpro-github-proxy.baruch-6d5.workers.dev';
 
-// --- STATE ---
+// --- EMAILJS CONFIG ---
+const EMAILJS_SVC  = 'service_qefaa3x';   
+const EMAILJS_TPL  = 'template_nh3iqob';  
+const EMAILJS_KEY  = 'MNDXK3JgE890yvoA6';   
+const NOTIFY_EMAIL = 'orders@allprobuildingsupplies.com';
+emailjs.init(EMAILJS_KEY);
+
 let currentProdSha = null;
 let currentUserSha = null;
 let currentOrderSha = null;
-let masterProducts = []; 
 let masterUsers = [];
 let masterOrders = [];
-
-window.onload = async () => {
-  emailjs.init(EMAILJS_KEY);
-  await loadUsers();
-  await loadProducts();
-  await loadOrders();
-};
+let activeOrderObj = null; // Holds the order currently open in the modal
 
 function showStatus(msg, isErr) {
   const el = document.getElementById('status-msg');
   el.textContent = msg;
   el.className = isErr ? 'status-err' : 'status-success';
   el.style.display = 'block';
-  window.scrollTo(0,0);
-  setTimeout(() => el.style.display = 'none', 5000);
+  setTimeout(() => el.style.display = 'none', 4000);
 }
 
 function switchTab(tab) {
@@ -244,15 +262,19 @@ function switchTab(tab) {
   document.getElementById('tab-' + tab).classList.add('active');
 }
 
-// --- CSV UTILS ---
+// --- CSV PARSER UTILS ---
 function parseCSV(str) {
   var lines = [], curLine = [], curStr = '', inQ = false;
   for(var i=0; i<str.length; i++) {
     var c = str[i];
-    if(c === '"') { if(inQ && str[i+1] === '"') { curStr += '"'; i++; } else { inQ = !inQ; } }
-    else if(c === ',' && !inQ) { curLine.push(curStr); curStr = ''; }
-    else if((c === '\n' || c === '\r') && !inQ) { if(c === '\r' && str[i+1] === '\n') i++; curLine.push(curStr); lines.push(curLine); curLine = []; curStr = ''; }
-    else { curStr += c; }
+    if(c === '"') {
+      if(inQ && str[i+1] === '"') { curStr += '"'; i++; } else { inQ = !inQ; }
+    } else if(c === ',' && !inQ) {
+      curLine.push(curStr); curStr = '';
+    } else if((c === '\n' || c === '\r') && !inQ) {
+      if(c === '\r' && str[i+1] === '\n') i++;
+      curLine.push(curStr); lines.push(curLine); curLine = []; curStr = '';
+    } else { curStr += c; }
   }
   if(curStr !== '' || curLine.length > 0) { curLine.push(curStr); lines.push(curLine); }
   return lines;
@@ -260,490 +282,273 @@ function parseCSV(str) {
 function stringifyCSV(lines) {
   return lines.map(row => row.map(cell => {
     var s = String(cell||'');
-    if(s.includes(',') || s.includes('"') || s.includes('\n')) return '"' + s.replace(/"/g, '""') + '"';
+    if(s.includes(',') || s.includes('"') || s.includes('\n')) { return '"' + s.replace(/"/g, '""') + '"'; }
     return s;
   }).join(',')).join('\n');
 }
 
-// ==========================================
-// 1. USERS
-// ==========================================
-async function loadUsers() {
-  try {
-    const r = await fetch(WORKER_URL + '/github/users.json');
-    const d = await r.json();
-    currentUserSha = d.sha;
-    masterUsers = JSON.parse(decodeURIComponent(escape(atob(d.content)))).users || [];
-    
-    const tbody = document.getElementById('users-tbody');
-    tbody.innerHTML = '';
-    masterUsers.forEach((u, i) => {
-      tbody.innerHTML += `
-        <tr>
-          <td data-label="ID">${u.id}</td>
-          <td data-label="Name">${u.fname} ${u.lname}</td>
-          <td data-label="Email">${u.email}</td>
-          <td data-label="Company">${u.company}</td>
-          <td data-label="Status">
-            <select class="data-input status-sel" data-idx="${i}" style="background:${u.status==='approved'?'rgba(46,204,113,.1)':'var(--ink3)'}">
-              <option value="pending" ${u.status==='pending'?'selected':''}>Pending</option>
-              <option value="approved" ${u.status==='approved'?'selected':''}>Approved</option>
-              <option value="rejected" ${u.status==='rejected'?'selected':''}>Rejected</option>
-            </select>
-          </td>
-          <td data-label="Pieces"><select class="data-input pcs-sel" data-idx="${i}"><option value="true" ${u.canOrderPieces!==false?'selected':''}>Yes</option><option value="false" ${u.canOrderPieces===false?'selected':''}>No</option></select></td>
-          <td><button class="btn-del" onclick="deleteUser(${i})">Del</button></td>
-        </tr>`;
-    });
-
-    const custSel = document.getElementById('m-cust');
-    custSel.innerHTML = '<option value="">-- Select Customer --</option>';
-    masterUsers.filter(u=>u.status==='approved').forEach(u => {
-      custSel.innerHTML += `<option value="${u.email}">${u.fname} ${u.lname} (${u.company})</option>`;
-    });
-  } catch(e) { console.error(e); }
-}
-
-async function saveUsers(btn) {
-  btn.textContent = 'Saving...'; btn.disabled = true;
-  document.querySelectorAll('.status-sel').forEach(sel => masterUsers[sel.dataset.idx].status = sel.value);
-  document.querySelectorAll('.pcs-sel').forEach(sel => masterUsers[sel.dataset.idx].canOrderPieces = sel.value === 'true');
-  const payload = { message: 'Admin: Update users', content: btoa(unescape(encodeURIComponent(JSON.stringify({users: masterUsers}, null, 2)))), branch: 'main', sha: currentUserSha };
-  try {
-    const r = await fetch(WORKER_URL + '/github/users.json', { method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
-    if(r.ok) { const d = await r.json(); currentUserSha = d.content.sha; showStatus('Users saved!', false); await loadUsers(); } else throw new Error();
-  } catch(e) { showStatus('Error saving users.', true); }
-  btn.textContent = 'Save User Approvals'; btn.disabled = false;
-}
-
-function deleteUser(idx) { if(confirm("Permanently delete user?")) { masterUsers.splice(idx, 1); saveUsers(document.querySelector('#tab-users .btn-gold')); } }
-
-// ==========================================
-// 2. PRODUCTS
-// ==========================================
+// --- PRODUCTS ---
 async function loadProducts() {
   try {
     const r = await fetch(WORKER_URL + '/github/products.csv');
     const d = await r.json();
     currentProdSha = d.sha;
-    const rows = parseCSV(decodeURIComponent(escape(atob(d.content))));
-    
+    const csv = decodeURIComponent(escape(atob(d.content)));
+    const rows = parseCSV(csv);
     const tbody = document.getElementById('prod-tbody');
     tbody.innerHTML = '';
-    masterProducts = [];
-
     for(let i=1; i<rows.length; i++) {
       if(!rows[i][0]) continue;
-      masterProducts.push({
-        code: rows[i][0].trim(), desc: rows[i][1].trim(), size: rows[i][2].trim(),
-        pack: rows[i][3].trim(), qty: parseInt(rows[i][4])||0, price: parseFloat(rows[i][5])||0
-      });
       addProductRow(rows[i]);
     }
-  } catch(e) { console.error(e); }
+  } catch(e) { console.error('Products load error'); }
 }
 
 function addProductRow(data = ['', '', '', '', '', '', '']) {
   const tr = document.createElement('tr');
   tr.innerHTML = `
-    <td data-label="Category"><input class="data-input" value="${data[0]||''}"></td>
-    <td data-label="Description"><input class="data-input" value="${data[1]||''}"></td>
-    <td data-label="Size"><input class="data-input" value='${data[2]||''}'></td>
-    <td data-label="Pack"><input class="data-input" value="${data[3]||''}"></td>
-    <td data-label="Qty"><input class="data-input" value="${data[4]||''}"></td>
-    <td data-label="Price"><input class="data-input" value="${data[5]||''}"></td>
-    <td data-label="Image"><input class="data-input" value="${data[6]||''}"></td>
+    <td><input class="data-input" value="${data[0]||''}" placeholder="PIPE-SOLID"></td>
+    <td><input class="data-input" value="${data[1]||''}" placeholder="ASTM D1785 SCH40 PVC"></td>
+    <td><input class="data-input" value="${data[2]||''}" placeholder='2"'></td>
+    <td><input class="data-input" value="${data[3]||''}" placeholder="20"></td>
+    <td><input class="data-input" value="${data[4]||''}" placeholder="100"></td>
+    <td><input class="data-input" value="${data[5]||''}" placeholder="16.20"></td>
+    <td><input class="data-input" value="${data[6]||''}" placeholder="images/Sch40Solid.png"></td>
     <td><button class="btn-del" onclick="this.closest('tr').remove()">X</button></td>
   `;
   document.getElementById('prod-tbody').appendChild(tr);
 }
 
-async function saveProducts(btn) {
-  if(btn){ btn.textContent = 'Saving...'; btn.disabled = true; }
+async function saveProducts() {
+  const btn = event.target; btn.textContent = 'Saving...'; btn.disabled = true;
   const rows = [['Code', 'Description', 'Size', 'Pack', 'Qty', 'Price', 'Image']];
   document.querySelectorAll('#prod-tbody tr').forEach(tr => {
     const inputs = tr.querySelectorAll('input');
-    if(inputs[0].value.trim() !== '') { rows.push(Array.from(inputs).map(inp => inp.value.trim())); }
+    if(inputs[0].value.trim() !== '') {
+      rows.push(Array.from(inputs).map(inp => inputs[0].value === 'Code' ? inp.value : inp.value.trim()));
+    }
   });
-  const payload = { message: 'Admin: Update products', content: btoa(unescape(encodeURIComponent(stringifyCSV(rows)))), branch: 'main', sha: currentProdSha };
+  const csvStr = stringifyCSV(rows);
+  const payload = { message: 'Admin: Update products.csv', content: btoa(unescape(encodeURIComponent(csvStr))), branch: 'main', sha: currentProdSha };
+  
   try {
     const r = await fetch(WORKER_URL + '/github/products.csv', { method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
-    if(r.ok) { const d = await r.json(); currentProdSha = d.content.sha; showStatus('Products saved!', false); loadProducts(); } else throw new Error();
+    if(r.ok) { const d = await r.json(); currentProdSha = d.content.sha; showStatus('Products saved successfully!', false); } 
+    else throw new Error();
   } catch(e) { showStatus('Error saving products.', true); }
-  if(btn){ btn.textContent = 'Save Products'; btn.disabled = false; }
+  btn.textContent = 'Save Products'; btn.disabled = false;
 }
 
-// ==========================================
-// 3. ORDERS & MODAL
-// ==========================================
+// --- USERS ---
+async function loadUsers() {
+  try {
+    const r = await fetch(WORKER_URL + '/github/users.json');
+    const d = await r.json();
+    currentUserSha = d.sha;
+    const jsonStr = decodeURIComponent(escape(atob(d.content)));
+    masterUsers = JSON.parse(jsonStr).users || [];
+    const tbody = document.getElementById('users-tbody');
+    tbody.innerHTML = '';
+    
+    masterUsers.forEach((u, i) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td style="font-family:monospace;color:var(--silver);">${u.id}</td>
+        <td>${u.fname} ${u.lname}</td>
+        <td>${u.email}</td>
+        <td>${u.company}</td>
+        <td>
+          <select class="data-input status-sel" data-idx="${i}" style="background:${u.status==='approved'?'rgba(46,204,113,.1)':'var(--ink3)'}">
+            <option value="pending" ${u.status==='pending'?'selected':''}>Pending</option>
+            <option value="approved" ${u.status==='approved'?'selected':''}>Approved</option>
+            <option value="rejected" ${u.status==='rejected'?'selected':''}>Rejected</option>
+          </select>
+        </td>
+        <td>
+          <select class="data-input pcs-sel" data-idx="${i}">
+            <option value="true" ${u.canOrderPieces!==false?'selected':''}>Yes (Pieces & Cases)</option>
+            <option value="false" ${u.canOrderPieces===false?'selected':''}>No (Cases Only)</option>
+          </select>
+        </td>
+        <td><button class="btn-del" onclick="deleteUser(${i})">Delete</button></td>
+      `;
+      tbody.appendChild(tr);
+    });
+  } catch(e) { console.error('Users load error'); }
+}
+
+function deleteUser(idx) {
+  if(confirm("Are you sure you want to permanently delete this user?")) { masterUsers.splice(idx, 1); saveUsers(); }
+}
+
+async function saveUsers() {
+  const btn = event.target; btn.textContent = 'Saving...'; btn.disabled = true;
+  document.querySelectorAll('.status-sel').forEach(sel => masterUsers[sel.dataset.idx].status = sel.value);
+  document.querySelectorAll('.pcs-sel').forEach(sel => masterUsers[sel.dataset.idx].canOrderPieces = sel.value === 'true');
+  
+  const payload = { message: 'Admin: Update users.json', content: btoa(unescape(encodeURIComponent(JSON.stringify({users: masterUsers}, null, 2)))), branch: 'main', sha: currentUserSha };
+  try {
+    const r = await fetch(WORKER_URL + '/github/users.json', { method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
+    if(r.ok) { const d = await r.json(); currentUserSha = d.content.sha; showStatus('Users saved successfully!', false); loadUsers(); } 
+    else throw new Error();
+  } catch(e) { showStatus('Error saving users.', true); }
+  btn.textContent = 'Save Approvals'; btn.disabled = false;
+}
+
+// --- ORDERS ---
 async function loadOrders() {
   try {
     const r = await fetch(WORKER_URL + '/github/orders.json');
     const d = await r.json();
     currentOrderSha = d.sha;
-    masterOrders = JSON.parse(decodeURIComponent(escape(atob(d.content)))).orders || [];
-    renderOrders();
-  } catch(e) { console.error(e); }
+    const jsonStr = decodeURIComponent(escape(atob(d.content)));
+    masterOrders = JSON.parse(jsonStr).orders || [];
+    
+    // Sort newest first
+    masterOrders.sort((a,b) => new Date(b.placedAt) - new Date(a.placedAt));
+    
+    const tbody = document.getElementById('orders-tbody');
+    tbody.innerHTML = '';
+    
+    masterOrders.forEach(o => {
+      const dDate = new Date(o.placedAt).toLocaleDateString();
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td style="font-family:monospace;color:var(--gold);">${o.id}</td>
+        <td>${dDate}</td>
+        <td>${o.customer.name}<br><span style="font-size:10px;color:var(--silver)">${o.customer.company}</span></td>
+        <td style="font-family:monospace">$${(o.total||0).toFixed(2)}</td>
+        <td><span class="badge ${o.status}">${o.status}</span></td>
+        <td><button class="btn-view" onclick="openOrderModal('${o.id}')">View &rarr;</button></td>
+      `;
+      tbody.appendChild(tr);
+    });
+  } catch(e) { console.error('Orders load error'); }
 }
-
-function renderOrders() {
-  masterOrders.sort((a, b) => new Date(b.placedAt) - new Date(a.placedAt));
-  const tbody = document.getElementById('orders-tbody');
-  tbody.innerHTML = '';
-  masterOrders.forEach(o => {
-    let badge = 'b-pending';
-    if(o.status==='confirmed') badge = 'b-confirmed';
-    if(o.status==='cancelled') badge = 'b-cancelled';
-    tbody.innerHTML += `
-      <tr>
-        <td data-label="ID"><span style="color:var(--gold);font-family:monospace;">${o.id}</span></td>
-        <td data-label="Date">${new Date(o.placedAt).toLocaleDateString()}</td>
-        <td data-label="Customer">${o.customer.name}<br><span style="font-size:10px;color:var(--silver)">${o.customer.company}</span></td>
-        <td data-label="Total">$${(o.total||0).toFixed(2)}</td>
-        <td data-label="Status"><span class="badge ${badge}">${o.status}</span></td>
-        <td><button class="btn-ghost" style="padding:4px 8px;" onclick="openOrderModal('${o.id}')">Edit</button></td>
-      </tr>
-    `;
-  });
-}
-
-// --- MODAL LOGIC ---
-let modalItems = [];
 
 function openOrderModal(orderId) {
-  const isCreate = !orderId;
-  document.getElementById('m-order-id').value = orderId || '';
-  document.getElementById('m-mode').value = isCreate ? 'create' : 'edit';
-  document.getElementById('modal-title').textContent = isCreate ? 'Create New Order' : 'Edit Order: ' + orderId;
+  activeOrderObj = masterOrders.find(o => o.id === orderId);
+  if(!activeOrderObj) return;
   
-  document.getElementById('m-cust').value = '';
-  document.getElementById('m-status').value = 'pending';
-  document.getElementById('m-del-method').value = 'delivery';
-  document.getElementById('m-address').value = '';
-  document.getElementById('m-notes').value = '';
-  document.getElementById('m-cust').disabled = !isCreate;
+  document.getElementById('m-id').textContent = activeOrderObj.id;
+  document.getElementById('m-cust-name').textContent = activeOrderObj.customer.name;
+  document.getElementById('m-cust-company').textContent = activeOrderObj.customer.company || 'N/A';
+  document.getElementById('m-cust-email').innerHTML = `<a href="mailto:${activeOrderObj.customer.email}" style="color:var(--gold)">${activeOrderObj.customer.email}</a>`;
+  document.getElementById('m-cust-phone').textContent = activeOrderObj.customer.phone;
+  document.getElementById('m-delivery').textContent = activeOrderObj.delivery.method.toUpperCase() + ': ' + activeOrderObj.delivery.address;
+  document.getElementById('m-po').textContent = activeOrderObj.po || 'N/A';
+  document.getElementById('m-notes').textContent = activeOrderObj.notes || 'None';
+  document.getElementById('m-total').textContent = '$' + (activeOrderObj.total||0).toFixed(2);
   
-  // The 'Add Item' button is now ALWAYS visible
-  document.getElementById('btn-add-item').style.display = 'inline-block';
-
-  if (isCreate) {
-    modalItems = [];
-  } else {
-    const o = masterOrders.find(x => x.id === orderId);
-    document.getElementById('m-cust').innerHTML += `<option value="EDIT_MODE" selected>${o.customer.name} (${o.customer.email})</option>`;
-    document.getElementById('m-cust').value = "EDIT_MODE";
-    document.getElementById('m-status').value = o.status;
-    document.getElementById('m-del-method').value = o.delivery.method;
-    document.getElementById('m-address').value = o.delivery.address || o.po || '';
-    document.getElementById('m-notes').value = o.notes || '';
-    
-    // Clone and prep existing items for full editing
-    modalItems = JSON.parse(JSON.stringify(o.items));
-    modalItems.forEach(it => {
-      if (!it.pcsPerCtn) it.pcsPerCtn = 1;
-      it.inputQty = (it.unit === 'carton') ? (it.qty / it.pcsPerCtn) : it.qty;
-    });
-  }
+  document.getElementById('m-status-sel').value = activeOrderObj.status;
+  document.getElementById('resend-msg').style.display = 'none';
   
-  renderModalItems();
-  document.getElementById('order-modal').style.display = 'flex';
+  const tbody = document.getElementById('m-items-tbody');
+  tbody.innerHTML = '';
+  activeOrderObj.items.forEach(item => {
+    let tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${item.description} ${item.size}<br><span style="font-size:10px;color:var(--silver)">${item.code}</span></td>
+      <td style="font-family:monospace">${item.qty} ${item.unit==='carton'?'ctn':'pcs'}</td>
+      <td style="font-family:monospace">$${(item.unitPrice||0).toFixed(2)}</td>
+      <td style="text-align:right;font-family:monospace;color:var(--white)">$${(item.lineTotal||0).toFixed(2)}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+  
+  document.getElementById('order-modal-overlay').style.display = 'flex';
   document.body.style.overflow = 'hidden';
 }
 
-function closeModal() {
-  document.getElementById('order-modal').style.display = 'none';
-  document.body.style.overflow = '';
-}
-
-function getProductOptionsHtml(selectedCodeSize) {
-  let opts = '<option value="">Select Item...</option>';
-  let found = false;
-  masterProducts.forEach(p => {
-    let val = p.code + '|' + p.size;
-    if(selectedCodeSize === val) found = true;
-    opts += `<option value="${val}" ${selectedCodeSize===val?'selected':''}>${p.code} - ${p.desc} ${p.size} ($${p.price.toFixed(2)})</option>`;
-  });
-  // Fallback if item was deleted from DB but is still on the order
-  if(selectedCodeSize && !found) {
-    opts += `<option value="${selectedCodeSize}" selected>${selectedCodeSize} (Archived Item)</option>`;
-  }
-  return opts;
-}
-
-function addModalItem() {
-  modalItems.push({ code:'', description:'', size:'', qty:1, inputQty:1, unit:'piece', unitPrice:0, lineTotal:0, pcsPerCtn:1 });
-  renderModalItems();
-}
-
-function updateMItem(idx, field, val) {
-  let it = modalItems[idx];
-  if(field === 'prod') {
-    let [c, s] = val.split('|');
-    let p = masterProducts.find(x => x.code === c && x.size === s);
-    if(p) { it.code=p.code; it.description=p.desc; it.size=p.size; it.unitPrice=p.price; it.pcsPerCtn=parseInt(p.pack)||1; }
-  }
-  if(field === 'qty') it.inputQty = parseInt(val)||1;
-  if(field === 'unit') it.unit = val;
-  
-  if (it.inputQty === undefined) it.inputQty = 1;
-  
-  // Convert input units back into total actual pieces
-  it.qty = (it.unit === 'carton') ? (it.inputQty * it.pcsPerCtn) : it.inputQty;
-  it.lineTotal = it.qty * it.unitPrice;
-  renderModalItems();
-}
-
-function renderModalItems() {
-  const tbody = document.getElementById('m-items-tbody');
-  tbody.innerHTML = '';
-  let grand = 0;
-
-  // Items are now ALWAYS rendered as editable rows
-  modalItems.forEach((it, idx) => {
-    grand += it.lineTotal;
-    tbody.innerHTML += `
-      <tr>
-        <td data-label="Product"><select class="data-input" onchange="updateMItem(${idx}, 'prod', this.value)">${getProductOptionsHtml(it.code+'|'+it.size)}</select></td>
-        <td data-label="Qty"><input type="number" class="data-input" value="${it.inputQty}" min="1" onchange="updateMItem(${idx}, 'qty', this.value)" style="width:60px"></td>
-        <td data-label="Unit">
-          <select class="data-input" onchange="updateMItem(${idx}, 'unit', this.value)">
-            <option value="piece" ${it.unit==='piece'?'selected':''}>Piece</option><option value="carton" ${it.unit==='carton'?'selected':''}>Carton</option>
-          </select>
-        </td>
-        <td data-label="Price">$${it.unitPrice.toFixed(2)}/pc<br><span style="font-size:10px;color:var(--silver)">(${it.pcsPerCtn || 1} pcs/ctn)</span></td>
-        <td data-label="Total">$${it.lineTotal.toFixed(2)}</td>
-        <td><button class="btn-del" onclick="modalItems.splice(${idx},1);renderModalItems()">X</button></td>
-      </tr>
-    `;
-  });
-  document.getElementById('m-grand-total').textContent = '$' + grand.toFixed(2);
-}
-
-// --- SAVE / PROCESS ORDER ---
-async function saveOrderModal(btn) {
-  const mode = document.getElementById('m-mode').value;
-  const isCreate = mode === 'create';
-  
-  if (isCreate && (!document.getElementById('m-cust').value || modalItems.length===0)) {
-    alert("Please select a customer and add at least one item."); return;
-  }
-
-  btn.textContent = 'Processing...'; btn.disabled = true;
-  let orderObj = null;
-
-  if (isCreate) {
-    const userEmail = document.getElementById('m-cust').value;
-    const user = masterUsers.find(u => u.email === userEmail);
-    const grand = modalItems.reduce((s,i)=>s+i.lineTotal, 0);
-    orderObj = {
-      id: 'APB-'+Date.now().toString(36).toUpperCase(),
-      placedAt: new Date().toISOString(),
-      status: document.getElementById('m-status').value,
-      customer: { id: user.id, name: user.fname+' '+user.lname, email: user.email, company: user.company, phone: user.phone||'' },
-      delivery: { method: document.getElementById('m-del-method').value, address: document.getElementById('m-address').value },
-      notes: document.getElementById('m-notes').value,
-      items: modalItems.map(it => ({
-        code: it.code, description: it.description, size: it.size,
-        qty: it.qty, unit: it.unit, pcsPerCtn: it.pcsPerCtn,
-        unitPrice: it.unitPrice, lineTotal: it.lineTotal
-      })),
-      total: grand
-    };
-    masterOrders.push(orderObj);
-    
-    // Inventory Sync for Creation
-    await syncInventory([], orderObj.items, 'cancelled', orderObj.status);
-    
-    await sendEmails(orderObj, 'new');
-    if (orderObj.status === 'confirmed') await sendEmails(orderObj, 'confirmed');
-
-  } else {
-    const oId = document.getElementById('m-order-id').value;
-    orderObj = masterOrders.find(o => o.id === oId);
-    
-    const oldStatus = orderObj.status;
-    const newStatus = document.getElementById('m-status').value;
-    const oldItems = JSON.parse(JSON.stringify(orderObj.items)); // Snapshot the old items for math
-    
-    orderObj.status = newStatus;
-    orderObj.delivery.method = document.getElementById('m-del-method').value;
-    orderObj.delivery.address = document.getElementById('m-address').value;
-    orderObj.notes = document.getElementById('m-notes').value;
-
-    // Apply the edited items to the order object
-    orderObj.items = modalItems.map(it => ({
-      code: it.code, description: it.description, size: it.size,
-      qty: it.qty, unit: it.unit, pcsPerCtn: it.pcsPerCtn,
-      unitPrice: it.unitPrice, lineTotal: it.lineTotal
-    }));
-    orderObj.total = modalItems.reduce((s,i)=>s+i.lineTotal, 0);
-
-    // Calculate EXACT inventory delta (Handles changes to qty, deletions, additions, AND status)
-    await syncInventory(oldItems, orderObj.items, oldStatus, newStatus);
-
-    if (oldStatus !== 'cancelled' && newStatus === 'cancelled') {
-       await sendEmails(orderObj, 'cancelled');
-    } 
-    else if (oldStatus !== 'confirmed' && newStatus === 'confirmed') {
-       await sendEmails(orderObj, 'confirmed');
+function closeOrderModal(e) {
+  if(e) {
+    if(e.target.id === 'order-modal-overlay' || e.target.classList.contains('modal-close')) {
+      document.getElementById('order-modal-overlay').style.display = 'none';
+      document.body.style.overflow = '';
+      activeOrderObj = null;
     }
   }
+}
 
-  // Push to JSON DB
-  const payload = { message: 'Admin: Update order ' + orderObj.id, content: btoa(unescape(encodeURIComponent(JSON.stringify({orders: masterOrders}, null, 2)))), branch: 'main', sha: currentOrderSha };
+async function saveOrderStatus() {
+  if(!activeOrderObj) return;
+  const newStatus = document.getElementById('m-status-sel').value;
+  activeOrderObj.status = newStatus;
+  
+  const payload = { message: 'Admin: Update order status ' + activeOrderObj.id, content: btoa(unescape(encodeURIComponent(JSON.stringify({orders: masterOrders}, null, 2)))), branch: 'main', sha: currentOrderSha };
+  
   try {
     const r = await fetch(WORKER_URL + '/github/orders.json', { method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
     if(r.ok) { 
       const d = await r.json(); currentOrderSha = d.content.sha; 
-      showStatus('Order saved successfully!', false); 
-      renderOrders(); 
-      closeModal(); 
+      showStatus('Order status updated successfully!', false); 
+      loadOrders(); // Refresh table
     } else throw new Error();
-  } catch(e) { showStatus('Failed to save order to database.', true); }
-
-  btn.textContent = 'Save Order'; btn.disabled = false;
+  } catch(e) { showStatus('Error updating order.', true); }
 }
 
-// --- SMART INVENTORY SYNC ENGINE ---
-async function syncInventory(oldItems, newItems, oldStatus, newStatus) {
-  let changes = {};
-  
-  // 1. Add back ALL old items to the temporary delta pool (if it wasn't cancelled)
-  if (oldStatus !== 'cancelled' && oldItems) {
-    oldItems.forEach(i => { 
-      let k = i.code+'|'+i.size.replace(/"/g,''); 
-      changes[k] = (changes[k]||0) + i.qty; 
-    });
-  }
-  
-  // 2. Subtract ALL new items from the temporary delta pool (if it isn't being cancelled)
-  if (newStatus !== 'cancelled' && newItems) {
-    newItems.forEach(i => { 
-      let k = i.code+'|'+i.size.replace(/"/g,''); 
-      changes[k] = (changes[k]||0) - i.qty; 
-    });
-  }
-  
-  await loadProducts(); 
-  let needsSave = false;
-  
-  // Apply the NET DIFFERENCE to the live database inputs
-  const trs = document.querySelectorAll('#prod-tbody tr');
-  trs.forEach(tr => {
-    const inputs = tr.querySelectorAll('input');
-    if(!inputs.length) return;
-    
-    let code = inputs[0].value.trim();
-    let size = inputs[2].value.trim().replace(/"/g,'');
-    let k = code+'|'+size;
-    
-    if(changes[k]) { // If there is a net change != 0
-      let current = parseInt(inputs[4].value)||0;
-      inputs[4].value = Math.max(0, current + changes[k]); 
-      needsSave = true;
-    }
-  });
-  
-  if(needsSave) await saveProducts(null);
+// --- RESEND EMAIL LOGIC ---
+function buildConfirmEmail(order){
+  var itemLines = order.items.map(function(i){ return i.description+' '+i.size+' — '+i.qty+' pcs @ $'+i.unitPrice.toFixed(2)+' = $'+i.lineTotal.toFixed(2); }).join('\n');
+  return `<!DOCTYPE html><html><head><meta charset="UTF-8"/></head><body style="margin:0;padding:0;background:#f4f4f4;font-family:'Helvetica Neue',Arial,sans-serif;"><table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;padding:32px 0;"><tr><td align="center"><table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:4px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);"><tr><td style="background:#0C1117;padding:28px 36px;border-bottom:4px solid #C8981F;"><table width="100%" cellpadding="0" cellspacing="0"><tr><td><div style="font-family:'Arial Black',Arial,sans-serif;font-size:20px;font-weight:900;color:#FFFFFF;letter-spacing:2px;text-transform:uppercase;">ALL PRO BUILDING SUPPLIES</div><div style="font-size:11px;color:#C8981F;letter-spacing:3px;text-transform:uppercase;margin-top:3px;">LLC</div></td><td align="right"><div style="background:#C8981F;color:#0C1117;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:6px 14px;border-radius:2px;">ORDER COPY</div></td></tr></table></td></tr><tr><td style="padding:32px 36px 0;"><p style="margin:0;font-size:16px;color:#222;">Hi <strong>${order.customer.name}</strong>,</p><p style="margin:12px 0 0;font-size:15px;color:#444;line-height:1.6;">Here is a copy of the order you placed. We are processing it and will be in touch shortly regarding availability and fulfillment.</p></td></tr><tr><td style="padding:24px 36px 0;"><table width="100%" cellpadding="0" cellspacing="0" style="background:#f8f8f8;border-radius:4px;border:1px solid #e8e8e8;"><tr><td style="padding:16px 20px;border-right:1px solid #e8e8e8;"><div style="font-size:10px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Order ID</div><div style="font-size:14px;font-weight:700;color:#C8981F;font-family:monospace;">${order.id}</div></td><td style="padding:16px 20px;border-right:1px solid #e8e8e8;"><div style="font-size:10px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Date</div><div style="font-size:14px;color:#222;">${new Date(order.placedAt).toLocaleDateString()}</div></td><td style="padding:16px 20px;"><div style="font-size:10px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Delivery</div><div style="font-size:13px;color:#222;">${order.delivery.address}</div></td></tr></table></td></tr><tr><td style="padding:24px 36px 0;"><div style="font-size:11px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;font-weight:700;">Items Ordered</div><table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #e8e8e8;border-radius:4px;overflow:hidden;"><tr style="background:#0C1117;"><td style="padding:10px 14px;font-size:11px;color:#C8981F;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;">Product</td><td style="padding:10px 14px;font-size:11px;color:#C8981F;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;text-align:right;">Total</td></tr>${order.items.map(function(i){return '<tr><td style="padding:10px 14px;font-size:13px;color:#333;border-bottom:1px solid #f0f0f0;">'+i.description+' '+i.size+'<br/><span style=\"font-size:11px;color:#888\">'+i.qty+' pcs @ $'+i.unitPrice.toFixed(2)+'</span></td><td style="padding:10px 14px;font-size:13px;color:#333;text-align:right;border-bottom:1px solid #f0f0f0;">$'+i.lineTotal.toFixed(2)+'</td></tr>';}).join('')}</table></td></tr><tr><td style="padding:0 36px;"><table width="100%" cellpadding="0" cellspacing="0"><tr><td></td><td style="padding:16px 0;border-top:2px solid #C8981F;width:220px;" align="right"><span style="font-size:13px;color:#888;text-transform:uppercase;letter-spacing:1px;">Order Total&nbsp;&nbsp;</span><span style="font-size:22px;font-weight:700;color:#0C1117;">$${order.total.toFixed(2)}</span></td></tr></table></td></tr>${order.po||order.notes?'<tr><td style="padding:0 36px 24px;"><table width="100%" cellpadding="0" cellspacing="0" style="background:#fffbf0;border:1px solid #f0e0a0;border-radius:4px;"><tr><td style="padding:14px 18px;"><div style="font-size:12px;color:#666;margin-bottom:4px;"><strong style=\"color:#333\">PO Number:</strong> '+(order.po||'N/A')+'</div><div style="font-size:12px;color:#666;"><strong style=\"color:#333\">Notes:</strong> '+(order.notes||'None')+'</div></td></tr></table></td></tr>':''}<tr><td style="padding:0 36px;"><hr style="border:none;border-top:1px solid #eee;margin:0;"/></td></tr><tr><td style="padding:24px 36px;"><p style="margin:0;font-size:14px;color:#444;line-height:1.7;">Questions about your order?</p><p style="margin:10px 0 0;font-size:14px;color:#444;">📞 <a href="tel:17328291940" style="color:#C8981F;text-decoration:none;font-weight:600;">732-829-1940</a></p><p style="margin:4px 0 0;font-size:14px;color:#444;">✉️ <a href="mailto:info@allprobuildingsupplies.com" style="color:#C8981F;text-decoration:none;">info@allprobuildingsupplies.com</a></p></td></tr><tr><td style="background:#0C1117;padding:20px 36px;text-align:center;"><div style="font-size:12px;color:#888;">© 2026 All Pro Building Supplies LLC</div></td></tr></table></td></tr></table></body></html>`;
 }
 
-// --- EMAILJS INTEGRATION ---
-async function sendEmails(order, type) {
-  // Base parameters for the EmailJS template
-  const baseParams = {
-    order_id: order.id,
-    customer: order.customer.name,
-    total: '$' + order.total.toFixed(2),
-    delivery: order.delivery.method.toUpperCase() + ' - ' + order.delivery.address,
-    notes: order.notes || 'None'
+async function resendEmail(target) {
+  if(!activeOrderObj) return;
+  const msgEl = document.getElementById('resend-msg');
+  msgEl.style.display = 'none';
+  msgEl.style.color = '#ff6b6b'; // Default to error color during processing
+  msgEl.textContent = 'Sending...';
+  msgEl.style.display = 'block';
+
+  let order = activeOrderObj;
+  var params = {
+    to_email:    NOTIFY_EMAIL, // Fallback
+    cust_email:  order.customer.email,
+    email_subject: 'Order Copy ' + order.id + ' — ' + order.customer.name + ' (' + order.customer.company + ')',
+    email_body:  buildConfirmEmail(order),
+    order_id:    order.id,
+    customer:    order.customer.name + ' (' + order.customer.company + ')',
+    phone:       order.customer.phone,
+    delivery:    order.delivery.method.toUpperCase() + ': ' + order.delivery.address,
+    po:          order.po || 'N/A',
+    notes:       order.notes || 'None',
+    total:       '$' + order.total.toFixed(2),
+    placed_at:   new Date(order.placedAt).toLocaleString(),
+    admin_link:  'https://allprobuildingsupplies.com/admin.html',
+    cust_name:   order.customer.name,
+    items:       order.items.map(function(i){ return i.description+' '+i.size+' — '+i.qty+' pcs = $'+i.lineTotal.toFixed(2); }).join('\n')
   };
 
   try {
-    if (type === 'new') {
-      // 1. Send to Customer
-      await emailjs.send(EMAILJS_SVC, EMAILJS_TPL, Object.assign({}, baseParams, {
-        to_email: order.customer.email,
-        email_subject: `Order Received — ${order.id} | All Pro Building Supplies`,
-        email_body: buildConfirmEmail(order)
-      }));
-      // 2. Send to Admin
-      await emailjs.send(EMAILJS_SVC, EMAILJS_TPL, Object.assign({}, baseParams, {
-        to_email: NOTIFY_EMAIL,
-        email_subject: `[ADMIN ENTRY] New Order — ${order.id} | ${order.customer.name}`,
-        email_body: buildConfirmEmail(order)
-      }));
-    } 
-    else if (type === 'confirmed') {
-      // 1. Send to Customer
-      await emailjs.send(EMAILJS_SVC, EMAILJS_TPL, Object.assign({}, baseParams, {
-        to_email: order.customer.email,
-        email_subject: `Order CONFIRMED — ${order.id} | All Pro Building Supplies`,
-        email_body: buildStatusEmail(order, 'confirmed')
-      }));
-      // 2. Send to Admin
-      await emailjs.send(EMAILJS_SVC, EMAILJS_TPL, Object.assign({}, baseParams, {
-        to_email: NOTIFY_EMAIL,
-        email_subject: `[STATUS] Confirmed — ${order.id} | ${order.customer.name}`,
-        email_body: buildStatusEmail(order, 'confirmed')
+    if(target === 'admin' || target === 'both') {
+      await emailjs.send(EMAILJS_SVC, EMAILJS_TPL, Object.assign({}, params, {
+        cust_email: NOTIFY_EMAIL,
+        email_subject: '[RESEND] Order ' + order.id + ' — ' + order.customer.name
       }));
     }
-    else if (type === 'cancelled') {
-      // 1. Send to Customer
-      await emailjs.send(EMAILJS_SVC, EMAILJS_TPL, Object.assign({}, baseParams, {
-        to_email: order.customer.email,
-        email_subject: `Order CANCELLED — ${order.id} | All Pro Building Supplies`,
-        email_body: buildStatusEmail(order, 'cancelled')
-      }));
-      // 2. Send to Admin
-      await emailjs.send(EMAILJS_SVC, EMAILJS_TPL, Object.assign({}, baseParams, {
-        to_email: NOTIFY_EMAIL,
-        email_subject: `[STATUS] Cancelled — ${order.id} | ${order.customer.name}`,
-        email_body: buildStatusEmail(order, 'cancelled')
+    if(target === 'customer' || target === 'both') {
+      await emailjs.send(EMAILJS_SVC, EMAILJS_TPL, Object.assign({}, params, {
+        cust_email: order.customer.email,
+        email_subject: 'Copy of Order — ' + order.id + ' | All Pro Building Supplies'
       }));
     }
-  } catch(e) { 
-    console.error('EmailJS Error:', e); 
+    msgEl.style.color = '#2ecc71';
+    msgEl.textContent = 'Email sent successfully!';
+  } catch(e) {
+    msgEl.textContent = 'Failed to send email. Check EmailJS config.';
+    console.error(e);
   }
 }
 
-function buildConfirmEmail(order){
-  return `<!DOCTYPE html><html><body style="font-family:Arial,sans-serif;color:#333;line-height:1.6;padding:20px;">
-    <h2 style="color:#C8981F;">Order Received: ${order.id}</h2>
-    <p>Hi ${order.customer.name},</p>
-    <p>Your order has been placed successfully and is pending review. We will contact you shortly to confirm.</p>
-    <hr/>
-    <p><strong>Delivery:</strong> ${order.delivery.address}</p>
-    <table width="100%" cellpadding="8" cellspacing="0" style="border-collapse:collapse;margin-top:20px;">
-      <tr style="background:#f4f4f4;border-bottom:2px solid #ddd;">
-        <th align="left">Item</th><th align="center">Qty</th><th align="right">Total</th>
-      </tr>
-      ${order.items.map(i => `<tr>
-        <td style="border-bottom:1px solid #eee;">${i.description} ${i.size}<br><span style="font-size:11px;color:#888">${i.code}</span></td>
-        <td align="center" style="border-bottom:1px solid #eee;">${i.qty} pcs</td>
-        <td align="right" style="border-bottom:1px solid #eee;">$${i.lineTotal.toFixed(2)}</td>
-      </tr>`).join('')}
-    </table>
-    <h3 style="text-align:right;margin-top:20px;">Total: $${order.total.toFixed(2)}</h3>
-  </body></html>`;
-}
-
-function buildStatusEmail(order, status){
-  const color = status === 'confirmed' ? '#2ecc71' : '#e74c3c';
-  const msg = status === 'confirmed' 
-    ? 'Your order has been confirmed and is being processed for fulfillment.' 
-    : 'Your order has been cancelled. Please contact us if you have any questions.';
-  
-  return `<!DOCTYPE html><html><body style="font-family:Arial,sans-serif;color:#333;line-height:1.6;padding:20px;">
-    <h2 style="color:${color};text-transform:uppercase;">Order ${status}: ${order.id}</h2>
-    <p>Hi ${order.customer.name},</p>
-    <p>${msg}</p>
-    <hr/>
-    <p><strong>Order Total:</strong> $${order.total.toFixed(2)}</p>
-    <p><strong>Notes:</strong> ${order.notes || 'None'}</p>
-    <br>
-    <p>Thank you,<br>All Pro Building Supplies LLC<br>732-829-1940</p>
-  </body></html>`;
-}
+// Init
+window.onload = () => { 
+  // Show orders tab by default
+  switchTab('orders');
+  loadOrders(); 
+  loadProducts(); 
+  loadUsers(); 
+};
 </script>
 </body>
 </html>
