@@ -155,7 +155,7 @@
     <input type="hidden" id="m-mode"/> <div class="form-grid">
       <div class="form-grp">
         <label class="form-lbl">Customer</label>
-        <select class="data-input" id="m-cust" onchange="autoFillCust()"></select>
+        <select class="data-input" id="m-cust"></select>
       </div>
       <div class="form-grp">
         <label class="form-lbl">Order Status</label>
@@ -217,7 +217,7 @@ const NOTIFY_EMAIL = 'orders@allprobuildingsupplies.com';
 let currentProdSha = null;
 let currentUserSha = null;
 let currentOrderSha = null;
-let masterProducts = []; // Array of objects for easy searching
+let masterProducts = []; 
 let masterUsers = [];
 let masterOrders = [];
 
@@ -275,7 +275,6 @@ async function loadUsers() {
     currentUserSha = d.sha;
     masterUsers = JSON.parse(decodeURIComponent(escape(atob(d.content)))).users || [];
     
-    // Render Table
     const tbody = document.getElementById('users-tbody');
     tbody.innerHTML = '';
     masterUsers.forEach((u, i) => {
@@ -297,13 +296,11 @@ async function loadUsers() {
         </tr>`;
     });
 
-    // Populate Modal Dropdown
     const custSel = document.getElementById('m-cust');
     custSel.innerHTML = '<option value="">-- Select Customer --</option>';
     masterUsers.filter(u=>u.status==='approved').forEach(u => {
       custSel.innerHTML += `<option value="${u.email}">${u.fname} ${u.lname} (${u.company})</option>`;
     });
-
   } catch(e) { console.error(e); }
 }
 
@@ -337,12 +334,10 @@ async function loadProducts() {
 
     for(let i=1; i<rows.length; i++) {
       if(!rows[i][0]) continue;
-      // cache for order modal
       masterProducts.push({
         code: rows[i][0].trim(), desc: rows[i][1].trim(), size: rows[i][2].trim(),
         pack: rows[i][3].trim(), qty: parseInt(rows[i][4])||0, price: parseFloat(rows[i][5])||0
       });
-      // render row
       addProductRow(rows[i]);
     }
   } catch(e) { console.error(e); }
@@ -421,14 +416,11 @@ function openOrderModal(orderId) {
   document.getElementById('m-mode').value = isCreate ? 'create' : 'edit';
   document.getElementById('modal-title').textContent = isCreate ? 'Create New Order' : 'Edit Order: ' + orderId;
   
-  // Reset Form
   document.getElementById('m-cust').value = '';
   document.getElementById('m-status').value = 'pending';
   document.getElementById('m-del-method').value = 'delivery';
   document.getElementById('m-address').value = '';
   document.getElementById('m-notes').value = '';
-  
-  // Disable fields based on mode
   document.getElementById('m-cust').disabled = !isCreate;
   document.getElementById('btn-add-item').style.display = isCreate ? 'inline-block' : 'none';
 
@@ -442,7 +434,13 @@ function openOrderModal(orderId) {
     document.getElementById('m-del-method').value = o.delivery.method;
     document.getElementById('m-address').value = o.delivery.address || o.po || '';
     document.getElementById('m-notes').value = o.notes || '';
-    modalItems = JSON.parse(JSON.stringify(o.items)); // clone
+    modalItems = JSON.parse(JSON.stringify(o.items));
+    
+    // Set inputQty correctly based on unit selection for display
+    modalItems.forEach(it => {
+      if (!it.pcsPerCtn) it.pcsPerCtn = 1;
+      it.inputQty = (it.unit === 'carton') ? (it.qty / it.pcsPerCtn) : it.qty;
+    });
   }
   
   renderModalItems();
@@ -455,10 +453,6 @@ function closeModal() {
   document.body.style.overflow = '';
 }
 
-function autoFillCust() {
-  // Can be expanded if needed
-}
-
 function getProductOptionsHtml(selectedCodeSize) {
   let opts = '<option value="">Select Item...</option>';
   masterProducts.forEach(p => {
@@ -469,7 +463,25 @@ function getProductOptionsHtml(selectedCodeSize) {
 }
 
 function addModalItem() {
-  modalItems.push({ code:'', description:'', size:'', qty:1, unit:'piece', unitPrice:0, lineTotal:0 });
+  modalItems.push({ code:'', description:'', size:'', qty:1, inputQty:1, unit:'piece', unitPrice:0, lineTotal:0, pcsPerCtn:1 });
+  renderModalItems();
+}
+
+function updateMItem(idx, field, val) {
+  let it = modalItems[idx];
+  if(field === 'prod') {
+    let [c, s] = val.split('|');
+    let p = masterProducts.find(x => x.code === c && x.size === s);
+    if(p) { it.code=p.code; it.description=p.desc; it.size=p.size; it.unitPrice=p.price; it.pcsPerCtn=parseInt(p.pack)||1; }
+  }
+  if(field === 'qty') it.inputQty = parseInt(val)||1;
+  if(field === 'unit') it.unit = val;
+  
+  if (it.inputQty === undefined) it.inputQty = 1;
+  
+  // Convert input units back into total actual pieces
+  it.qty = (it.unit === 'carton') ? (it.inputQty * it.pcsPerCtn) : it.inputQty;
+  it.lineTotal = it.qty * it.unitPrice;
   renderModalItems();
 }
 
@@ -483,29 +495,28 @@ function renderModalItems() {
     grand += it.lineTotal;
     
     if (isCreate) {
-      // Editable Row
       tbody.innerHTML += `
         <tr>
           <td data-label="Product"><select class="data-input" onchange="updateMItem(${idx}, 'prod', this.value)">${getProductOptionsHtml(it.code+'|'+it.size)}</select></td>
-          <td data-label="Qty"><input type="number" class="data-input" value="${it.qty}" min="1" onchange="updateMItem(${idx}, 'qty', this.value)" style="width:60px"></td>
+          <td data-label="Qty"><input type="number" class="data-input" value="${it.inputQty}" min="1" onchange="updateMItem(${idx}, 'qty', this.value)" style="width:60px"></td>
           <td data-label="Unit">
             <select class="data-input" onchange="updateMItem(${idx}, 'unit', this.value)">
               <option value="piece" ${it.unit==='piece'?'selected':''}>Piece</option><option value="carton" ${it.unit==='carton'?'selected':''}>Carton</option>
             </select>
           </td>
-          <td data-label="Price">$${it.unitPrice.toFixed(2)}</td>
+          <td data-label="Price">$${it.unitPrice.toFixed(2)}/pc<br><span style="font-size:10px;color:var(--silver)">(${it.pcsPerCtn || 1} pcs/ctn)</span></td>
           <td data-label="Total">$${it.lineTotal.toFixed(2)}</td>
           <td><button class="btn-del" onclick="modalItems.splice(${idx},1);renderModalItems()">X</button></td>
         </tr>
       `;
     } else {
-      // Read-only Row
+      let unitLabel = it.unit === 'carton' ? (it.inputQty + ' ctn (' + it.qty + ' pcs)') : it.qty + ' pcs';
       tbody.innerHTML += `
         <tr>
           <td data-label="Product">${it.description} ${it.size}<br><span style="font-size:10px;color:var(--silver)">${it.code}</span></td>
-          <td data-label="Qty">${it.qty}</td>
+          <td data-label="Qty">${unitLabel}</td>
           <td data-label="Unit">${it.unit}</td>
-          <td data-label="Price">$${it.unitPrice.toFixed(2)}</td>
+          <td data-label="Price">$${it.unitPrice.toFixed(2)}/pc</td>
           <td data-label="Total">$${it.lineTotal.toFixed(2)}</td>
           <td></td>
         </tr>
@@ -513,19 +524,6 @@ function renderModalItems() {
     }
   });
   document.getElementById('m-grand-total').textContent = '$' + grand.toFixed(2);
-}
-
-function updateMItem(idx, field, val) {
-  let it = modalItems[idx];
-  if(field === 'prod') {
-    let [c, s] = val.split('|');
-    let p = masterProducts.find(x => x.code === c && x.size === s);
-    if(p) { it.code=p.code; it.description=p.desc; it.size=p.size; it.unitPrice=p.price; it.pcsPerCtn=parseInt(p.pack)||1; }
-  }
-  if(field === 'qty') it.qty = parseInt(val)||1;
-  if(field === 'unit') it.unit = val;
-  it.lineTotal = it.qty * it.unitPrice;
-  renderModalItems();
 }
 
 // --- SAVE / PROCESS ORDER ---
@@ -540,10 +538,8 @@ async function saveOrderModal(btn) {
   btn.textContent = 'Processing...'; btn.disabled = true;
   
   let orderObj = null;
-  let statusChangedTo = null; // null, 'confirmed', 'cancelled'
 
   if (isCreate) {
-    // 1. Build New Order
     const userEmail = document.getElementById('m-cust').value;
     const user = masterUsers.find(u => u.email === userEmail);
     const grand = modalItems.reduce((s,i)=>s+i.lineTotal, 0);
@@ -554,20 +550,20 @@ async function saveOrderModal(btn) {
       customer: { id: user.id, name: user.fname+' '+user.lname, email: user.email, company: user.company, phone: user.phone||'' },
       delivery: { method: document.getElementById('m-del-method').value, address: document.getElementById('m-address').value },
       notes: document.getElementById('m-notes').value,
-      items: modalItems,
+      items: modalItems.map(it => ({
+        code: it.code, description: it.description, size: it.size,
+        qty: it.qty, unit: it.unit, pcsPerCtn: it.pcsPerCtn,
+        unitPrice: it.unitPrice, lineTotal: it.lineTotal
+      })),
       total: grand
     };
     masterOrders.push(orderObj);
     
-    // Inventory Deduct
-    await applyInventoryDelta(modalItems, -1);
-    
-    // Email triggers
+    await applyInventoryDelta(orderObj.items, -1);
     await sendEmails(orderObj, 'new');
     if (orderObj.status === 'confirmed') await sendEmails(orderObj, 'confirmed');
 
   } else {
-    // 2. Update Existing Order
     const oId = document.getElementById('m-order-id').value;
     orderObj = masterOrders.find(o => o.id === oId);
     const oldStatus = orderObj.status;
@@ -578,9 +574,8 @@ async function saveOrderModal(btn) {
     orderObj.delivery.address = document.getElementById('m-address').value;
     orderObj.notes = document.getElementById('m-notes').value;
 
-    // Inventory & Email logic based on status change
     if (oldStatus !== 'cancelled' && newStatus === 'cancelled') {
-       await applyInventoryDelta(orderObj.items, 1); // Add back
+       await applyInventoryDelta(orderObj.items, 1);
        await sendEmails(orderObj, 'cancelled');
     } 
     else if (oldStatus !== 'confirmed' && newStatus === 'confirmed') {
@@ -588,7 +583,6 @@ async function saveOrderModal(btn) {
     }
   }
 
-  // 3. Save JSON
   const payload = { message: 'Admin: Update order ' + orderObj.id, content: btoa(unescape(encodeURIComponent(JSON.stringify({orders: masterOrders}, null, 2)))), branch: 'main', sha: currentOrderSha };
   try {
     const r = await fetch(WORKER_URL + '/github/orders.json', { method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
@@ -605,11 +599,9 @@ async function saveOrderModal(btn) {
 
 // --- INVENTORY SYNC ---
 async function applyInventoryDelta(items, direction) {
-  // direction: -1 (deduct), 1 (add back)
   let deductions = {};
   items.forEach(i => { let k = i.code+'|'+i.size.replace(/"/g,''); deductions[k] = (deductions[k]||0) + (i.qty * direction); });
 
-  // Wait for latest products to ensure we don't overwrite other changes
   await loadProducts(); 
   
   const trs = document.querySelectorAll('#prod-tbody tr');
@@ -620,11 +612,10 @@ async function applyInventoryDelta(items, direction) {
     let k = code+'|'+size;
     if(deductions[k]) {
       let current = parseInt(inputs[4].value)||0;
-      inputs[4].value = Math.max(0, current + deductions[k]); // Add the direction value
+      inputs[4].value = Math.max(0, current + deductions[k]); 
     }
   });
   
-  // Save silently
   await saveProducts(null);
 }
 
@@ -671,7 +662,7 @@ function buildConfirmEmail(order){
       </tr>
       ${order.items.map(i => `<tr>
         <td style="border-bottom:1px solid #eee;">${i.description} ${i.size}<br><span style="font-size:11px;color:#888">${i.code}</span></td>
-        <td align="center" style="border-bottom:1px solid #eee;">${i.qty}</td>
+        <td align="center" style="border-bottom:1px solid #eee;">${i.qty} pcs</td>
         <td align="right" style="border-bottom:1px solid #eee;">$${i.lineTotal.toFixed(2)}</td>
       </tr>`).join('')}
     </table>
