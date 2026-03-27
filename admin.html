@@ -24,7 +24,8 @@
 
 /* Buttons */
 .action-bar{display:flex;justify-content:space-between;align-items:center;margin-top:20px;flex-wrap:wrap;gap:12px;}
-.btn-save{background:var(--gold);color:var(--ink);font-family:'Oswald',sans-serif;font-size:14px;letter-spacing:2px;text-transform:uppercase;padding:12px 24px;border:none;cursor:pointer;font-weight:600;}
+.btn-save{background:var(--gold);color:var(--ink);font-family:'Oswald',sans-serif;font-size:14px;letter-spacing:2px;text-transform:uppercase;padding:12px 24px;border:none;cursor:pointer;font-weight:600;transition:transform .2s;}
+.btn-save:hover{transform:translateY(-2px);}
 .btn-add{background:transparent;border:1px dashed rgba(139,160,178,.4);color:var(--silver);padding:10px 20px;cursor:pointer;font-family:'DM Mono',monospace;font-size:12px;}
 .btn-add:hover{border-color:var(--white);color:var(--white);}
 .btn-del{background:rgba(255,80,80,.1);border:1px solid rgba(255,80,80,.2);color:#ff6b6b;cursor:pointer;padding:8px 12px;font-weight:bold;}
@@ -41,7 +42,7 @@
 .badge.confirmed{background:rgba(46,204,113,.15);color:#2ecc71;border:1px solid rgba(46,204,113,.3);}
 .badge.cancelled{background:rgba(255,107,107,.15);color:#ff6b6b;border:1px solid rgba(255,107,107,.3);}
 
-/* MODAL SCROLL FIX */
+/* MODAL SCROLL FIX & LAYOUT */
 #order-modal-overlay{
   display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85);
   z-index:9999; overflow-y:auto; padding:40px 20px;
@@ -50,7 +51,7 @@
 }
 #order-modal{
   background:var(--ink2); border:1px solid rgba(200,152,31,.4);
-  max-width:800px; width:100%; padding:32px;
+  max-width:850px; width:100%; padding:32px;
   margin:auto; 
   position:relative;
 }
@@ -59,16 +60,19 @@
 .modal-title{font-family:'Oswald',sans-serif;font-size:24px;color:var(--gold);margin-bottom:24px;border-bottom:1px solid rgba(255,255,255,.1);padding-bottom:12px;}
 .modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px;}
 .modal-box{background:var(--ink3);border:1px solid rgba(255,255,255,.05);padding:16px;}
-.modal-lbl{font-size:10px;color:var(--silver);font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;}
-.modal-val{font-size:14px;color:var(--white);margin-bottom:12px;word-break:break-word;}
-.modal-val:last-child{margin-bottom:0;}
+.modal-lbl{font-size:10px;color:var(--silver);font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;margin-top:8px;}
+.modal-lbl:first-child{margin-top:0;}
 
 /* Resend Button Bar */
 .resend-bar{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;}
 .resend-btn{background:transparent;border:1px solid rgba(139,160,178,.3);color:var(--silver);padding:8px 14px;font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;transition:all .2s;}
 .resend-btn:hover{border-color:var(--gold);color:var(--gold);background:rgba(200,152,31,.1);}
 
-/* --- MOBILE OPTIMIZATIONS --- */
+/* Admin Auth Gate */
+#admin-auth-gate{display:flex; flex-direction:column; align-items:center; justify-content:center; position:fixed; inset:0; background:var(--ink); z-index:100000;}
+.auth-box{background:var(--ink2); border:1px solid var(--gold); padding:40px; text-align:center; max-width:400px; width:90%;}
+
+/* MOBILE OPTIMIZATIONS */
 @media(max-width:768px){
   .modal-grid{grid-template-columns:1fr;}
   #order-modal{padding:20px;}
@@ -92,7 +96,19 @@
 </style>
 </head>
 <body>
-  <div id="cursor"></div><div id="cursor-ring"></div>
+<div id="cursor"></div><div id="cursor-ring"></div>
+
+<div id="admin-auth-gate">
+  <div class="auth-box">
+    <img src="assets/logo.png" alt="All Pro" style="width:120px;margin-bottom:20px;">
+    <h2 style="font-family:'Oswald',sans-serif;color:var(--white);margin-bottom:24px;letter-spacing:1px;">Admin Portal Login</h2>
+    <input type="password" id="admin-pin" class="data-input" placeholder="Enter Admin Password" style="text-align:center;font-size:16px;padding:14px;margin-bottom:16px;">
+    <button class="btn-save" style="width:100%;" onclick="checkAdminAuth()">Access Dashboard</button>
+    <div id="admin-auth-err" style="color:#ff6b6b;font-size:12px;margin-top:12px;display:none;font-family:'DM Mono',monospace;">Incorrect password.</div>
+    <a href="index.html" style="display:block;margin-top:24px;color:var(--silver);font-size:12px;">← Back to Website</a>
+  </div>
+</div>
+
 <nav>
   <div class="nav-logo">
     <img src="assets/logo.png" alt="All Pro Building Supplies"/>
@@ -103,20 +119,20 @@
   </div>
 </nav>
 
-<div class="admin-container">
+<div class="admin-container" id="main-admin-content" style="display:none;">
   <div id="status-msg"></div>
 
   <div class="admin-header">
     <h1 class="admin-title">Database Manager</h1>
     <div class="admin-tabs">
-      <button class="admin-tab" onclick="switchTab('orders')" data-tab="orders">Orders</button>
+      <button class="admin-tab active" onclick="switchTab('orders')" data-tab="orders">Orders</button>
       <button class="admin-tab" onclick="switchTab('products')" data-tab="products">Products (CSV)</button>
       <button class="admin-tab" onclick="switchTab('users')" data-tab="users">Users (JSON)</button>
     </div>
   </div>
 
-  <div id="tab-orders" class="admin-panel">
-    <p style="color:var(--silver);font-size:14px;margin-bottom:20px;">Manage customer orders. Click 'View' to see details, change status, and resend emails.</p>
+  <div id="tab-orders" class="admin-panel active">
+    <p style="color:var(--silver);font-size:14px;margin-bottom:20px;">Manage and edit customer orders. Click 'View Details' to edit order contents, change status, and resend emails.</p>
     <table class="data-table" id="orders-table">
       <thead>
         <tr>
@@ -182,33 +198,41 @@
 <div id="order-modal-overlay" onclick="closeOrderModal(event)">
   <div id="order-modal" onclick="event.stopPropagation()">
     <button class="modal-close" onclick="closeOrderModal(event)">&times;</button>
-    <div class="modal-title">Order Details: <span id="m-id" style="color:var(--white)"></span></div>
+    <div class="modal-title">Edit Order: <span id="m-id" style="color:var(--white)"></span></div>
     
     <div class="modal-grid">
       <div class="modal-box">
-        <div class="modal-lbl">Customer</div>
-        <div class="modal-val" id="m-cust-name"></div>
-        <div class="modal-val" id="m-cust-company"></div>
-        <div class="modal-val" id="m-cust-email"></div>
-        <div class="modal-val" id="m-cust-phone"></div>
+        <div class="modal-lbl">Customer Name</div>
+        <input type="text" class="data-input" id="edit-cust-name" style="margin-bottom:12px;">
+        
+        <div class="modal-lbl">Company</div>
+        <input type="text" class="data-input" id="edit-cust-company" style="margin-bottom:12px;">
+        
+        <div class="modal-lbl">Email</div>
+        <input type="text" class="data-input" id="edit-cust-email" style="margin-bottom:12px;">
+        
+        <div class="modal-lbl">Phone</div>
+        <input type="text" class="data-input" id="edit-cust-phone">
       </div>
       <div class="modal-box">
         <div class="modal-lbl">Delivery / Logistics</div>
-        <div class="modal-val" id="m-delivery"></div>
-        <div class="modal-lbl" style="margin-top:12px;">PO Number</div>
-        <div class="modal-val" id="m-po"></div>
-        <div class="modal-lbl" style="margin-top:12px;">Notes</div>
-        <div class="modal-val" id="m-notes"></div>
+        <textarea class="data-input" id="edit-delivery" style="resize:vertical;min-height:60px;margin-bottom:12px;"></textarea>
+        
+        <div class="modal-lbl">PO Number</div>
+        <input type="text" class="data-input" id="edit-po" style="margin-bottom:12px;">
+        
+        <div class="modal-lbl">Notes</div>
+        <textarea class="data-input" id="edit-notes" style="resize:vertical;min-height:60px;"></textarea>
       </div>
     </div>
 
     <div class="modal-box" style="margin-bottom:24px; padding:0; overflow:hidden;">
       <table class="data-table" style="margin:0;">
-        <thead><tr><th>Item</th><th>Qty</th><th>Unit Price</th><th style="text-align:right">Line Total</th></tr></thead>
+        <thead><tr><th>Item</th><th>Qty</th><th>Unit Price ($)</th><th style="text-align:right">Line Total</th><th></th></tr></thead>
         <tbody id="m-items-tbody"></tbody>
       </table>
       <div style="padding:16px; text-align:right; font-family:'Oswald',sans-serif; font-size:20px; color:var(--gold); border-top:1px solid rgba(255,255,255,.05);">
-        Total: <span id="m-total" style="color:var(--white)"></span>
+        Calculated Total: <span id="m-total" style="color:var(--white)"></span>
       </div>
     </div>
 
@@ -216,13 +240,13 @@
       <div class="modal-grid" style="margin-bottom:0; gap:20px;">
         
         <div>
-          <div class="modal-lbl" style="color:var(--gold)">Update Order Status</div>
-          <select id="m-status-sel" class="data-input" style="margin-bottom:12px;">
+          <div class="modal-lbl" style="color:var(--gold)">Order Status</div>
+          <select id="m-status-sel" class="data-input" style="margin-bottom:16px;">
             <option value="pending">Pending</option>
             <option value="confirmed">Confirmed</option>
             <option value="cancelled">Cancelled</option>
           </select>
-          <button class="btn-save" style="width:100%; font-size:12px; padding:10px;" onclick="saveOrderStatus()">Save Status</button>
+          <button class="btn-save" style="width:100%;" onclick="saveOrderChanges()">💾 Save All Changes</button>
         </div>
         
         <div>
@@ -243,6 +267,31 @@
 
 <script>
 const WORKER_URL = 'https://allpro-github-proxy.baruch-6d5.workers.dev';
+
+// --- ADMIN AUTH GATE ---
+function checkAdminAuth() {
+  const pin = document.getElementById('admin-pin').value;
+  if(pin === 'Admin2026!') { // <-- CHANGE YOUR ADMIN PASSWORD HERE
+    sessionStorage.setItem('apbs_admin_auth', 'true');
+    unlockAdmin();
+  } else {
+    document.getElementById('admin-auth-err').style.display = 'block';
+  }
+}
+
+function unlockAdmin() {
+  document.getElementById('admin-auth-gate').style.display = 'none';
+  document.getElementById('main-admin-content').style.display = 'block';
+  switchTab('orders');
+  loadOrders(); 
+  loadProducts(); 
+  loadUsers(); 
+}
+
+// Check if already logged in this session
+if(sessionStorage.getItem('apbs_admin_auth') === 'true') {
+  unlockAdmin();
+}
 
 // --- EMAILJS CONFIG ---
 const EMAILJS_SVC  = 'service_qefaa3x';   
@@ -266,7 +315,6 @@ function showStatus(msg, isErr) {
   setTimeout(() => el.style.display = 'none', 4000);
 }
 
-// FIX: Bulletproof Tab Switching that doesn't rely on `event.target`
 function switchTab(tab) {
   document.querySelectorAll('.admin-tab').forEach(b => b.classList.remove('active'));
   document.querySelectorAll('.admin-panel').forEach(p => p.classList.remove('active'));
@@ -322,15 +370,14 @@ async function loadProducts() {
 
 function addProductRow(data = ['', '', '', '', '', '', '']) {
   const tr = document.createElement('tr');
-  // Added data-labels for mobile card rendering
   tr.innerHTML = `
-    <td data-label="Category Code"><input class="data-input" value="${data[0]||''}" placeholder="PIPE-SOLID"></td>
-    <td data-label="Description"><input class="data-input" value="${data[1]||''}" placeholder="ASTM D1785 SCH40 PVC"></td>
-    <td data-label="Size"><input class="data-input" value="${data[2]||''}" placeholder='2"'></td>
-    <td data-label="Pcs / Ctn"><input class="data-input" value="${data[3]||''}" placeholder="20"></td>
-    <td data-label="Inventory Qty"><input class="data-input" value="${data[4]||''}" placeholder="100"></td>
-    <td data-label="Unit Price ($)"><input class="data-input" value="${data[5]||''}" placeholder="16.20"></td>
-    <td data-label="Image URL"><input class="data-input" value="${data[6]||''}" placeholder="images/Sch40Solid.png"></td>
+    <td data-label="Category Code"><input class="data-input" value="${data[0]||''}"></td>
+    <td data-label="Description"><input class="data-input" value="${data[1]||''}"></td>
+    <td data-label="Size"><input class="data-input" value="${data[2]||''}"></td>
+    <td data-label="Pcs / Ctn"><input class="data-input" value="${data[3]||''}"></td>
+    <td data-label="Inventory Qty"><input class="data-input" value="${data[4]||''}"></td>
+    <td data-label="Unit Price ($)"><input class="data-input" value="${data[5]||''}"></td>
+    <td data-label="Image URL"><input class="data-input" value="${data[6]||''}"></td>
     <td data-label="Action"><button class="btn-del" onclick="this.closest('tr').remove()">Delete Row</button></td>
   `;
   document.getElementById('prod-tbody').appendChild(tr);
@@ -420,8 +467,6 @@ async function loadOrders() {
     currentOrderSha = d.sha;
     const jsonStr = decodeURIComponent(escape(atob(d.content)));
     masterOrders = JSON.parse(jsonStr).orders || [];
-    
-    // Sort newest first
     masterOrders.sort((a,b) => new Date(b.placedAt) - new Date(a.placedAt));
     
     const tbody = document.getElementById('orders-tbody');
@@ -436,45 +481,84 @@ async function loadOrders() {
         <td data-label="Customer">${o.customer.name}<br><span style="font-size:10px;color:var(--silver)">${o.customer.company}</span></td>
         <td data-label="Total" style="font-family:monospace">$${(o.total||0).toFixed(2)}</td>
         <td data-label="Status"><span class="badge ${o.status}">${o.status}</span></td>
-        <td data-label="Action"><button class="btn-view" onclick="openOrderModal('${o.id}')">View Details</button></td>
+        <td data-label="Action"><button class="btn-view" onclick="openOrderModal('${o.id}')">View & Edit</button></td>
       `;
       tbody.appendChild(tr);
     });
   } catch(e) { console.error('Orders load error'); }
 }
 
+// Populate the Edit Modal
 function openOrderModal(orderId) {
   activeOrderObj = masterOrders.find(o => o.id === orderId);
   if(!activeOrderObj) return;
   
   document.getElementById('m-id').textContent = activeOrderObj.id;
-  document.getElementById('m-cust-name').textContent = activeOrderObj.customer.name;
-  document.getElementById('m-cust-company').textContent = activeOrderObj.customer.company || 'N/A';
-  document.getElementById('m-cust-email').innerHTML = `<a href="mailto:${activeOrderObj.customer.email}" style="color:var(--gold)">${activeOrderObj.customer.email}</a>`;
-  document.getElementById('m-cust-phone').textContent = activeOrderObj.customer.phone;
-  document.getElementById('m-delivery').textContent = activeOrderObj.delivery.method.toUpperCase() + ': ' + activeOrderObj.delivery.address;
-  document.getElementById('m-po').textContent = activeOrderObj.po || 'N/A';
-  document.getElementById('m-notes').textContent = activeOrderObj.notes || 'None';
-  document.getElementById('m-total').textContent = '$' + (activeOrderObj.total||0).toFixed(2);
+  
+  // Fill editable inputs
+  document.getElementById('edit-cust-name').value = activeOrderObj.customer.name;
+  document.getElementById('edit-cust-company').value = activeOrderObj.customer.company || '';
+  document.getElementById('edit-cust-email').value = activeOrderObj.customer.email || '';
+  document.getElementById('edit-cust-phone').value = activeOrderObj.customer.phone || '';
+  
+  // Delivery strings are usually structured, we just allow raw text editing for simplicity
+  document.getElementById('edit-delivery').value = (activeOrderObj.delivery.method ? activeOrderObj.delivery.method.toUpperCase() + ': ' : '') + activeOrderObj.delivery.address;
+  document.getElementById('edit-po').value = activeOrderObj.po || '';
+  document.getElementById('edit-notes').value = activeOrderObj.notes || '';
   
   document.getElementById('m-status-sel').value = activeOrderObj.status;
   document.getElementById('resend-msg').style.display = 'none';
   
+  renderEditableItems();
+  
+  document.getElementById('order-modal-overlay').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+function renderEditableItems() {
   const tbody = document.getElementById('m-items-tbody');
   tbody.innerHTML = '';
-  activeOrderObj.items.forEach(item => {
+  let calcTotal = 0;
+
+  activeOrderObj.items.forEach((item, idx) => {
+    let lineTot = parseFloat(item.qty) * parseFloat(item.unitPrice);
+    calcTotal += lineTot;
+    
     let tr = document.createElement('tr');
     tr.innerHTML = `
-      <td data-label="Item">${item.description} ${item.size}<br><span style="font-size:10px;color:var(--silver)">${item.code}</span></td>
-      <td data-label="Qty" style="font-family:monospace">${item.qty} ${item.unit==='carton'?'ctn':'pcs'}</td>
-      <td data-label="Unit Price" style="font-family:monospace">$${(item.unitPrice||0).toFixed(2)}</td>
-      <td data-label="Line Total" style="text-align:right;font-family:monospace;color:var(--white)">$${(item.lineTotal||0).toFixed(2)}</td>
+      <td data-label="Item">${item.description} ${item.size}<br><span style="font-size:10px;color:var(--silver)">${item.code} (${item.unit})</span></td>
+      <td data-label="Qty"><input type="number" class="data-input edit-qty" data-idx="${idx}" value="${item.qty}" style="width:70px;" onchange="liveRecalc()"></td>
+      <td data-label="Unit Price"><input type="number" step="0.01" class="data-input edit-price" data-idx="${idx}" value="${(item.unitPrice||0).toFixed(2)}" style="width:90px;" onchange="liveRecalc()"></td>
+      <td data-label="Line Total" class="live-line-tot" style="text-align:right;font-family:monospace;color:var(--white)">$${lineTot.toFixed(2)}</td>
+      <td data-label="Action"><button class="btn-del" onclick="removeOrderItem(${idx})">X</button></td>
     `;
     tbody.appendChild(tr);
   });
   
-  document.getElementById('order-modal-overlay').style.display = 'flex';
-  document.body.style.overflow = 'hidden';
+  document.getElementById('m-total').textContent = '$' + calcTotal.toFixed(2);
+}
+
+function liveRecalc() {
+  let qtys = document.querySelectorAll('.edit-qty');
+  let prices = document.querySelectorAll('.edit-price');
+  let lines = document.querySelectorAll('.live-line-tot');
+  let calcTotal = 0;
+  
+  qtys.forEach((qInput, i) => {
+    let q = parseFloat(qInput.value) || 0;
+    let p = parseFloat(prices[i].value) || 0;
+    let ltot = q * p;
+    calcTotal += ltot;
+    lines[i].textContent = '$' + ltot.toFixed(2);
+  });
+  document.getElementById('m-total').textContent = '$' + calcTotal.toFixed(2);
+}
+
+function removeOrderItem(idx) {
+  if(confirm('Remove this item from the order?')) {
+    activeOrderObj.items.splice(idx, 1);
+    renderEditableItems();
+  }
 }
 
 function closeOrderModal(e) {
@@ -487,26 +571,50 @@ function closeOrderModal(e) {
   }
 }
 
-async function saveOrderStatus() {
+async function saveOrderChanges() {
   if(!activeOrderObj) return;
-  const newStatus = document.getElementById('m-status-sel').value;
-  activeOrderObj.status = newStatus;
   
-  const payload = { message: 'Admin: Update order status ' + activeOrderObj.id, content: btoa(unescape(encodeURIComponent(JSON.stringify({orders: masterOrders}, null, 2)))), branch: 'main', sha: currentOrderSha };
+  // Scrape inputs back into object
+  activeOrderObj.customer.name = document.getElementById('edit-cust-name').value.trim();
+  activeOrderObj.customer.company = document.getElementById('edit-cust-company').value.trim();
+  activeOrderObj.customer.email = document.getElementById('edit-cust-email').value.trim();
+  activeOrderObj.customer.phone = document.getElementById('edit-cust-phone').value.trim();
+  
+  activeOrderObj.delivery.address = document.getElementById('edit-delivery').value.trim();
+  activeOrderObj.po = document.getElementById('edit-po').value.trim();
+  activeOrderObj.notes = document.getElementById('edit-notes').value.trim();
+  activeOrderObj.status = document.getElementById('m-status-sel').value;
+
+  let qtys = document.querySelectorAll('.edit-qty');
+  let prices = document.querySelectorAll('.edit-price');
+  let newTotal = 0;
+  
+  qtys.forEach((qInput, i) => {
+    let q = parseInt(qInput.value) || 0;
+    let p = parseFloat(prices[i].value) || 0;
+    activeOrderObj.items[i].qty = q;
+    activeOrderObj.items[i].unitPrice = p;
+    activeOrderObj.items[i].lineTotal = q * p;
+    newTotal += (q * p);
+  });
+  activeOrderObj.total = newTotal;
+  
+  const payload = { message: 'Admin: Edit order ' + activeOrderObj.id, content: btoa(unescape(encodeURIComponent(JSON.stringify({orders: masterOrders}, null, 2)))), branch: 'main', sha: currentOrderSha };
   
   try {
     const r = await fetch(WORKER_URL + '/github/orders.json', { method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
     if(r.ok) { 
       const d = await r.json(); currentOrderSha = d.content.sha; 
-      showStatus('Order status updated successfully!', false); 
-      loadOrders(); // Refresh table
+      showStatus('Order changes saved successfully!', false); 
+      closeOrderModal({target: {id: 'order-modal-overlay'}});
+      loadOrders(); 
     } else throw new Error();
-  } catch(e) { showStatus('Error updating order.', true); }
+  } catch(e) { showStatus('Error saving order.', true); }
 }
 
 // --- RESEND EMAIL LOGIC ---
 function buildConfirmEmail(order){
-  return `<!DOCTYPE html><html><head><meta charset="UTF-8"/></head><body style="margin:0;padding:0;background:#f4f4f4;font-family:'Helvetica Neue',Arial,sans-serif;"><table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;padding:32px 0;"><tr><td align="center"><table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:4px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);"><tr><td style="background:#0C1117;padding:28px 36px;border-bottom:4px solid #C8981F;"><table width="100%" cellpadding="0" cellspacing="0"><tr><td><div style="font-family:'Arial Black',Arial,sans-serif;font-size:20px;font-weight:900;color:#FFFFFF;letter-spacing:2px;text-transform:uppercase;">ALL PRO BUILDING SUPPLIES</div><div style="font-size:11px;color:#C8981F;letter-spacing:3px;text-transform:uppercase;margin-top:3px;">LLC</div></td><td align="right"><div style="background:#C8981F;color:#0C1117;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:6px 14px;border-radius:2px;">ORDER COPY</div></td></tr></table></td></tr><tr><td style="padding:32px 36px 0;"><p style="margin:0;font-size:16px;color:#222;">Hi <strong>${order.customer.name}</strong>,</p><p style="margin:12px 0 0;font-size:15px;color:#444;line-height:1.6;">Here is a copy of the order you placed. We are processing it and will be in touch shortly regarding availability and fulfillment.</p></td></tr><tr><td style="padding:24px 36px 0;"><table width="100%" cellpadding="0" cellspacing="0" style="background:#f8f8f8;border-radius:4px;border:1px solid #e8e8e8;"><tr><td style="padding:16px 20px;border-right:1px solid #e8e8e8;"><div style="font-size:10px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Order ID</div><div style="font-size:14px;font-weight:700;color:#C8981F;font-family:monospace;">${order.id}</div></td><td style="padding:16px 20px;border-right:1px solid #e8e8e8;"><div style="font-size:10px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Date</div><div style="font-size:14px;color:#222;">${new Date(order.placedAt).toLocaleDateString()}</div></td><td style="padding:16px 20px;"><div style="font-size:10px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Delivery</div><div style="font-size:13px;color:#222;">${order.delivery.address}</div></td></tr></table></td></tr><tr><td style="padding:24px 36px 0;"><div style="font-size:11px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;font-weight:700;">Items Ordered</div><table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #e8e8e8;border-radius:4px;overflow:hidden;"><tr style="background:#0C1117;"><td style="padding:10px 14px;font-size:11px;color:#C8981F;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;">Product</td><td style="padding:10px 14px;font-size:11px;color:#C8981F;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;text-align:right;">Total</td></tr>${order.items.map(function(i){return '<tr><td style="padding:10px 14px;font-size:13px;color:#333;border-bottom:1px solid #f0f0f0;">'+i.description+' '+i.size+'<br/><span style=\"font-size:11px;color:#888\">'+i.qty+' pcs @ $'+i.unitPrice.toFixed(2)+'</span></td><td style="padding:10px 14px;font-size:13px;color:#333;text-align:right;border-bottom:1px solid #f0f0f0;">$'+i.lineTotal.toFixed(2)+'</td></tr>';}).join('')}</table></td></tr><tr><td style="padding:0 36px;"><table width="100%" cellpadding="0" cellspacing="0"><tr><td></td><td style="padding:16px 0;border-top:2px solid #C8981F;width:220px;" align="right"><span style="font-size:13px;color:#888;text-transform:uppercase;letter-spacing:1px;">Order Total&nbsp;&nbsp;</span><span style="font-size:22px;font-weight:700;color:#0C1117;">$${order.total.toFixed(2)}</span></td></tr></table></td></tr>${order.po||order.notes?'<tr><td style="padding:0 36px 24px;"><table width="100%" cellpadding="0" cellspacing="0" style="background:#fffbf0;border:1px solid #f0e0a0;border-radius:4px;"><tr><td style="padding:14px 18px;"><div style="font-size:12px;color:#666;margin-bottom:4px;"><strong style=\"color:#333\">PO Number:</strong> '+(order.po||'N/A')+'</div><div style="font-size:12px;color:#666;"><strong style=\"color:#333\">Notes:</strong> '+(order.notes||'None')+'</div></td></tr></table></td></tr>':''}<tr><td style="padding:0 36px;"><hr style="border:none;border-top:1px solid #eee;margin:0;"/></td></tr><tr><td style="padding:24px 36px;"><p style="margin:0;font-size:14px;color:#444;line-height:1.7;">Questions about your order?</p><p style="margin:10px 0 0;font-size:14px;color:#444;">📞 <a href="tel:17328291940" style="color:#C8981F;text-decoration:none;font-weight:600;">732-829-1940</a></p><p style="margin:4px 0 0;font-size:14px;color:#444;">✉️ <a href="mailto:info@allprobuildingsupplies.com" style="color:#C8981F;text-decoration:none;">info@allprobuildingsupplies.com</a></p></td></tr><tr><td style="background:#0C1117;padding:20px 36px;text-align:center;"><div style="font-size:12px;color:#888;">© 2026 All Pro Building Supplies LLC</div></td></tr></table></td></tr></table></body></html>`;
+  return `<!DOCTYPE html><html><head><meta charset="UTF-8"/></head><body style="margin:0;padding:0;background:#f4f4f4;font-family:'Helvetica Neue',Arial,sans-serif;"><table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;padding:32px 0;"><tr><td align="center"><table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:4px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);"><tr><td style="background:#0C1117;padding:28px 36px;border-bottom:4px solid #C8981F;"><table width="100%" cellpadding="0" cellspacing="0"><tr><td><div style="font-family:'Arial Black',Arial,sans-serif;font-size:20px;font-weight:900;color:#FFFFFF;letter-spacing:2px;text-transform:uppercase;">ALL PRO BUILDING SUPPLIES</div><div style="font-size:11px;color:#C8981F;letter-spacing:3px;text-transform:uppercase;margin-top:3px;">LLC</div></td><td align="right"><div style="background:#C8981F;color:#0C1117;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:6px 14px;border-radius:2px;">ORDER COPY</div></td></tr></table></td></tr><tr><td style="padding:32px 36px 0;"><p style="margin:0;font-size:16px;color:#222;">Hi <strong>${order.customer.name}</strong>,</p><p style="margin:12px 0 0;font-size:15px;color:#444;line-height:1.6;">Here is a copy of your order. If any changes were made by our team, they are reflected below.</p></td></tr><tr><td style="padding:24px 36px 0;"><table width="100%" cellpadding="0" cellspacing="0" style="background:#f8f8f8;border-radius:4px;border:1px solid #e8e8e8;"><tr><td style="padding:16px 20px;border-right:1px solid #e8e8e8;"><div style="font-size:10px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Order ID</div><div style="font-size:14px;font-weight:700;color:#C8981F;font-family:monospace;">${order.id}</div></td><td style="padding:16px 20px;border-right:1px solid #e8e8e8;"><div style="font-size:10px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Date</div><div style="font-size:14px;color:#222;">${new Date(order.placedAt).toLocaleDateString()}</div></td><td style="padding:16px 20px;"><div style="font-size:10px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Status / Logistics</div><div style="font-size:13px;color:#222;"><strong>${order.status.toUpperCase()}</strong><br>${order.delivery.address}</div></td></tr></table></td></tr><tr><td style="padding:24px 36px 0;"><div style="font-size:11px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;font-weight:700;">Items Ordered</div><table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #e8e8e8;border-radius:4px;overflow:hidden;"><tr style="background:#0C1117;"><td style="padding:10px 14px;font-size:11px;color:#C8981F;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;">Product</td><td style="padding:10px 14px;font-size:11px;color:#C8981F;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;text-align:right;">Total</td></tr>${order.items.map(function(i){return '<tr><td style="padding:10px 14px;font-size:13px;color:#333;border-bottom:1px solid #f0f0f0;">'+i.description+' '+i.size+'<br/><span style=\"font-size:11px;color:#888\">'+i.qty+' pcs @ $'+(i.unitPrice||0).toFixed(2)+'</span></td><td style="padding:10px 14px;font-size:13px;color:#333;text-align:right;border-bottom:1px solid #f0f0f0;">$'+(i.lineTotal||0).toFixed(2)+'</td></tr>';}).join('')}</table></td></tr><tr><td style="padding:0 36px;"><table width="100%" cellpadding="0" cellspacing="0"><tr><td></td><td style="padding:16px 0;border-top:2px solid #C8981F;width:220px;" align="right"><span style="font-size:13px;color:#888;text-transform:uppercase;letter-spacing:1px;">Order Total&nbsp;&nbsp;</span><span style="font-size:22px;font-weight:700;color:#0C1117;">$${(order.total||0).toFixed(2)}</span></td></tr></table></td></tr>${order.po||order.notes?'<tr><td style="padding:0 36px 24px;"><table width="100%" cellpadding="0" cellspacing="0" style="background:#fffbf0;border:1px solid #f0e0a0;border-radius:4px;"><tr><td style="padding:14px 18px;"><div style="font-size:12px;color:#666;margin-bottom:4px;"><strong style=\"color:#333\">PO Number:</strong> '+(order.po||'N/A')+'</div><div style="font-size:12px;color:#666;"><strong style=\"color:#333\">Notes:</strong> '+(order.notes||'None')+'</div></td></tr></table></td></tr>':''}<tr><td style="padding:0 36px;"><hr style="border:none;border-top:1px solid #eee;margin:0;"/></td></tr><tr><td style="padding:24px 36px;"><p style="margin:0;font-size:14px;color:#444;line-height:1.7;">Questions about your order?</p><p style="margin:10px 0 0;font-size:14px;color:#444;">📞 <a href="tel:17328291940" style="color:#C8981F;text-decoration:none;font-weight:600;">732-829-1940</a></p><p style="margin:4px 0 0;font-size:14px;color:#444;">✉️ <a href="mailto:info@allprobuildingsupplies.com" style="color:#C8981F;text-decoration:none;">info@allprobuildingsupplies.com</a></p></td></tr><tr><td style="background:#0C1117;padding:20px 36px;text-align:center;"><div style="font-size:12px;color:#888;">© 2026 All Pro Building Supplies LLC</div></td></tr></table></td></tr></table></body></html>`;
 }
 
 async function resendEmail(target) {
@@ -521,32 +629,32 @@ async function resendEmail(target) {
   var params = {
     to_email:    NOTIFY_EMAIL, 
     cust_email:  order.customer.email,
-    email_subject: 'Order Copy ' + order.id + ' — ' + order.customer.name + ' (' + order.customer.company + ')',
+    email_subject: 'Order Update ' + order.id + ' — ' + order.customer.name + ' (' + order.customer.company + ')',
     email_body:  buildConfirmEmail(order),
     order_id:    order.id,
     customer:    order.customer.name + ' (' + order.customer.company + ')',
     phone:       order.customer.phone,
-    delivery:    order.delivery.method.toUpperCase() + ': ' + order.delivery.address,
+    delivery:    order.delivery.address,
     po:          order.po || 'N/A',
     notes:       order.notes || 'None',
-    total:       '$' + order.total.toFixed(2),
+    total:       '$' + (order.total||0).toFixed(2),
     placed_at:   new Date(order.placedAt).toLocaleString(),
     admin_link:  'https://allprobuildingsupplies.com/admin.html',
     cust_name:   order.customer.name,
-    items:       order.items.map(function(i){ return i.description+' '+i.size+' — '+i.qty+' pcs = $'+i.lineTotal.toFixed(2); }).join('\n')
+    items:       order.items.map(function(i){ return i.description+' '+i.size+' — '+i.qty+' pcs = $'+(i.lineTotal||0).toFixed(2); }).join('\n')
   };
 
   try {
     if(target === 'admin' || target === 'both') {
       await emailjs.send(EMAILJS_SVC, EMAILJS_TPL, Object.assign({}, params, {
         cust_email: NOTIFY_EMAIL,
-        email_subject: '[RESEND] Order ' + order.id + ' — ' + order.customer.name
+        email_subject: '[UPDATED] Order ' + order.id + ' — ' + order.customer.name
       }));
     }
     if(target === 'customer' || target === 'both') {
       await emailjs.send(EMAILJS_SVC, EMAILJS_TPL, Object.assign({}, params, {
         cust_email: order.customer.email,
-        email_subject: 'Copy of Order — ' + order.id + ' | All Pro Building Supplies'
+        email_subject: 'Order Update — ' + order.id + ' | All Pro Building Supplies'
       }));
     }
     msgEl.style.color = '#2ecc71';
@@ -556,14 +664,7 @@ async function resendEmail(target) {
     console.error(e);
   }
 }
-
-// Init
-window.onload = () => { 
-  switchTab('orders');
-  loadOrders(); 
-  loadProducts(); 
-  loadUsers(); 
-};
 </script>
+<script src="assets/main.js"></script>
 </body>
 </html>
