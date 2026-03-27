@@ -649,8 +649,8 @@ async function syncInventory(oldItems, newItems, oldStatus, newStatus) {
 
 // --- EMAILJS INTEGRATION ---
 async function sendEmails(order, type) {
-  const params = {
-    to_email: order.customer.email,
+  // Base parameters for the EmailJS template
+  const baseParams = {
     order_id: order.id,
     customer: order.customer.name,
     total: '$' + order.total.toFixed(2),
@@ -660,21 +660,50 @@ async function sendEmails(order, type) {
 
   try {
     if (type === 'new') {
-      params.email_subject = `Order Received — ${order.id} | All Pro Building Supplies`;
-      params.email_body = buildConfirmEmail(order);
-      await emailjs.send(EMAILJS_SVC, EMAILJS_TPL, params);
+      // 1. Send to Customer
+      await emailjs.send(EMAILJS_SVC, EMAILJS_TPL, Object.assign({}, baseParams, {
+        to_email: order.customer.email,
+        email_subject: `Order Received — ${order.id} | All Pro Building Supplies`,
+        email_body: buildConfirmEmail(order)
+      }));
+      // 2. Send to Admin
+      await emailjs.send(EMAILJS_SVC, EMAILJS_TPL, Object.assign({}, baseParams, {
+        to_email: NOTIFY_EMAIL,
+        email_subject: `[ADMIN ENTRY] New Order — ${order.id} | ${order.customer.name}`,
+        email_body: buildConfirmEmail(order)
+      }));
     } 
     else if (type === 'confirmed') {
-      params.email_subject = `Order CONFIRMED — ${order.id} | All Pro Building Supplies`;
-      params.email_body = buildStatusEmail(order, 'confirmed');
-      await emailjs.send(EMAILJS_SVC, EMAILJS_TPL, params);
+      // 1. Send to Customer
+      await emailjs.send(EMAILJS_SVC, EMAILJS_TPL, Object.assign({}, baseParams, {
+        to_email: order.customer.email,
+        email_subject: `Order CONFIRMED — ${order.id} | All Pro Building Supplies`,
+        email_body: buildStatusEmail(order, 'confirmed')
+      }));
+      // 2. Send to Admin
+      await emailjs.send(EMAILJS_SVC, EMAILJS_TPL, Object.assign({}, baseParams, {
+        to_email: NOTIFY_EMAIL,
+        email_subject: `[STATUS] Confirmed — ${order.id} | ${order.customer.name}`,
+        email_body: buildStatusEmail(order, 'confirmed')
+      }));
     }
     else if (type === 'cancelled') {
-      params.email_subject = `Order CANCELLED — ${order.id} | All Pro Building Supplies`;
-      params.email_body = buildStatusEmail(order, 'cancelled');
-      await emailjs.send(EMAILJS_SVC, EMAILJS_TPL, params);
+      // 1. Send to Customer
+      await emailjs.send(EMAILJS_SVC, EMAILJS_TPL, Object.assign({}, baseParams, {
+        to_email: order.customer.email,
+        email_subject: `Order CANCELLED — ${order.id} | All Pro Building Supplies`,
+        email_body: buildStatusEmail(order, 'cancelled')
+      }));
+      // 2. Send to Admin
+      await emailjs.send(EMAILJS_SVC, EMAILJS_TPL, Object.assign({}, baseParams, {
+        to_email: NOTIFY_EMAIL,
+        email_subject: `[STATUS] Cancelled — ${order.id} | ${order.customer.name}`,
+        email_body: buildStatusEmail(order, 'cancelled')
+      }));
     }
-  } catch(e) { console.error('EmailJS Error:', e); }
+  } catch(e) { 
+    console.error('EmailJS Error:', e); 
+  }
 }
 
 function buildConfirmEmail(order){
