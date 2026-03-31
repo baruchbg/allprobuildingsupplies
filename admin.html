@@ -723,14 +723,14 @@ async function sendDeliveredEmail() {
   }
 }
 
-// Init
-window.onload = () => { 
+// FIX: Use DOMContentLoaded instead of window.onload so we don't break main.js
+document.addEventListener('DOMContentLoaded', () => { 
   switchTab('orders');
   loadOrders(); 
   loadProducts(); 
   loadUsers(); 
-};
+});
 </script>
+<script src="assets/main.js"></script>
 </body>
 </html>
-
