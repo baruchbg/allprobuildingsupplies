@@ -3,7 +3,7 @@
     {
       "id": "APB-MN9BWNA1",
       "placedAt": "2026-03-27T20:03:18.361Z",
-      "status": "confirmed",
+      "status": "delivered",
       "customer": {
         "id": "1774547143945",
         "name": "Tim Papirnik",
@@ -13,7 +13,7 @@
       },
       "delivery": {
         "method": "delivery",
-        "address": "1985 Rutgers University Blvd A2, Lakewood, NJ 08701"
+        "address": "DELIVERY: 1985 Rutgers University Blvd A2, Lakewood, NJ 08701"
       },
       "notes": "",
       "items": [
@@ -158,7 +158,8 @@
           "lineTotal": 102
         }
       ],
-      "total": 3151
+      "total": 3151,
+      "po": ""
     }
   ]
 }
