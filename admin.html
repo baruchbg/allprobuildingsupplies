@@ -2,13 +2,14 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Admin Panel — All Pro Building Supplies LLC</title>
+<title>Admin Panel 2.0 (Testing) — All Pro Building Supplies LLC</title>
 <link rel="stylesheet" href="assets/style.css"/>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 <style>
 .admin-container{max-width:1200px;margin:40px auto;padding:0 20px;}
 .admin-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:32px;border-bottom:1px solid rgba(200,152,31,.2);padding-bottom:16px;flex-wrap:wrap;gap:16px;}
 .admin-title{font-family:'Oswald',sans-serif;font-size:28px;color:var(--white);}
+.admin-title span {color:var(--gold); font-size:16px; vertical-align:middle; margin-left:10px; font-family:'DM Mono',monospace;}
 .admin-tabs{display:flex;gap:8px;flex-wrap:wrap;}
 .admin-tab{background:var(--ink2);border:1px solid rgba(139,160,178,.2);color:var(--silver);font-family:'DM Mono',monospace;font-size:13px;letter-spacing:1px;padding:10px 20px;cursor:pointer;transition:all .2s;}
 .admin-tab.active{background:rgba(200,152,31,.1);border-color:var(--gold);color:var(--gold);}
@@ -19,7 +20,7 @@
 .data-table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:20px;}
 .data-table th{background:rgba(255,255,255,.03);color:var(--gold);font-family:'DM Mono',monospace;font-size:11px;letter-spacing:1px;text-transform:uppercase;padding:12px;text-align:left;border-bottom:1px solid rgba(200,152,31,.2);}
 .data-table td{padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.05);vertical-align:middle;}
-.data-input{width:100%;background:var(--ink3);border:1px solid rgba(139,160,178,.2);color:var(--white);font-family:'DM Sans',sans-serif;font-size:13px;padding:8px 10px;outline:none;box-sizing:border-box;}
+.data-input{width:100%;background:var(--ink3);border:1px solid rgba(139,160,178,.2);color:var(--white);font-family:'DM Sans',sans-serif;font-size:13px;padding:8px 10px;outline:none;box-sizing:border-box;transition:opacity 0.2s;}
 .data-input:focus{border-color:var(--gold);}
 
 /* Buttons */
@@ -28,8 +29,10 @@
 .btn-save:hover{transform:translateY(-2px);}
 .btn-add{background:transparent;border:1px dashed rgba(139,160,178,.4);color:var(--silver);padding:10px 20px;cursor:pointer;font-family:'DM Mono',monospace;font-size:12px;}
 .btn-add:hover{border-color:var(--white);color:var(--white);}
-.btn-del{background:rgba(255,80,80,.1);border:1px solid rgba(255,80,80,.2);color:#ff6b6b;cursor:pointer;padding:8px 12px;font-weight:bold;}
+.btn-del{background:rgba(255,80,80,.1);border:1px solid rgba(255,80,80,.2);color:#ff6b6b;cursor:pointer;padding:8px 12px;font-weight:bold;transition:opacity 0.2s;}
 .btn-view{background:rgba(200,152,31,.1);border:1px solid var(--gold);color:var(--gold);cursor:pointer;padding:6px 14px;font-family:'DM Mono',monospace;font-size:11px;text-transform:uppercase;}
+.btn-email-cmd{background:transparent;border:1px solid rgba(52,152,219,.4);color:#3498db;padding:12px 20px;font-family:'DM Mono',monospace;font-size:12px;cursor:pointer;transition:all .2s;width:100%;text-transform:uppercase;letter-spacing:1px;margin-top:8px;}
+.btn-email-cmd:hover{background:rgba(52,152,219,.1);border-color:#3498db;}
 
 /* Status Messaging */
 #status-msg{font-family:'DM Mono',monospace;font-size:12px;padding:12px;margin-bottom:20px;display:none;}
@@ -43,19 +46,29 @@
 .badge.delivered{background:rgba(52,152,219,.15);color:#3498db;border:1px solid rgba(52,152,219,.3);}
 .badge.cancelled{background:rgba(255,107,107,.15);color:#ff6b6b;border:1px solid rgba(255,107,107,.3);}
 
-/* MODAL SCROLL FIX & LAYOUT */
+/* MODALS */
 #order-modal-overlay{
   display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85);
   z-index:9999; overflow-y:auto; padding:40px 20px;
-  align-items:flex-start; 
-  justify-content:center;
+  align-items:flex-start; justify-content:center;
 }
 #order-modal{
   background:var(--ink2); border:1px solid rgba(200,152,31,.4);
   max-width:850px; width:100%; padding:32px;
-  margin:auto; 
-  position:relative;
+  margin:auto; position:relative;
 }
+
+#email-modal-overlay{
+  display:none; position:fixed; inset:0; background:rgba(0,0,0,0.65);
+  z-index:10005; overflow-y:auto; padding:40px 20px;
+  align-items:center; justify-content:center;
+}
+#email-modal{
+  background:var(--ink); border:1px solid #3498db;
+  max-width:500px; width:100%; padding:32px;
+  position:relative; box-shadow:0 10px 40px rgba(0,0,0,0.5);
+}
+
 .modal-close{position:absolute;top:20px;right:20px;background:none;border:none;color:var(--silver);font-size:24px;cursor:pointer;}
 .modal-close:hover{color:var(--white);}
 .modal-title{font-family:'Oswald',sans-serif;font-size:24px;color:var(--gold);margin-bottom:24px;border-bottom:1px solid rgba(255,255,255,.1);padding-bottom:12px;}
@@ -64,40 +77,36 @@
 .modal-lbl{font-size:10px;color:var(--silver);font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;margin-top:8px;}
 .modal-lbl:first-child{margin-top:0;}
 
-/* Resend Button Bar */
-.resend-bar{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;}
-.resend-btn{background:transparent;border:1px solid rgba(139,160,178,.3);color:var(--silver);padding:8px 14px;font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;transition:all .2s;}
-.resend-btn:hover{border-color:var(--gold);color:var(--gold);background:rgba(200,152,31,.1);}
-.btn-deliver{border-color:rgba(52,152,219,.5);color:#3498db;}
-.btn-deliver:hover{background:rgba(52,152,219,.1);border-color:#3498db;color:#3498db;}
+#edit-lock-banner{
+  display:none; background:rgba(255,159,67,.15); color:#ff9f43; 
+  border:1px solid rgba(255,159,67,.3); padding:10px 14px; 
+  margin-bottom:20px; font-size:12px; font-family:'DM Mono',monospace;
+}
+
+/* Checkboxes & Multi-Emails */
+.chk-row{display:flex;align-items:center;gap:8px;margin-bottom:10px;font-size:14px;color:var(--smoke);}
+.chk-row input[type="checkbox"]{accent-color:var(--gold);width:16px;height:16px;}
+.custom-email-row{display:flex; gap:8px; margin-bottom:8px;}
 
 /* Admin Auth Gate */
 #admin-auth-gate{display:flex; flex-direction:column; align-items:center; justify-content:center; position:fixed; inset:0; background:var(--ink); z-index:100000;}
 .auth-box{background:var(--ink2); border:1px solid var(--gold); padding:40px; text-align:center; max-width:400px; width:90%;}
 
 /* --- CURSOR FIX FOR MODALS --- */
-#cursor, #cursor-ring {
-  z-index: 999999 !important;
-}
+#cursor, #cursor-ring { z-index: 999999 !important; }
 
 /* MOBILE OPTIMIZATIONS */
 @media(max-width:768px){
   .modal-grid{grid-template-columns:1fr;}
-  #order-modal{padding:20px;}
-  .resend-btn{flex:1;text-align:center;min-width:100px;}
+  #order-modal, #email-modal{padding:20px;}
   .admin-panel{padding:16px;}
-  .btn-save, .btn-add{width:100%; justify-content:center; text-align:center;}
+  .btn-save, .btn-add, .btn-email-cmd{width:100%; justify-content:center; text-align:center;}
   
-  /* Convert Data Tables to Cards on Mobile */
   .data-table, .data-table tbody, .data-table tr, .data-table td { display: block; width: 100%; }
   .data-table thead { display: none; }
   .data-table tr { background: var(--ink3); border: 1px solid rgba(200,152,31,.2); margin-bottom: 16px; padding: 16px; border-radius:4px; }
   .data-table td { display: flex; flex-direction: column; padding: 6px 0; border: none; }
-  .data-table td::before { 
-    content: attr(data-label); 
-    font-family: 'DM Mono', monospace; font-size: 10px; color: var(--gold); 
-    text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; 
-  }
+  .data-table td::before { content: attr(data-label); font-family: 'DM Mono', monospace; font-size: 10px; color: var(--gold); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
   .btn-del { width: 100%; margin-top: 12px; }
   .btn-view { width: 100%; text-align: center; margin-top: 8px;}
 }
@@ -131,7 +140,7 @@
   <div id="status-msg"></div>
 
   <div class="admin-header">
-    <h1 class="admin-title">Database Manager</h1>
+    <h1 class="admin-title">Database Manager <span>v2.0</span></h1>
     <div class="admin-tabs">
       <button class="admin-tab active" onclick="switchTab('orders')" data-tab="orders">Orders</button>
       <button class="admin-tab" onclick="switchTab('products')" data-tab="products">Products (CSV)</button>
@@ -140,17 +149,10 @@
   </div>
 
   <div id="tab-orders" class="admin-panel active">
-    <p style="color:var(--silver);font-size:14px;margin-bottom:20px;">Manage and edit customer orders. Click 'View Details' to edit order contents, change status, and resend emails.</p>
+    <p style="color:var(--silver);font-size:14px;margin-bottom:20px;">Manage and edit customer orders. Click 'View Details' to edit order contents, change status, and send invoices/emails.</p>
     <table class="data-table" id="orders-table">
       <thead>
-        <tr>
-          <th>Order ID</th>
-          <th>Date</th>
-          <th>Customer</th>
-          <th>Total</th>
-          <th>Status</th>
-          <th>Action</th>
-        </tr>
+        <tr><th>Order ID</th><th>Date</th><th>Customer</th><th>Total</th><th>Status</th><th>Action</th></tr>
       </thead>
       <tbody id="orders-tbody"></tbody>
     </table>
@@ -160,16 +162,7 @@
     <p style="color:var(--silver);font-size:14px;margin-bottom:20px;">Edit your master inventory. This data feeds directly into the live Products and Checkout pages.</p>
     <table class="data-table" id="prod-table">
       <thead>
-        <tr>
-          <th>Category Code</th>
-          <th>Description</th>
-          <th>Size</th>
-          <th>Pcs / Ctn</th>
-          <th>Inventory Qty</th>
-          <th>Unit Price ($)</th>
-          <th>Image URL</th>
-          <th></th>
-        </tr>
+        <tr><th>Category Code</th><th>Description</th><th>Size</th><th>Pcs / Ctn</th><th>Inventory Qty</th><th>Unit Price ($)</th><th>Image URL</th><th></th></tr>
       </thead>
       <tbody id="prod-tbody"></tbody>
     </table>
@@ -183,15 +176,7 @@
     <p style="color:var(--silver);font-size:14px;margin-bottom:20px;">Approve or reject trade accounts. Only 'approved' users can view pricing and place orders.</p>
     <table class="data-table" id="users-table">
       <thead>
-        <tr>
-          <th>ID</th>
-          <th>Name</th>
-          <th>Email</th>
-          <th>Company</th>
-          <th>Status</th>
-          <th>Pieces Allowed</th>
-          <th></th>
-        </tr>
+        <tr><th>ID</th><th>Name</th><th>Email</th><th>Company</th><th>Status</th><th>Pieces Allowed</th><th></th></tr>
       </thead>
       <tbody id="users-tbody"></tbody>
     </table>
@@ -200,7 +185,6 @@
       <button class="btn-save" onclick="saveUsers()">Save Approvals</button>
     </div>
   </div>
-
 </div>
 
 <div id="order-modal-overlay" onclick="closeOrderModal(event)">
@@ -208,29 +192,19 @@
     <button class="modal-close" onclick="closeOrderModal(event)">&times;</button>
     <div class="modal-title">Edit Order: <span id="m-id" style="color:var(--white)"></span></div>
     
+    <div id="edit-lock-banner">⚠ This order is Delivered or Cancelled. Order editing is disabled. Change status to Pending or Confirmed to unlock fields.</div>
+
     <div class="modal-grid">
       <div class="modal-box">
-        <div class="modal-lbl">Customer Name</div>
-        <input type="text" class="data-input" id="edit-cust-name" style="margin-bottom:12px;">
-        
-        <div class="modal-lbl">Company</div>
-        <input type="text" class="data-input" id="edit-cust-company" style="margin-bottom:12px;">
-        
-        <div class="modal-lbl">Email</div>
-        <input type="text" class="data-input" id="edit-cust-email" style="margin-bottom:12px;">
-        
-        <div class="modal-lbl">Phone</div>
-        <input type="text" class="data-input" id="edit-cust-phone">
+        <div class="modal-lbl">Customer Name</div><input type="text" class="data-input locked-input" id="edit-cust-name" style="margin-bottom:12px;">
+        <div class="modal-lbl">Company</div><input type="text" class="data-input locked-input" id="edit-cust-company" style="margin-bottom:12px;">
+        <div class="modal-lbl">Email</div><input type="text" class="data-input locked-input" id="edit-cust-email" style="margin-bottom:12px;">
+        <div class="modal-lbl">Phone</div><input type="text" class="data-input locked-input" id="edit-cust-phone">
       </div>
       <div class="modal-box">
-        <div class="modal-lbl">Delivery / Logistics</div>
-        <textarea class="data-input" id="edit-delivery" style="resize:vertical;min-height:60px;margin-bottom:12px;"></textarea>
-        
-        <div class="modal-lbl">PO Number</div>
-        <input type="text" class="data-input" id="edit-po" style="margin-bottom:12px;">
-        
-        <div class="modal-lbl">Notes</div>
-        <textarea class="data-input" id="edit-notes" style="resize:vertical;min-height:60px;"></textarea>
+        <div class="modal-lbl">Delivery / Logistics</div><textarea class="data-input locked-input" id="edit-delivery" style="resize:vertical;min-height:60px;margin-bottom:12px;"></textarea>
+        <div class="modal-lbl">PO Number</div><input type="text" class="data-input locked-input" id="edit-po" style="margin-bottom:12px;">
+        <div class="modal-lbl">Notes</div><textarea class="data-input locked-input" id="edit-notes" style="resize:vertical;min-height:60px;"></textarea>
       </div>
     </div>
 
@@ -249,7 +223,7 @@
         
         <div>
           <div class="modal-lbl" style="color:var(--gold)">Order Status</div>
-          <select id="m-status-sel" class="data-input" style="margin-bottom:16px;">
+          <select id="m-status-sel" class="data-input" style="margin-bottom:16px;" onchange="toggleEditLock(this.value)">
             <option value="pending">Pending</option>
             <option value="confirmed">Confirmed</option>
             <option value="delivered">Delivered</option>
@@ -259,16 +233,9 @@
         </div>
         
         <div>
-          <div class="modal-lbl" style="color:var(--gold)">Email Communications</div>
-          <div class="resend-bar">
-            <button class="resend-btn" onclick="resendEmail('customer')">✉ Resend Copy (Customer)</button>
-            <button class="resend-btn" onclick="resendEmail('admin')">✉ Resend Copy (Admin)</button>
-          </div>
-          <div class="modal-lbl" style="color:var(--gold); margin-top:12px;">Post-Delivery Action</div>
-          <div class="resend-bar" style="margin-top:4px;">
-            <button class="resend-btn btn-deliver" onclick="sendDeliveredEmail()">📦 Send "Delivered / Thank You" Email</button>
-          </div>
-          <div id="resend-msg" style="font-size:11px; color:#2ecc71; font-family:'DM Mono',monospace; margin-top:10px; display:none;">Email sent successfully!</div>
+          <div class="modal-lbl" style="color:var(--gold)">Communications</div>
+          <p style="font-size:12px; color:var(--silver); margin-bottom:12px; line-height:1.5;">Send formatted confirmation emails, delivery notifications, or invoices to customers and admins.</p>
+          <button class="btn-email-cmd" onclick="openEmailModal()">✉ Open Email Command Center</button>
         </div>
 
       </div>
@@ -277,37 +244,75 @@
   </div>
 </div>
 
+<div id="email-modal-overlay" onclick="closeEmailModal(event)">
+  <div id="email-modal" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="closeEmailModal(event)">&times;</button>
+    <div class="modal-title" style="color:#3498db; border-color:rgba(52,152,219,.3);">Email Command Center</div>
+    
+    <div class="modal-lbl" style="color:var(--white)">1. Select Email Format</div>
+    <select id="email-format-sel" class="data-input" style="margin-bottom:24px; border-color:#3498db;">
+      <option value="confirm">Order Confirmation / Update</option>
+      <option value="deliver">Delivery Confirmation (Thank You)</option>
+      <option value="invoice">Formal Invoice (With Payment Info)</option>
+    </select>
+
+    <div class="modal-lbl" style="color:var(--white)">2. Select Recipients</div>
+    <div style="background:var(--ink2); padding:16px; border:1px solid rgba(139,160,178,.2); margin-bottom:24px;">
+      <label class="chk-row">
+        <input type="checkbox" id="chk-cust" checked> 
+        Send to Customer <span style="color:var(--silver);font-size:12px;" id="lbl-cust-email"></span>
+      </label>
+      <label class="chk-row">
+        <input type="checkbox" id="chk-admin"> 
+        Send to Admin <span style="color:var(--silver);font-size:12px;">(orders@allprobuildingsupplies.com)</span>
+      </label>
+      <label class="chk-row" style="margin-bottom:0;">
+        <input type="checkbox" id="chk-custom" onchange="document.getElementById('custom-email-container').style.display=this.checked?'block':'none'"> 
+        Send to Custom Email...
+      </label>
+      
+      <div id="custom-email-container" style="display:none; margin-top:12px;">
+        <div class="custom-email-row">
+          <input type="email" class="data-input custom-email-input" placeholder="e.g. accounting@builder.com" style="border-color:rgba(255,255,255,.2);">
+          <button class="btn-view" style="padding:0 12px; font-size:16px;" onclick="addCustomEmailField()" title="Add another email">+</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="email-send-msg" style="font-family:'DM Mono',monospace;font-size:12px;margin-bottom:16px;display:none;"></div>
+
+    <div style="display:flex;gap:12px;">
+      <button class="btn-add" style="flex:1;text-align:center;" onclick="closeEmailModal()">Cancel</button>
+      <button class="btn-save" id="btn-execute-send" style="flex:2;background:#3498db;color:#fff;" onclick="executeSendEmail()">🚀 Send Email(s)</button>
+    </div>
+
+  </div>
+</div>
+
+
 <script>
 const WORKER_URL = 'https://allpro-github-proxy.baruch-6d5.workers.dev';
 
 // --- ADMIN AUTH GATE ---
 function checkAdminAuth() {
   const pin = document.getElementById('admin-pin').value;
-  if(pin === 'Admin2026!') { // <-- CHANGE YOUR ADMIN PASSWORD HERE
+  if(pin === 'Admin2026!') { 
     sessionStorage.setItem('apbs_admin_auth', 'true');
     unlockAdmin();
   } else {
     document.getElementById('admin-auth-err').style.display = 'block';
   }
 }
-
-// Allow pressing "Enter" on password field
 document.getElementById('admin-pin').addEventListener('keypress', function (e) {
-    if (e.key === 'Enter') {
-        checkAdminAuth();
-    }
+    if (e.key === 'Enter') checkAdminAuth();
 });
 
 function unlockAdmin() {
   document.getElementById('admin-auth-gate').style.display = 'none';
   document.getElementById('main-admin-content').style.display = 'block';
   switchTab('orders');
-  loadOrders(); 
-  loadProducts(); 
-  loadUsers(); 
 }
 
-// Check if already logged in this session
 if(sessionStorage.getItem('apbs_admin_auth') === 'true') {
   unlockAdmin();
 }
@@ -319,28 +324,20 @@ const EMAILJS_KEY  = 'MNDXK3JgE890yvoA6';
 const NOTIFY_EMAIL = 'orders@allprobuildingsupplies.com';
 emailjs.init(EMAILJS_KEY);
 
-let currentProdSha = null;
-let currentUserSha = null;
-let currentOrderSha = null;
-let masterUsers = [];
-let masterOrders = [];
-let activeOrderObj = null; 
+let currentProdSha = null, currentUserSha = null, currentOrderSha = null;
+let masterUsers = [], masterOrders = [], activeOrderObj = null; 
 
 function showStatus(msg, isErr) {
   const el = document.getElementById('status-msg');
-  el.textContent = msg;
-  el.className = isErr ? 'status-err' : 'status-success';
-  el.style.display = 'block';
-  setTimeout(() => el.style.display = 'none', 4000);
+  el.textContent = msg; el.className = isErr ? 'status-err' : 'status-success';
+  el.style.display = 'block'; setTimeout(() => el.style.display = 'none', 4000);
 }
 
 function switchTab(tab) {
   document.querySelectorAll('.admin-tab').forEach(b => b.classList.remove('active'));
   document.querySelectorAll('.admin-panel').forEach(p => p.classList.remove('active'));
-  
   const targetBtn = document.querySelector(`.admin-tab[data-tab="${tab}"]`);
   if(targetBtn) targetBtn.classList.add('active');
-  
   const targetPanel = document.getElementById('tab-' + tab);
   if(targetPanel) targetPanel.classList.add('active');
 }
@@ -365,167 +362,119 @@ function parseCSV(str) {
 function stringifyCSV(lines) {
   return lines.map(row => row.map(cell => {
     var s = String(cell||'');
-    if(s.includes(',') || s.includes('"') || s.includes('\n')) { return '"' + s.replace(/"/g, '""') + '"'; }
+    if(s.includes(',') || s.includes('"') || s.includes('\n')) return '"' + s.replace(/"/g, '""') + '"';
     return s;
   }).join(',')).join('\n');
 }
 
-// --- PRODUCTS ---
+// --- DATA LOADERS ---
 async function loadProducts() {
   try {
-    const r = await fetch(WORKER_URL + '/github/products.csv');
-    const d = await r.json();
-    currentProdSha = d.sha;
-    const csv = decodeURIComponent(escape(atob(d.content)));
-    const rows = parseCSV(csv);
-    const tbody = document.getElementById('prod-tbody');
-    tbody.innerHTML = '';
-    for(let i=1; i<rows.length; i++) {
-      if(!rows[i][0]) continue;
-      addProductRow(rows[i]);
-    }
-  } catch(e) { console.error('Products load error'); }
+    const r = await fetch(WORKER_URL + '/github/products.csv'); const d = await r.json();
+    currentProdSha = d.sha; const csv = decodeURIComponent(escape(atob(d.content)));
+    const rows = parseCSV(csv); const tbody = document.getElementById('prod-tbody'); tbody.innerHTML = '';
+    for(let i=1; i<rows.length; i++) { if(rows[i][0]) addProductRow(rows[i]); }
+  } catch(e) {}
 }
-
 function addProductRow(data = ['', '', '', '', '', '', '']) {
   const tr = document.createElement('tr');
-  tr.innerHTML = `
-    <td data-label="Category Code"><input class="data-input" value="${data[0]||''}"></td>
-    <td data-label="Description"><input class="data-input" value="${data[1]||''}"></td>
-    <td data-label="Size"><input class="data-input" value="${data[2]||''}"></td>
-    <td data-label="Pcs / Ctn"><input class="data-input" value="${data[3]||''}"></td>
-    <td data-label="Inventory Qty"><input class="data-input" value="${data[4]||''}"></td>
-    <td data-label="Unit Price ($)"><input class="data-input" value="${data[5]||''}"></td>
-    <td data-label="Image URL"><input class="data-input" value="${data[6]||''}"></td>
-    <td data-label="Action"><button class="btn-del" onclick="this.closest('tr').remove()">Delete Row</button></td>
-  `;
+  tr.innerHTML = `<td data-label="Category Code"><input class="data-input" value="${data[0]||''}"></td><td data-label="Description"><input class="data-input" value="${data[1]||''}"></td><td data-label="Size"><input class="data-input" value="${data[2]||''}"></td><td data-label="Pcs / Ctn"><input class="data-input" value="${data[3]||''}"></td><td data-label="Inventory Qty"><input class="data-input" value="${data[4]||''}"></td><td data-label="Unit Price ($)"><input class="data-input" value="${data[5]||''}"></td><td data-label="Image URL"><input class="data-input" value="${data[6]||''}"></td><td data-label="Action"><button class="btn-del" onclick="this.closest('tr').remove()">Delete Row</button></td>`;
   document.getElementById('prod-tbody').appendChild(tr);
 }
-
 async function saveProducts() {
   const btn = event.target; btn.textContent = 'Saving...'; btn.disabled = true;
   const rows = [['Code', 'Description', 'Size', 'Pack', 'Qty', 'Price', 'Image']];
   document.querySelectorAll('#prod-tbody tr').forEach(tr => {
     const inputs = tr.querySelectorAll('input');
-    if(inputs[0].value.trim() !== '') {
-      rows.push(Array.from(inputs).map(inp => inputs[0].value === 'Code' ? inp.value : inp.value.trim()));
-    }
+    if(inputs[0].value.trim() !== '') rows.push(Array.from(inputs).map(inp => inputs[0].value === 'Code' ? inp.value : inp.value.trim()));
   });
-  const csvStr = stringifyCSV(rows);
-  const payload = { message: 'Admin: Update products.csv', content: btoa(unescape(encodeURIComponent(csvStr))), branch: 'main', sha: currentProdSha };
-  
+  const payload = { message: 'Admin: Update products.csv', content: btoa(unescape(encodeURIComponent(stringifyCSV(rows)))), branch: 'main', sha: currentProdSha };
   try {
     const r = await fetch(WORKER_URL + '/github/products.csv', { method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
-    if(r.ok) { const d = await r.json(); currentProdSha = d.content.sha; showStatus('Products saved successfully!', false); } 
-    else throw new Error();
+    if(r.ok) { const d = await r.json(); currentProdSha = d.content.sha; showStatus('Products saved successfully!', false); } else throw new Error();
   } catch(e) { showStatus('Error saving products.', true); }
   btn.textContent = 'Save Products'; btn.disabled = false;
 }
 
-// --- USERS ---
 async function loadUsers() {
   try {
-    const r = await fetch(WORKER_URL + '/github/users.json');
-    const d = await r.json();
-    currentUserSha = d.sha;
-    const jsonStr = decodeURIComponent(escape(atob(d.content)));
-    masterUsers = JSON.parse(jsonStr).users || [];
-    const tbody = document.getElementById('users-tbody');
-    tbody.innerHTML = '';
-    
+    const r = await fetch(WORKER_URL + '/github/users.json'); const d = await r.json();
+    currentUserSha = d.sha; masterUsers = JSON.parse(decodeURIComponent(escape(atob(d.content)))).users || [];
+    const tbody = document.getElementById('users-tbody'); tbody.innerHTML = '';
     masterUsers.forEach((u, i) => {
       const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td data-label="ID" style="font-family:monospace;color:var(--silver);">${u.id}</td>
-        <td data-label="Name">${u.fname} ${u.lname}</td>
-        <td data-label="Email">${u.email}</td>
-        <td data-label="Company">${u.company}</td>
-        <td data-label="Status">
-          <select class="data-input status-sel" data-idx="${i}" style="background:${u.status==='approved'?'rgba(46,204,113,.1)':'var(--ink3)'}">
-            <option value="pending" ${u.status==='pending'?'selected':''}>Pending</option>
-            <option value="approved" ${u.status==='approved'?'selected':''}>Approved</option>
-            <option value="rejected" ${u.status==='rejected'?'selected':''}>Rejected</option>
-          </select>
-        </td>
-        <td data-label="Pieces Allowed">
-          <select class="data-input pcs-sel" data-idx="${i}">
-            <option value="true" ${u.canOrderPieces!==false?'selected':''}>Yes (Pieces & Cases)</option>
-            <option value="false" ${u.canOrderPieces===false?'selected':''}>No (Cases Only)</option>
-          </select>
-        </td>
-        <td data-label="Action"><button class="btn-del" onclick="deleteUser(${i})">Delete</button></td>
-      `;
+      tr.innerHTML = `<td data-label="ID" style="font-family:monospace;color:var(--silver);">${u.id}</td><td data-label="Name">${u.fname} ${u.lname}</td><td data-label="Email">${u.email}</td><td data-label="Company">${u.company}</td><td data-label="Status"><select class="data-input status-sel" data-idx="${i}" style="background:${u.status==='approved'?'rgba(46,204,113,.1)':'var(--ink3)'}"><option value="pending" ${u.status==='pending'?'selected':''}>Pending</option><option value="approved" ${u.status==='approved'?'selected':''}>Approved</option><option value="rejected" ${u.status==='rejected'?'selected':''}>Rejected</option></select></td><td data-label="Pieces Allowed"><select class="data-input pcs-sel" data-idx="${i}"><option value="true" ${u.canOrderPieces!==false?'selected':''}>Yes (Pieces & Cases)</option><option value="false" ${u.canOrderPieces===false?'selected':''}>No (Cases Only)</option></select></td><td data-label="Action"><button class="btn-del" onclick="deleteUser(${i})">Delete</button></td>`;
       tbody.appendChild(tr);
     });
-  } catch(e) { console.error('Users load error'); }
+  } catch(e) {}
 }
-
-function deleteUser(idx) {
-  if(confirm("Are you sure you want to permanently delete this user?")) { masterUsers.splice(idx, 1); saveUsers(); }
-}
-
+function deleteUser(idx) { if(confirm("Permanently delete this user?")) { masterUsers.splice(idx, 1); saveUsers(); } }
 async function saveUsers() {
   const btn = event.target; btn.textContent = 'Saving...'; btn.disabled = true;
   document.querySelectorAll('.status-sel').forEach(sel => masterUsers[sel.dataset.idx].status = sel.value);
   document.querySelectorAll('.pcs-sel').forEach(sel => masterUsers[sel.dataset.idx].canOrderPieces = sel.value === 'true');
-  
   const payload = { message: 'Admin: Update users.json', content: btoa(unescape(encodeURIComponent(JSON.stringify({users: masterUsers}, null, 2)))), branch: 'main', sha: currentUserSha };
   try {
     const r = await fetch(WORKER_URL + '/github/users.json', { method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
-    if(r.ok) { const d = await r.json(); currentUserSha = d.content.sha; showStatus('Users saved successfully!', false); loadUsers(); } 
-    else throw new Error();
+    if(r.ok) { const d = await r.json(); currentUserSha = d.content.sha; showStatus('Users saved successfully!', false); loadUsers(); } else throw new Error();
   } catch(e) { showStatus('Error saving users.', true); }
   btn.textContent = 'Save Approvals'; btn.disabled = false;
 }
 
-// --- ORDERS ---
 async function loadOrders() {
   try {
-    const r = await fetch(WORKER_URL + '/github/orders.json');
-    const d = await r.json();
-    currentOrderSha = d.sha;
-    const jsonStr = decodeURIComponent(escape(atob(d.content)));
-    masterOrders = JSON.parse(jsonStr).orders || [];
+    const r = await fetch(WORKER_URL + '/github/orders.json'); const d = await r.json();
+    currentOrderSha = d.sha; masterOrders = JSON.parse(decodeURIComponent(escape(atob(d.content)))).orders || [];
     masterOrders.sort((a,b) => new Date(b.placedAt) - new Date(a.placedAt));
-    
-    const tbody = document.getElementById('orders-tbody');
-    tbody.innerHTML = '';
-    
+    const tbody = document.getElementById('orders-tbody'); tbody.innerHTML = '';
     masterOrders.forEach(o => {
       const dDate = new Date(o.placedAt).toLocaleDateString();
       const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td data-label="Order ID" style="font-family:monospace;color:var(--gold);">${o.id}</td>
-        <td data-label="Date">${dDate}</td>
-        <td data-label="Customer">${o.customer.name}<br><span style="font-size:10px;color:var(--silver)">${o.customer.company}</span></td>
-        <td data-label="Total" style="font-family:monospace">$${(o.total||0).toFixed(2)}</td>
-        <td data-label="Status"><span class="badge ${o.status}">${o.status}</span></td>
-        <td data-label="Action"><button class="btn-view" onclick="openOrderModal('${o.id}')">View & Edit</button></td>
-      `;
+      tr.innerHTML = `<td data-label="Order ID" style="font-family:monospace;color:var(--gold);">${o.id}</td><td data-label="Date">${dDate}</td><td data-label="Customer">${o.customer.name}<br><span style="font-size:10px;color:var(--silver)">${o.customer.company}</span></td><td data-label="Total" style="font-family:monospace">$${(o.total||0).toFixed(2)}</td><td data-label="Status"><span class="badge ${o.status}">${o.status}</span></td><td data-label="Action"><button class="btn-view" onclick="openOrderModal('${o.id}')">View & Edit</button></td>`;
       tbody.appendChild(tr);
     });
-  } catch(e) { console.error('Orders load error'); }
+  } catch(e) {}
 }
 
-// Populate the Edit Modal
+// --- ORDER EDIT LOGIC & LOCKING ---
+function toggleEditLock(status) {
+  const isLocked = (status === 'delivered' || status === 'cancelled');
+  
+  // Lock or unlock top-level input fields
+  const fields = ['edit-cust-name', 'edit-cust-company', 'edit-cust-email', 'edit-cust-phone', 'edit-delivery', 'edit-po', 'edit-notes'];
+  fields.forEach(id => {
+    document.getElementById(id).disabled = isLocked;
+    document.getElementById(id).style.opacity = isLocked ? '0.6' : '1';
+  });
+  
+  // Lock or unlock item rows (qtys, prices, delete buttons)
+  document.querySelectorAll('.edit-qty, .edit-price').forEach(inp => {
+    inp.disabled = isLocked;
+    inp.style.opacity = isLocked ? '0.6' : '1';
+  });
+  document.querySelectorAll('#m-items-tbody .btn-del').forEach(btn => {
+    btn.disabled = isLocked;
+    btn.style.opacity = isLocked ? '0.5' : '1';
+    btn.style.cursor = isLocked ? 'not-allowed' : 'pointer';
+  });
+  
+  // Show or hide the warning banner
+  document.getElementById('edit-lock-banner').style.display = isLocked ? 'block' : 'none';
+}
+
 function openOrderModal(orderId) {
   activeOrderObj = masterOrders.find(o => o.id === orderId);
   if(!activeOrderObj) return;
   
   document.getElementById('m-id').textContent = activeOrderObj.id;
-  
-  // Fill editable inputs
   document.getElementById('edit-cust-name').value = activeOrderObj.customer.name;
   document.getElementById('edit-cust-company').value = activeOrderObj.customer.company || '';
   document.getElementById('edit-cust-email').value = activeOrderObj.customer.email || '';
   document.getElementById('edit-cust-phone').value = activeOrderObj.customer.phone || '';
-  
   document.getElementById('edit-delivery').value = (activeOrderObj.delivery.method ? activeOrderObj.delivery.method.toUpperCase() + ': ' : '') + activeOrderObj.delivery.address;
   document.getElementById('edit-po').value = activeOrderObj.po || '';
   document.getElementById('edit-notes').value = activeOrderObj.notes || '';
-  
   document.getElementById('m-status-sel').value = activeOrderObj.status;
-  document.getElementById('resend-msg').style.display = 'none';
   
   renderEditableItems();
   
@@ -534,103 +483,105 @@ function openOrderModal(orderId) {
 }
 
 function renderEditableItems() {
-  const tbody = document.getElementById('m-items-tbody');
-  tbody.innerHTML = '';
+  const tbody = document.getElementById('m-items-tbody'); tbody.innerHTML = '';
   let calcTotal = 0;
-
   activeOrderObj.items.forEach((item, idx) => {
-    let lineTot = parseFloat(item.qty) * parseFloat(item.unitPrice);
-    calcTotal += lineTot;
-    
+    let lineTot = parseFloat(item.qty) * parseFloat(item.unitPrice); calcTotal += lineTot;
     let tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td data-label="Item">${item.description} ${item.size}<br><span style="font-size:10px;color:var(--silver)">${item.code} (${item.unit})</span></td>
-      <td data-label="Qty"><input type="number" class="data-input edit-qty" data-idx="${idx}" value="${item.qty}" style="width:70px;" onchange="liveRecalc()"></td>
-      <td data-label="Unit Price"><input type="number" step="0.01" class="data-input edit-price" data-idx="${idx}" value="${(item.unitPrice||0).toFixed(2)}" style="width:90px;" onchange="liveRecalc()"></td>
-      <td data-label="Line Total" class="live-line-tot" style="text-align:right;font-family:monospace;color:var(--white)">$${lineTot.toFixed(2)}</td>
-      <td data-label="Action"><button class="btn-del" onclick="removeOrderItem(${idx})">X</button></td>
-    `;
+    tr.innerHTML = `<td data-label="Item">${item.description} ${item.size}<br><span style="font-size:10px;color:var(--silver)">${item.code} (${item.unit})</span></td><td data-label="Qty"><input type="number" class="data-input edit-qty" data-idx="${idx}" value="${item.qty}" style="width:70px;" onchange="liveRecalc()"></td><td data-label="Unit Price"><input type="number" step="0.01" class="data-input edit-price" data-idx="${idx}" value="${(item.unitPrice||0).toFixed(2)}" style="width:90px;" onchange="liveRecalc()"></td><td data-label="Line Total" class="live-line-tot" style="text-align:right;font-family:monospace;color:var(--white)">$${lineTot.toFixed(2)}</td><td data-label="Action"><button class="btn-del" onclick="removeOrderItem(${idx})">X</button></td>`;
     tbody.appendChild(tr);
   });
-  
   document.getElementById('m-total').textContent = '$' + calcTotal.toFixed(2);
+  
+  // Apply locks if necessary after rendering items
+  toggleEditLock(document.getElementById('m-status-sel').value);
 }
 
 function liveRecalc() {
-  let qtys = document.querySelectorAll('.edit-qty');
-  let prices = document.querySelectorAll('.edit-price');
-  let lines = document.querySelectorAll('.live-line-tot');
-  let calcTotal = 0;
-  
+  let qtys = document.querySelectorAll('.edit-qty'), prices = document.querySelectorAll('.edit-price'), lines = document.querySelectorAll('.live-line-tot'), calcTotal = 0;
   qtys.forEach((qInput, i) => {
-    let q = parseFloat(qInput.value) || 0;
-    let p = parseFloat(prices[i].value) || 0;
-    let ltot = q * p;
-    calcTotal += ltot;
-    lines[i].textContent = '$' + ltot.toFixed(2);
+    let q = parseFloat(qInput.value) || 0, p = parseFloat(prices[i].value) || 0, ltot = q * p; calcTotal += ltot; lines[i].textContent = '$' + ltot.toFixed(2);
   });
   document.getElementById('m-total').textContent = '$' + calcTotal.toFixed(2);
 }
-
-function removeOrderItem(idx) {
-  if(confirm('Remove this item from the order?')) {
-    activeOrderObj.items.splice(idx, 1);
-    renderEditableItems();
-  }
+function removeOrderItem(idx) { 
+  if(document.getElementById('m-status-sel').value === 'delivered' || document.getElementById('m-status-sel').value === 'cancelled') return; // Enforce lock
+  if(confirm('Remove this item?')) { activeOrderObj.items.splice(idx, 1); renderEditableItems(); } 
 }
-
-function closeOrderModal(e) {
-  if(e) {
-    if(e.target.id === 'order-modal-overlay' || e.target.classList.contains('modal-close')) {
-      document.getElementById('order-modal-overlay').style.display = 'none';
-      document.body.style.overflow = '';
-      activeOrderObj = null;
-    }
-  }
-}
+function closeOrderModal(e) { if(e && (e.target.id === 'order-modal-overlay' || e.target.classList.contains('modal-close'))) { document.getElementById('order-modal-overlay').style.display = 'none'; document.body.style.overflow = ''; activeOrderObj = null; } }
 
 async function saveOrderChanges() {
   if(!activeOrderObj) return;
-  
-  // Scrape inputs back into object
   activeOrderObj.customer.name = document.getElementById('edit-cust-name').value.trim();
   activeOrderObj.customer.company = document.getElementById('edit-cust-company').value.trim();
   activeOrderObj.customer.email = document.getElementById('edit-cust-email').value.trim();
   activeOrderObj.customer.phone = document.getElementById('edit-cust-phone').value.trim();
-  
   activeOrderObj.delivery.address = document.getElementById('edit-delivery').value.trim();
   activeOrderObj.po = document.getElementById('edit-po').value.trim();
   activeOrderObj.notes = document.getElementById('edit-notes').value.trim();
   activeOrderObj.status = document.getElementById('m-status-sel').value;
 
-  let qtys = document.querySelectorAll('.edit-qty');
-  let prices = document.querySelectorAll('.edit-price');
-  let newTotal = 0;
-  
+  let qtys = document.querySelectorAll('.edit-qty'), prices = document.querySelectorAll('.edit-price'), newTotal = 0;
   qtys.forEach((qInput, i) => {
-    let q = parseInt(qInput.value) || 0;
-    let p = parseFloat(prices[i].value) || 0;
-    activeOrderObj.items[i].qty = q;
-    activeOrderObj.items[i].unitPrice = p;
-    activeOrderObj.items[i].lineTotal = q * p;
-    newTotal += (q * p);
+    let q = parseInt(qInput.value) || 0, p = parseFloat(prices[i].value) || 0;
+    activeOrderObj.items[i].qty = q; activeOrderObj.items[i].unitPrice = p; activeOrderObj.items[i].lineTotal = q * p; newTotal += (q * p);
   });
   activeOrderObj.total = newTotal;
   
   const payload = { message: 'Admin: Edit order ' + activeOrderObj.id, content: btoa(unescape(encodeURIComponent(JSON.stringify({orders: masterOrders}, null, 2)))), branch: 'main', sha: currentOrderSha };
-  
   try {
     const r = await fetch(WORKER_URL + '/github/orders.json', { method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
-    if(r.ok) { 
-      const d = await r.json(); currentOrderSha = d.content.sha; 
-      showStatus('Order changes saved successfully!', false); 
-      closeOrderModal({target: {id: 'order-modal-overlay'}});
-      loadOrders(); 
-    } else throw new Error();
+    if(r.ok) { const d = await r.json(); currentOrderSha = d.content.sha; showStatus('Order changes saved!', false); closeOrderModal({target: {id: 'order-modal-overlay'}}); loadOrders(); } 
+    else throw new Error();
   } catch(e) { showStatus('Error saving order.', true); }
 }
 
-// --- EMAIL NOTIFICATION TEMPLATES & LOGIC ---
+// --- NEW CONSOLIDATED EMAIL LOGIC ---
+function openEmailModal(e) {
+  if(e) e.stopPropagation();
+  if(!activeOrderObj) return;
+  
+  document.getElementById('lbl-cust-email').textContent = `(${activeOrderObj.customer.email || 'No email saved'})`;
+  document.getElementById('email-send-msg').style.display = 'none';
+  document.getElementById('chk-cust').checked = true;
+  document.getElementById('chk-admin').checked = false;
+  document.getElementById('chk-custom').checked = false;
+  
+  // Reset dynamic fields
+  document.getElementById('custom-email-container').style.display = 'none';
+  document.getElementById('custom-email-container').innerHTML = `
+    <div class="custom-email-row">
+      <input type="email" class="data-input custom-email-input" placeholder="e.g. accounting@builder.com" style="border-color:rgba(255,255,255,.2);">
+      <button class="btn-view" style="padding:0 12px; font-size:16px;" onclick="addCustomEmailField()" title="Add another email">+</button>
+    </div>
+  `;
+  
+  let btn = document.getElementById('btn-execute-send');
+  btn.disabled = false;
+  btn.innerHTML = '🚀 Send Email(s)';
+  btn.style.background = '#3498db';
+
+  document.getElementById('email-modal-overlay').style.display = 'flex';
+}
+
+function closeEmailModal(e) {
+  if(e && (e.target.id === 'email-modal-overlay' || e.target.classList.contains('modal-close'))) {
+    document.getElementById('email-modal-overlay').style.display = 'none';
+  } else if(!e) { document.getElementById('email-modal-overlay').style.display = 'none'; }
+}
+
+function addCustomEmailField() {
+  const container = document.getElementById('custom-email-container');
+  const div = document.createElement('div');
+  div.className = 'custom-email-row';
+  div.innerHTML = `
+    <input type="email" class="data-input custom-email-input" placeholder="e.g. additional@builder.com" style="border-color:rgba(255,255,255,.2);">
+    <button class="btn-del" style="padding:0 12px; margin-top:0;" onclick="this.parentElement.remove()" title="Remove email">X</button>
+  `;
+  container.appendChild(div);
+}
+
+// Email Templates
 function buildConfirmEmail(order){
   return `<!DOCTYPE html><html><head><meta charset="UTF-8"/></head><body style="margin:0;padding:0;background:#f4f4f4;font-family:'Helvetica Neue',Arial,sans-serif;"><table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;padding:32px 0;"><tr><td align="center"><table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:4px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);"><tr><td style="background:#0C1117;padding:28px 36px;border-bottom:4px solid #C8981F;"><table width="100%" cellpadding="0" cellspacing="0"><tr><td><div style="font-family:'Arial Black',Arial,sans-serif;font-size:20px;font-weight:900;color:#FFFFFF;letter-spacing:2px;text-transform:uppercase;">ALL PRO BUILDING SUPPLIES</div><div style="font-size:11px;color:#C8981F;letter-spacing:3px;text-transform:uppercase;margin-top:3px;">LLC</div></td><td align="right"><div style="background:#C8981F;color:#0C1117;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:6px 14px;border-radius:2px;">ORDER COPY</div></td></tr></table></td></tr><tr><td style="padding:32px 36px 0;"><p style="margin:0;font-size:16px;color:#222;">Hi <strong>${order.customer.name}</strong>,</p><p style="margin:12px 0 0;font-size:15px;color:#444;line-height:1.6;">Here is a copy of your order. If any changes were made by our team, they are reflected below.</p></td></tr><tr><td style="padding:24px 36px 0;"><table width="100%" cellpadding="0" cellspacing="0" style="background:#f8f8f8;border-radius:4px;border:1px solid #e8e8e8;"><tr><td style="padding:16px 20px;border-right:1px solid #e8e8e8;"><div style="font-size:10px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Order ID</div><div style="font-size:14px;font-weight:700;color:#C8981F;font-family:monospace;">${order.id}</div></td><td style="padding:16px 20px;border-right:1px solid #e8e8e8;"><div style="font-size:10px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Date</div><div style="font-size:14px;color:#222;">${new Date(order.placedAt).toLocaleDateString()}</div></td><td style="padding:16px 20px;"><div style="font-size:10px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Status / Logistics</div><div style="font-size:13px;color:#222;"><strong>${order.status.toUpperCase()}</strong><br>${order.delivery.address}</div></td></tr></table></td></tr><tr><td style="padding:24px 36px 0;"><div style="font-size:11px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;font-weight:700;">Items Ordered</div><table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #e8e8e8;border-radius:4px;overflow:hidden;"><tr style="background:#0C1117;"><td style="padding:10px 14px;font-size:11px;color:#C8981F;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;">Product</td><td style="padding:10px 14px;font-size:11px;color:#C8981F;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;text-align:right;">Total</td></tr>${order.items.map(function(i){return '<tr><td style="padding:10px 14px;font-size:13px;color:#333;border-bottom:1px solid #f0f0f0;">'+i.description+' '+i.size+'<br/><span style=\"font-size:11px;color:#888\">'+i.qty+' pcs @ $'+(i.unitPrice||0).toFixed(2)+'</span></td><td style="padding:10px 14px;font-size:13px;color:#333;text-align:right;border-bottom:1px solid #f0f0f0;">$'+(i.lineTotal||0).toFixed(2)+'</td></tr>';}).join('')}</table></td></tr><tr><td style="padding:0 36px;"><table width="100%" cellpadding="0" cellspacing="0"><tr><td></td><td style="padding:16px 0;border-top:2px solid #C8981F;width:220px;" align="right"><span style="font-size:13px;color:#888;text-transform:uppercase;letter-spacing:1px;">Order Total&nbsp;&nbsp;</span><span style="font-size:22px;font-weight:700;color:#0C1117;">$${(order.total||0).toFixed(2)}</span></td></tr></table></td></tr>${order.po||order.notes?'<tr><td style="padding:0 36px 24px;"><table width="100%" cellpadding="0" cellspacing="0" style="background:#fffbf0;border:1px solid #f0e0a0;border-radius:4px;"><tr><td style="padding:14px 18px;"><div style="font-size:12px;color:#666;margin-bottom:4px;"><strong style=\"color:#333\">PO Number:</strong> '+(order.po||'N/A')+'</div><div style="font-size:12px;color:#666;"><strong style=\"color:#333\">Notes:</strong> '+(order.notes||'None')+'</div></td></tr></table></td></tr>':''}<tr><td style="padding:0 36px;"><hr style="border:none;border-top:1px solid #eee;margin:0;"/></td></tr><tr><td style="padding:24px 36px;"><p style="margin:0;font-size:14px;color:#444;line-height:1.7;">Questions about your order?</p><p style="margin:10px 0 0;font-size:14px;color:#444;">📞 <a href="tel:17328291940" style="color:#C8981F;text-decoration:none;font-weight:600;">732-829-1940</a></p><p style="margin:4px 0 0;font-size:14px;color:#444;">✉️ <a href="mailto:info@allprobuildingsupplies.com" style="color:#C8981F;text-decoration:none;">info@allprobuildingsupplies.com</a></p></td></tr><tr><td style="background:#0C1117;padding:20px 36px;text-align:center;"><div style="font-size:12px;color:#888;">© 2026 All Pro Building Supplies LLC</div></td></tr></table></td></tr></table></body></html>`;
 }
@@ -639,19 +590,55 @@ function buildDeliveredEmail(order){
   return `<!DOCTYPE html><html><head><meta charset="UTF-8"/></head><body style="margin:0;padding:0;background:#f4f4f4;font-family:'Helvetica Neue',Arial,sans-serif;"><table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;padding:32px 0;"><tr><td align="center"><table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:4px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);"><tr><td style="background:#0C1117;padding:28px 36px;border-bottom:4px solid #C8981F;"><table width="100%" cellpadding="0" cellspacing="0"><tr><td><div style="font-family:'Arial Black',Arial,sans-serif;font-size:20px;font-weight:900;color:#FFFFFF;letter-spacing:2px;text-transform:uppercase;">ALL PRO BUILDING SUPPLIES</div><div style="font-size:11px;color:#C8981F;letter-spacing:3px;text-transform:uppercase;margin-top:3px;">LLC</div></td><td align="right"><div style="background:#3498db;color:#FFFFFF;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:6px 14px;border-radius:2px;">ORDER DELIVERED</div></td></tr></table></td></tr><tr><td style="padding:32px 36px 0;"><p style="margin:0;font-size:16px;color:#222;">Hi <strong>${order.customer.name}</strong>,</p><p style="margin:12px 0 0;font-size:15px;color:#444;line-height:1.6;">Great news! Your order <strong>${order.id}</strong> has been successfully delivered/picked up.</p><p style="margin:16px 0 0;font-size:15px;color:#444;line-height:1.6;">Thank you for your business. We truly appreciate you choosing All Pro Building Supplies, and we look forward to outfitting your next job.</p></td></tr><tr><td style="padding:24px 36px 0;"><table width="100%" cellpadding="0" cellspacing="0" style="background:#f8f8f8;border-radius:4px;border:1px solid #e8e8e8;"><tr><td style="padding:16px 20px;border-right:1px solid #e8e8e8;"><div style="font-size:10px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Order ID</div><div style="font-size:14px;font-weight:700;color:#C8981F;font-family:monospace;">${order.id}</div></td><td style="padding:16px 20px;"><div style="font-size:10px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Order Total</div><div style="font-size:14px;font-weight:700;color:#0C1117;">$${(order.total||0).toFixed(2)}</div></td></tr></table></td></tr><tr><td style="padding:24px 36px 24px;"><hr style="border:none;border-top:1px solid #eee;margin:0;"/></td></tr><tr><td style="padding:0 36px 36px;"><p style="margin:0;font-size:14px;color:#444;line-height:1.7;">Questions? We're always here:</p><p style="margin:10px 0 0;font-size:14px;color:#444;">📞 <a href="tel:17328291940" style="color:#C8981F;text-decoration:none;font-weight:600;">732-829-1940</a></p><p style="margin:4px 0 0;font-size:14px;color:#444;">✉️ <a href="mailto:info@allprobuildingsupplies.com" style="color:#C8981F;text-decoration:none;">info@allprobuildingsupplies.com</a></p></td></tr><tr><td style="background:#0C1117;padding:20px 36px;text-align:center;"><div style="font-size:12px;color:#888;">© 2026 All Pro Building Supplies LLC</div></td></tr></table></td></tr></table></body></html>`;
 }
 
-async function resendEmail(target) {
+function buildInvoiceEmail(order){
+  return `<!DOCTYPE html><html><head><meta charset="UTF-8"/></head><body style="margin:0;padding:0;background:#f4f4f4;font-family:'Helvetica Neue',Arial,sans-serif;"><table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;padding:32px 0;"><tr><td align="center"><table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:4px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);"><tr><td style="background:#0C1117;padding:28px 36px;border-bottom:4px solid #C8981F;"><table width="100%" cellpadding="0" cellspacing="0"><tr><td><div style="font-family:'Arial Black',Arial,sans-serif;font-size:20px;font-weight:900;color:#FFFFFF;letter-spacing:2px;text-transform:uppercase;">ALL PRO BUILDING SUPPLIES</div><div style="font-size:11px;color:#C8981F;letter-spacing:3px;text-transform:uppercase;margin-top:3px;">LLC</div></td><td align="right"><div style="background:#C8981F;color:#0C1117;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:6px 14px;border-radius:2px;">INVOICE</div></td></tr></table></td></tr><tr><td style="padding:32px 36px 0;"><p style="margin:0;font-size:16px;color:#222;">Hi <strong>${order.customer.name}</strong>,</p><p style="margin:12px 0 0;font-size:15px;color:#444;line-height:1.6;">Please find your invoice for the order below. Thank you for your business!</p></td></tr><tr><td style="padding:24px 36px 0;"><table width="100%" cellpadding="0" cellspacing="0" style="background:#f8f8f8;border-radius:4px;border:1px solid #e8e8e8;"><tr><td style="padding:16px 20px;border-right:1px solid #e8e8e8;"><div style="font-size:10px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Invoice / Order ID</div><div style="font-size:14px;font-weight:700;color:#C8981F;font-family:monospace;">${order.id}</div></td><td style="padding:16px 20px;border-right:1px solid #e8e8e8;"><div style="font-size:10px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Date</div><div style="font-size:14px;color:#222;">${new Date(order.placedAt).toLocaleDateString()}</div></td><td style="padding:16px 20px;"><div style="font-size:10px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Logistics</div><div style="font-size:13px;color:#222;">${order.delivery.address}</div></td></tr></table></td></tr><tr><td style="padding:24px 36px 0;"><div style="font-size:11px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;font-weight:700;">Items Billed</div><table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #e8e8e8;border-radius:4px;overflow:hidden;"><tr style="background:#0C1117;"><td style="padding:10px 14px;font-size:11px;color:#C8981F;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;">Product</td><td style="padding:10px 14px;font-size:11px;color:#C8981F;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;text-align:right;">Total</td></tr>${order.items.map(function(i){return '<tr><td style="padding:10px 14px;font-size:13px;color:#333;border-bottom:1px solid #f0f0f0;">'+i.description+' '+i.size+'<br/><span style=\"font-size:11px;color:#888\">'+i.qty+' pcs @ $'+(i.unitPrice||0).toFixed(2)+'</span></td><td style="padding:10px 14px;font-size:13px;color:#333;text-align:right;border-bottom:1px solid #f0f0f0;">$'+(i.lineTotal||0).toFixed(2)+'</td></tr>';}).join('')}</table></td></tr><tr><td style="padding:0 36px;"><table width="100%" cellpadding="0" cellspacing="0"><tr><td></td><td style="padding:16px 0;border-top:2px solid #C8981F;width:220px;" align="right"><span style="font-size:13px;color:#888;text-transform:uppercase;letter-spacing:1px;">Amount Due&nbsp;&nbsp;</span><span style="font-size:22px;font-weight:700;color:#0C1117;">$${(order.total||0).toFixed(2)}</span></td></tr></table></td></tr><tr><td style="padding:0 36px 24px;"><table width="100%" cellpadding="0" cellspacing="0" style="background:#f0f8ff;border:1px solid #a3d5ff;border-radius:4px;"><tr><td style="padding:16px 20px;"><div style="font-size:13px;font-weight:700;color:#2c3e50;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px;">Payment Instructions</div><div style="font-size:13px;color:#34495e;line-height:1.6;"><strong>Zelle:</strong> Please send payment to <strong>payments@allprobuildingsupplies.com</strong> or <strong>allprobuildingsupplies</strong>.<br><div style="margin-top:8px;"><img src="https://allprobuildingsupplies.com/assets/zelle-qr.png" alt="Zelle QR Code" style="width:140px; height:auto; border-radius:8px; border:1px solid #ccc;"></div><span style="font-size:11px;color:#7f8c8d;">*Please include your Order ID (${order.id}) in the memo field.</span></div></td></tr></table></td></tr><tr><td style="padding:0 36px;"><hr style="border:none;border-top:1px solid #eee;margin:0;"/></td></tr><tr><td style="padding:24px 36px;"><p style="margin:0;font-size:14px;color:#444;line-height:1.7;">Questions about this invoice?</p><p style="margin:10px 0 0;font-size:14px;color:#444;">📞 <a href="tel:17328291940" style="color:#C8981F;text-decoration:none;font-weight:600;">732-829-1940</a></p><p style="margin:4px 0 0;font-size:14px;color:#444;">✉️ <a href="mailto:info@allprobuildingsupplies.com" style="color:#C8981F;text-decoration:none;">info@allprobuildingsupplies.com</a></p></td></tr><tr><td style="background:#0C1117;padding:20px 36px;text-align:center;"><div style="font-size:12px;color:#888;">© 2026 All Pro Building Supplies LLC</div></td></tr></table></td></tr></table></body></html>`;
+}
+
+// Master Send Function
+async function executeSendEmail() {
   if(!activeOrderObj) return;
-  const msgEl = document.getElementById('resend-msg');
-  msgEl.style.display = 'block';
-  msgEl.style.color = '#ff6b6b'; 
-  msgEl.textContent = 'Sending...';
+
+  const type = document.getElementById('email-format-sel').value;
+  const sendCust = document.getElementById('chk-cust').checked;
+  const sendAdmin = document.getElementById('chk-admin').checked;
+  const sendCustom = document.getElementById('chk-custom').checked;
+  
+  let recipients = [];
+  if(sendCust && activeOrderObj.customer.email) recipients.push(activeOrderObj.customer.email);
+  if(sendAdmin) recipients.push(NOTIFY_EMAIL);
+  
+  if(sendCustom) {
+    document.querySelectorAll('.custom-email-input').forEach(inp => {
+      const val = inp.value.trim();
+      if(val) recipients.push(val);
+    });
+  }
+
+  const msgEl = document.getElementById('email-send-msg');
+  
+  if(recipients.length === 0) {
+    msgEl.style.display = 'block';
+    msgEl.style.color = '#ff6b6b';
+    msgEl.textContent = 'Please select at least one valid recipient.';
+    return;
+  }
+
+  let htmlBody = '';
+  let subject = '';
+  if(type === 'confirm') {
+    htmlBody = buildConfirmEmail(activeOrderObj);
+    subject = 'Order Update / Confirmation — ' + activeOrderObj.id;
+  } else if(type === 'deliver') {
+    htmlBody = buildDeliveredEmail(activeOrderObj);
+    subject = 'Order Delivered — Thank You! | All Pro Building Supplies';
+  } else if(type === 'invoice') {
+    htmlBody = buildInvoiceEmail(activeOrderObj);
+    subject = 'Invoice — Order ' + activeOrderObj.id + ' | All Pro Building Supplies';
+  }
 
   let order = activeOrderObj;
-  var params = {
-    to_email:    NOTIFY_EMAIL, 
-    cust_email:  order.customer.email,
-    email_subject: 'Order Update ' + order.id + ' — ' + order.customer.name + ' (' + order.customer.company + ')',
-    email_body:  buildConfirmEmail(order),
+  let baseParams = {
+    email_body:  htmlBody,
     order_id:    order.id,
     customer:    order.customer.name + ' (' + order.customer.company + ')',
     phone:       order.customer.phone,
@@ -665,72 +652,46 @@ async function resendEmail(target) {
     items:       order.items.map(function(i){ return i.description+' '+i.size+' — '+i.qty+' pcs = $'+(i.lineTotal||0).toFixed(2); }).join('\n')
   };
 
-  try {
-    if(target === 'admin' || target === 'both') {
-      await emailjs.send(EMAILJS_SVC, EMAILJS_TPL, Object.assign({}, params, {
-        cust_email: NOTIFY_EMAIL,
-        email_subject: '[UPDATED] Order ' + order.id + ' — ' + order.customer.name
-      }));
-    }
-    if(target === 'customer' || target === 'both') {
-      await emailjs.send(EMAILJS_SVC, EMAILJS_TPL, Object.assign({}, params, {
-        cust_email: order.customer.email,
-        email_subject: 'Order Update — ' + order.id + ' | All Pro Building Supplies'
-      }));
-    }
-    msgEl.style.color = '#2ecc71';
-    msgEl.textContent = 'Email sent successfully!';
-  } catch(e) {
-    msgEl.textContent = 'Failed to send email. Check EmailJS config.';
-    console.error(e);
-  }
-}
-
-async function sendDeliveredEmail() {
-  if(!activeOrderObj) return;
-  const msgEl = document.getElementById('resend-msg');
+  const btn = document.getElementById('btn-execute-send');
+  btn.disabled = true;
+  btn.innerHTML = 'Sending...';
   msgEl.style.display = 'block';
   msgEl.style.color = '#3498db';
-  msgEl.textContent = 'Sending Delivery Confirmation...';
+  msgEl.textContent = 'Processing request...';
 
-  let order = activeOrderObj;
-  var params = {
-    to_email:    NOTIFY_EMAIL,
-    cust_email:  order.customer.email,
-    email_subject: 'Order Delivered — Thank You! | All Pro Building Supplies',
-    email_body:  buildDeliveredEmail(order),
-    order_id:    order.id,
-    customer:    order.customer.name + ' (' + order.customer.company + ')',
-    phone:       order.customer.phone,
-    delivery:    order.delivery.address,
-    po:          order.po || 'N/A',
-    notes:       order.notes || 'None',
-    total:       '$' + (order.total||0).toFixed(2),
-    placed_at:   new Date(order.placedAt).toLocaleString(),
-    admin_link:  'https://allprobuildingsupplies.com/admin.html',
-    cust_name:   order.customer.name,
-    items:       order.items.map(function(i){ return i.description+' '+i.size+' — '+i.qty+' pcs = $'+(i.lineTotal||0).toFixed(2); }).join('\n')
-  };
+  let successCount = 0;
+  for(let email of recipients) {
+     try {
+       await emailjs.send(EMAILJS_SVC, EMAILJS_TPL, Object.assign({}, baseParams, {
+         to_email: email, 
+         cust_email: email, 
+         email_subject: subject
+       }));
+       successCount++;
+     } catch(e) {
+       console.error("Failed to send to", email, e);
+     }
+  }
 
-  try {
-    await emailjs.send(EMAILJS_SVC, EMAILJS_TPL, params);
+  if(successCount > 0) {
     msgEl.style.color = '#2ecc71';
-    msgEl.textContent = 'Delivery email sent successfully!';
-  } catch(e) {
+    msgEl.textContent = 'Sent successfully to ' + successCount + ' recipient(s).';
+    btn.style.background = '#2ecc71';
+    btn.innerHTML = '✔ Done';
+    setTimeout(closeEmailModal, 1500);
+  } else {
     msgEl.style.color = '#ff6b6b';
-    msgEl.textContent = 'Failed to send delivery email.';
-    console.error(e);
+    msgEl.textContent = 'Failed to send emails. Check EmailJS configuration.';
+    btn.disabled = false;
+    btn.style.background = '#e74c3c';
+    btn.innerHTML = 'Retry Send';
   }
 }
 
-// FIX: Use DOMContentLoaded instead of window.onload so we don't break main.js
+// Init
 document.addEventListener('DOMContentLoaded', () => { 
-  switchTab('orders');
-  loadOrders(); 
-  loadProducts(); 
-  loadUsers(); 
+  switchTab('orders'); loadOrders(); loadProducts(); loadUsers(); 
 });
 </script>
-<script src="assets/main.js"></script>
 </body>
 </html>
