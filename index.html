@@ -6,84 +6,573 @@
 <meta name="description" content="All Pro Building Supplies LLC — contractor-grade building materials, plumbing, hardware, and contractor supplies. Call 732-829-1940."/>
 <link rel="stylesheet" href="assets/style.css"/>
 <style>
-#hero{min-height:92vh;display:grid;grid-template-columns:1fr 1fr;position:relative;overflow:hidden;background:var(--ink)}
-.hero-left{display:flex;flex-direction:column;justify-content:center;padding:100px 64px 100px 80px;position:relative;z-index:2}
-.hero-tag{display:inline-flex;align-items:center;gap:10px;font-family:"DM Mono",monospace;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:32px}
-.blink{width:7px;height:7px;background:var(--gold);border-radius:50%;animation:blink 1.6s ease-in-out infinite}
-.tag-line{width:44px;height:1px;background:var(--gold)}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.15}}
-h1.htitle{font-family:"Oswald",sans-serif;font-size:clamp(56px,6.5vw,90px);font-weight:700;line-height:.95;letter-spacing:-1px;color:var(--white);margin-bottom:28px}
-h1.htitle em{font-style:normal;color:transparent;-webkit-text-stroke:2px var(--gold);display:block}
-h1.htitle strong{color:var(--gold)}
-.hero-sub{font-size:17px;line-height:1.78;color:var(--silver);max-width:460px;margin-bottom:48px;font-weight:300}
-.hero-sub b{color:var(--smoke);font-weight:500}
-.hero-btns{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:60px}
-.hero-proof{display:flex;gap:40px;padding-top:40px;border-top:1px solid rgba(139,160,178,.12)}
-.proof-num{font-family:"Oswald",sans-serif;font-size:36px;font-weight:600;color:var(--gold);line-height:1}
-.proof-lbl{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--silver);margin-top:4px}
-.hero-right{position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden}
-.hero-rbg{position:absolute;inset:0;background:radial-gradient(ellipse 80% 80% at 60% 50%,rgba(200,152,31,.08) 0%,transparent 65%),linear-gradient(135deg,var(--ink2) 0%,var(--ink) 100%)}
-.hero-hex{position:absolute;inset:0;opacity:.05;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='104'%3E%3Cpath d='M30 2L58 17L58 47L30 62L2 47L2 17Z' fill='none' stroke='%23C8981F' stroke-width='1'/%3E%3Cpath d='M30 62L58 77L58 107L30 122L2 107L2 77Z' fill='none' stroke='%23C8981F' stroke-width='1'/%3E%3C/svg%3E");background-size:60px 104px}
-.hero-stage{position:relative;z-index:2;width:500px;height:500px;display:flex;align-items:center;justify-content:center}
-.hero-glow{position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle,rgba(200,152,31,.12) 0%,transparent 65%);animation:gpulse 3s ease-in-out infinite}
-@keyframes gpulse{0%,100%{transform:scale(1);opacity:.6}50%{transform:scale(1.08);opacity:1}}
-.hero-r1{position:absolute;inset:20px;border-radius:50%;border:1px solid rgba(200,152,31,.15);animation:rcw 25s linear infinite}
-.hero-r1::before{content:"";position:absolute;top:-4px;left:50%;width:8px;height:8px;background:var(--gold);border-radius:50%;transform:translateX(-50%);box-shadow:0 0 12px var(--gold)}
-.hero-r2{position:absolute;inset:60px;border-radius:50%;border:1px dashed rgba(200,152,31,.07);animation:rccw 40s linear infinite}
-@keyframes rcw{to{transform:rotate(360deg)}}@keyframes rccw{to{transform:rotate(-360deg)}}
-.hero-logo-img{width:360px;height:auto;position:relative;z-index:3;opacity:0.85;filter:drop-shadow(0 0 40px rgba(200,152,31,.5)) brightness(1.3);animation:float 5s ease-in-out infinite}
-@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
-.cat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:3px;margin-top:56px}
-.cat-card{position:relative;overflow:hidden;aspect-ratio:1/1.3;background:var(--ink3);cursor:none;transition:transform .5s cubic-bezier(.22,.68,0,1.2)}
-.cat-card:hover{transform:scale(1.025);z-index:2}
-.cat-bgi{position:absolute;bottom:-10px;right:-10px;font-size:150px;opacity:.04;line-height:1;transform:rotate(-10deg);transition:opacity .5s,transform .5s}
-.cat-card:hover .cat-bgi{opacity:.09;transform:rotate(-5deg) scale(1.1)}
-.cat-ov{position:absolute;inset:0;background:linear-gradient(to top,rgba(12,17,23,.98) 0%,rgba(12,17,23,.35) 55%,transparent 100%)}
-.cat-cnt{position:absolute;bottom:0;left:0;right:0;padding:28px 24px}
-.cat-ico{width:50px;height:50px;background:rgba(200,152,31,.1);border:1px solid rgba(200,152,31,.22);display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:14px;transition:background .3s,border-color .3s}
-.cat-card:hover .cat-ico{background:rgba(200,152,31,.2);border-color:var(--gold)}
-.cat-name{font-family:"Oswald",sans-serif;font-size:22px;font-weight:600;color:var(--white);margin-bottom:6px}
-.cat-desc{font-size:13px;color:var(--silver);line-height:1.55}
-.cat-arr{position:absolute;top:18px;right:18px;width:34px;height:34px;border:1px solid rgba(200,152,31,.3);display:flex;align-items:center;justify-content:center;color:var(--gold);transform:translate(8px,-8px);opacity:0;transition:transform .3s,opacity .3s}
-.cat-card:hover .cat-arr{transform:translate(0,0);opacity:1}
-.cat-str{position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--gold);transform:scaleX(0);transform-origin:left;transition:transform .4s}
-.cat-card:hover .cat-str{transform:scaleX(1)}
-.why-grid{display:grid;grid-template-columns:1fr 1fr;gap:100px;align-items:center}
-.why-features{display:flex;flex-direction:column;margin-top:48px}
-.feat{display:flex;gap:20px;padding:24px 0;border-bottom:1px solid rgba(139,160,178,.08);transition:padding-left .3s;cursor:none;}
-.feat:first-child{border-top:1px solid rgba(139,160,178,.08)}.feat:hover{padding-left:8px}
-.feat-ico{flex-shrink:0;width:46px;height:46px;border:1px solid rgba(200,152,31,.2);display:flex;align-items:center;justify-content:center;font-size:20px;background:rgba(200,152,31,.05);transition:border-color .3s,background .3s}
-.feat:hover .feat-ico{border-color:var(--gold);background:rgba(200,152,31,.1)}
-.feat-ttl{font-family:"Oswald",sans-serif;font-size:17px;font-weight:500;color:var(--white);margin-bottom:4px}
-.feat-body{font-size:13.5px;color:var(--silver);line-height:1.65}
-.why-card{background:var(--ink3);border:1px solid rgba(200,152,31,.12);padding:48px 44px;position:relative;overflow:hidden}
-.why-card::before{content:"";position:absolute;top:0;right:0;width:200px;height:200px;background:radial-gradient(circle at top right,rgba(200,152,31,.08),transparent 65%)}
-.why-qmark{font-family:"Oswald",sans-serif;font-size:110px;font-weight:700;color:rgba(200,152,31,.07);line-height:1;margin-bottom:-20px}
-.why-qtxt{font-family:"Oswald",sans-serif;font-size:28px;font-weight:400;line-height:1.25;color:var(--white);margin-bottom:22px}
-.why-qtxt strong{color:var(--gold)}
-.why-qbody{font-size:15px;color:var(--silver);line-height:1.8;margin-bottom:36px}
-.why-cstrip{display:flex;flex-direction:column;gap:12px;padding-top:26px;border-top:1px solid rgba(139,160,178,.1)}
-.clink{display:flex;align-items:center;gap:14px;font-size:15px;color:var(--smoke);transition:color .2s;cursor:none;}.clink:hover{color:var(--gold)}
-.clink-ico{width:36px;height:36px;background:rgba(200,152,31,.09);border:1px solid rgba(200,152,31,.2);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
-.clink-lbl{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--silver);display:block}
-.clink-val{font-size:15px;color:var(--smoke);font-weight:500}
-.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:60px;position:relative}
-.steps::before{content:"";position:absolute;top:36px;left:calc(12.5% + 12px);right:calc(12.5% + 12px);height:1px;background:linear-gradient(90deg,var(--gold),rgba(200,152,31,.2))}
-.step{padding:0 28px;position:relative;z-index:1}
-.step-n{width:72px;height:72px;background:var(--ink2);border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;font-family:"Oswald",sans-serif;font-size:28px;font-weight:700;color:var(--gold);margin-bottom:24px;position:relative}
-.step-n::after{content:"";position:absolute;inset:4px;background:rgba(200,152,31,.06)}
-.step-ttl{font-family:"Oswald",sans-serif;font-size:19px;font-weight:600;color:var(--white);margin-bottom:8px}
-.step-body{font-size:13.5px;color:var(--silver);line-height:1.7}
+/* Define new dark blue color for the hero background */
+:root {
+  --apbs-dark-blue: #162a3c;
+}
+
+#hero {
+  min-height: 92vh;
+  position: relative;
+  overflow: hidden;
+  /* Apply the new dark blue background to the entire hero */
+  background: var(--apbs-dark-blue);
+}
+
+/* Central container for all text, buttons, and logo to stack and center */
+.hero-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center; /* Center-align all text elements */
+  padding: 100px 20px 100px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2; /* Content above background layers */
+}
+
+.hero-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: "DM Mono", monospace;
+  font-size: 11px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 32px;
+}
+
+.blink {
+  width: 7px;
+  height: 7px;
+  background: var(--gold);
+  border-radius: 50%;
+  animation: blink 1.6s ease-in-out infinite;
+}
+
+.tag-line {
+  width: 44px;
+  height: 1px;
+  background: var(--gold);
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: .15; }
+}
+
+h1.htitle {
+  font-family: "Oswald", sans-serif;
+  font-size: clamp(56px, 6.5vw, 90px);
+  font-weight: 700;
+  line-height: .95;
+  letter-spacing: -1px;
+  color: var(--white);
+  margin-bottom: 28px;
+  text-align: center; /* Explicitly center header text */
+}
+
+h1.htitle em {
+  font-style: normal;
+  color: transparent;
+  -webkit-text-stroke: 2px var(--gold);
+  display: block;
+}
+
+h1.htitle strong {
+  color: var(--gold);
+}
+
+.hero-sub {
+  font-size: 17px;
+  line-height: 1.78;
+  color: var(--silver);
+  /* Removed max-width to allow centered text to occupy more space if needed */
+  margin-bottom: 48px;
+  font-weight: 300;
+  text-align: center; /* Explicitly center subtext */
+}
+
+.hero-sub b {
+  color: var(--smoke);
+  font-weight: 500;
+}
+
+.hero-btns {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 60px;
+  justify-content: center; /* Center-align the buttons */
+}
+
+.hero-proof {
+  display: flex;
+  gap: 40px;
+  padding-top: 40px;
+  border-top: 1px solid rgba(139, 160, 178,.12);
+  justify-content: center; /* Center the proof elements */
+}
+
+.proof-num {
+  font-family: "Oswald", sans-serif;
+  font-size: 36px;
+  font-weight: 600;
+  color: var(--gold);
+  line-height: 1;
+}
+
+.proof-lbl {
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--silver);
+  margin-top: 4px;
+}
+
+/* Re-use original background design elements, applied to the entire #hero */
+.hero-rbg {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 80% 80% at 60% 50%, rgba(200,152,31,.08) 0%, transparent 65%), linear-gradient(135deg, var(--ink2) 0%, var(--ink) 100%);
+}
+
+.hero-hex {
+  position: absolute;
+  inset: 0;
+  opacity: .05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='104'%3E%3Cpath d='M30 2L58 17L58 47L30 62L2 47L2 17Z' fill='none' stroke='%23C8981F' stroke-width='1'/%3E%3Cpath d='M30 62L58 77L58 107L30 122L2 107L2 77Z' fill='none' stroke='%23C8981F' stroke-width='1'/%3E%3C/svg%3E");
+  background-size: 60px 104px;
+}
+
+/* Positioned centrally within .hero-content flex container */
+.hero-stage {
+  position: relative;
+  z-index: 3; /* Above rings and glow, which stay within .hero-stage */
+  width: 500px;
+  height: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px; /* Space after text/buttons */
+}
+
+.hero-glow {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(200,152,31,.12) 0%, transparent 65%);
+  animation: gpulse 3s ease-in-out infinite;
+  z-index: 1;
+}
+
+@keyframes gpulse {
+  0%, 100% { transform: scale(1); opacity: .6; }
+  50% { transform: scale(1.08); opacity: 1; }
+}
+
+.hero-r1 {
+  position: absolute;
+  inset: 20px;
+  border-radius: 50%;
+  border: 1px solid rgba(200,152,31,.15);
+  animation: rcw 25s linear infinite;
+  z-index: 2;
+}
+
+.hero-r1::before {
+  content: "";
+  position: absolute;
+  top: -4px;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  background: var(--gold);
+  border-radius: 50%;
+  transform: translateX(-50%);
+  box-shadow: 0 0 12px var(--gold);
+}
+
+.hero-r2 {
+  position: absolute;
+  inset: 60px;
+  border-radius: 50%;
+  border: 1px dashed rgba(200,152,31,.07);
+  animation: rccw 40s linear infinite;
+  z-index: 2;
+}
+
+@keyframes rcw { to { transform: rotate(360deg); } }
+@keyframes rccw { to { transform: rotate(-360deg); } }
+
+/* Logo legibility fix integrated into floating animation */
+.hero-logo-img {
+  width: 360px;
+  height: auto;
+  position: relative;
+  z-index: 4; /* Above glow and rings */
+  opacity: 0.85; /* Legibility fix: transparency reduced */
+  filter: drop-shadow(0 0 40px rgba(200,152,31,.5)) brightness(1.3); /* Legibility fix: shadow intensified, brightened */
+  animation: float 5s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+
+/* Category grid and other elements below hero unchanged */
+.cat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 3px;
+  margin-top: 56px;
+}
+
+.cat-card {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 1/1.3;
+  background: var(--ink3);
+  cursor: none;
+  transition: transform .5s cubic-bezier(.22,.68,0,1.2);
+}
+
+.cat-card:hover {
+  transform: scale(1.025);
+  z-index: 2;
+}
+
+.cat-bgi {
+  position: absolute;
+  bottom: -10px;
+  right: -10px;
+  font-size: 150px;
+  opacity: .04;
+  line-height: 1;
+  transform: rotate(-10deg);
+  transition: opacity .5s, transform .5s;
+}
+
+.cat-card:hover .cat-bgi {
+  opacity: .09;
+  transform: rotate(-5deg) scale(1.1);
+}
+
+.cat-ov {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(12,17,23,.98) 0%, rgba(12,17,23,.35) 55%, transparent 100%);
+}
+
+.cat-cnt {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 28px 24px;
+}
+
+.cat-ico {
+  width: 50px;
+  height: 50px;
+  background: rgba(200,152,31,.1);
+  border: 1px solid rgba(200,152,31,.22);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  margin-bottom: 14px;
+  transition: background .3s, border-color .3s;
+}
+
+.cat-card:hover .cat-ico {
+  background: rgba(200,152,31,.2);
+  border-color: var(--gold);
+}
+
+.cat-name {
+  font-family: "Oswald", sans-serif;
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--white);
+  margin-bottom: 6px;
+}
+
+.cat-desc {
+  font-size: 13px;
+  color: var(--silver);
+  line-height: 1.55;
+}
+
+.cat-arr {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(200,152,31,.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--gold);
+  transform: translate(8px,-8px);
+  opacity: 0;
+  transition: transform .3s, opacity .3s;
+}
+
+.cat-card:hover .cat-arr {
+  transform: translate(0,0);
+  opacity: 1;
+}
+
+.cat-str {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--gold);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform .4s;
+}
+
+.cat-card:hover .cat-str {
+  transform: scaleX(1);
+}
+
+.why-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 100px;
+  align-items: center;
+}
+
+.why-features {
+  display: flex;
+  flex-direction: column;
+  margin-top: 48px;
+}
+
+.feat {
+  display: flex;
+  gap: 20px;
+  padding: 24px 0;
+  border-bottom: 1px solid rgba(139,160,178,.08);
+  transition: padding-left .3s;
+  cursor: none;
+}
+
+.feat:first-child {
+  border-top: 1px solid rgba(139,160,178,.08);
+}
+
+.feat:hover {
+  padding-left: 8px;
+}
+
+.feat-ico {
+  flex-shrink: 0;
+  width: 46px;
+  height: 46px;
+  border: 1px solid rgba(200,152,31,.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  background: rgba(200,152,31,.05);
+  transition: border-color .3s, background .3s;
+}
+
+.feat:hover .feat-ico {
+  border-color: var(--gold);
+  background: rgba(200,152,31,.1);
+}
+
+.feat-ttl {
+  font-family: "Oswald", sans-serif;
+  font-size: 17px;
+  font-weight: 500;
+  color: var(--white);
+  margin-bottom: 4px;
+}
+
+.feat-body {
+  font-size: 13.5px;
+  color: var(--silver);
+  line-height: 1.65;
+}
+
+.why-card {
+  background: var(--ink3);
+  border: 1px solid rgba(200,152,31,.12);
+  padding: 48px 44px;
+  position: relative;
+  overflow: hidden;
+}
+
+.why-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle at top right, rgba(200,152,31,.08), transparent 65%);
+}
+
+.why-qmark {
+  font-family: "Oswald", sans-serif;
+  font-size: 110px;
+  font-weight: 700;
+  color: rgba(200,152,31,.07);
+  line-height: 1;
+  margin-bottom: -20px;
+}
+
+.why-qtxt {
+  font-family: "Oswald", sans-serif;
+  font-size: 28px;
+  font-weight: 400;
+  line-height: 1.25;
+  color: var(--white);
+  margin-bottom: 22px;
+}
+
+.why-qtxt strong {
+  color: var(--gold);
+}
+
+.why-qbody {
+  font-size: 15px;
+  color: var(--silver);
+  line-height: 1.8;
+  margin-bottom: 36px;
+}
+
+.why-cstrip {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 26px;
+  border-top: 1px solid rgba(139,160,178,.1);
+}
+
+.clink {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 15px;
+  color: var(--smoke);
+  transition: color .2s;
+  cursor: none;
+}
+
+.clink:hover {
+  color: var(--gold);
+}
+
+.clink-ico {
+  width: 36px;
+  height: 36px;
+  background: rgba(200,152,31,.09);
+  border: 1px solid rgba(200,152,31,.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  flex-shrink: 0;
+}
+
+.clink-lbl {
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--silver);
+  display: block;
+}
+
+.clink-val {
+  font-size: 15px;
+  color: var(--smoke);
+  font-weight: 500;
+}
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  margin-top: 60px;
+  position: relative;
+}
+
+.steps::before {
+  content: "";
+  position: absolute;
+  top: 36px;
+  left: calc(12.5% + 12px);
+  right: calc(12.5% + 12px);
+  height: 1px;
+  background: linear-gradient(90deg, var(--gold), rgba(200,152,31,.2));
+}
+
+.step {
+  padding: 0 28px;
+  position: relative;
+  z-index: 1;
+}
+
+.step-n {
+  width: 72px;
+  height: 72px;
+  background: var(--ink2);
+  border: 2px solid var(--gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Oswald", sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--gold);
+  margin-bottom: 24px;
+  position: relative;
+}
+
+.step-n::after {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  background: rgba(200,152,31,.06);
+}
+
+.step-ttl {
+  font-family: "Oswald", sans-serif;
+  font-size: 19px;
+  font-weight: 600;
+  color: var(--white);
+  margin-bottom: 8px;
+}
+
+.step-body {
+  font-size: 13.5px;
+  color: var(--silver);
+  line-height: 1.7;
+}
 
 /* --- MOBILE OPTIMIZATIONS --- */
 @media(max-width:1100px){
-  #hero{grid-template-columns:1fr}
-  .hero-right{display:none}
+  /* The logo now stacks within .hero-content, so old hero-right hiding is unnecessary */
   .hero-left{padding:80px 48px}
   .why-grid{grid-template-columns:1fr;gap:48px}
 }
 @media(max-width:768px){
-  .hero-left{padding:64px 24px}
+  .hero-content {
+    padding: 64px 24px;
+  }
   h1.htitle{font-size:clamp(42px,10vw,64px);letter-spacing:-.5px}
   .hero-sub{font-size:15px}
   .hero-btns{flex-direction:column}
@@ -91,6 +580,23 @@ h1.htitle strong{color:var(--gold)}
   .hero-proof{gap:24px;flex-wrap:wrap;justify-content:space-between}
   .proof-num{font-size:28px}
   
+  /* Logo stacks on mobile, so adjust stage margin for mobile */
+  .hero-stage {
+    margin-top: 40px;
+    width: 320px; /* Adjust stage width on smaller screens */
+    height: 320px; /* Adjust stage height on smaller screens */
+  }
+  
+  .hero-logo-img {
+    width: 240px; /* Reduce logo size for mobile */
+  }
+
+  /* Rings and glow still animate but scaled for mobile */
+  .hero-r1::before {
+    width: 6px;
+    height: 6px;
+  }
+
   /* Timeline Mobile Rebuild */
   .steps{grid-template-columns:1fr;gap:40px;padding-left:16px;}
   .steps::before{display:none;} /* Hide horizontal line */
@@ -125,7 +631,7 @@ h1.htitle strong{color:var(--gold)}
   .why-qbody{font-size:14px; margin-bottom:24px;}
 }
 @media(max-width:480px){
-  .hero-left{padding:52px 16px}
+  .hero-content{padding:52px 16px}
   h1.htitle{font-size:38px}
   .hero-proof{gap:20px}
 }
@@ -178,7 +684,9 @@ h1.htitle strong{color:var(--gold)}
 </div>
 
 <section id="hero">
-  <div class="hero-left">
+  <div class="hero-rbg"></div><div class="hero-hex"></div>
+
+  <div class="hero-content">
     <div class="hero-tag"><span class="blink"></span><span class="tag-line"></span>Available Now · Fast Turnaround · NJ</div>
     <h1 class="htitle">Building Supplies<br><em>That Keep</em><br><strong>Jobs Moving.</strong></h1>
     <p class="hero-sub">All Pro Building Supplies LLC delivers <b>contractor-grade materials</b> — building supplies, plumbing, hardware, and jobsite essentials. Call or email for pricing. We respond fast. No runaround.</p>
@@ -191,15 +699,14 @@ h1.htitle strong{color:var(--gold)}
       <div><div class="proof-num">Pro</div><div class="proof-lbl">Grade Quality</div></div>
       <div><div class="proof-num">Real</div><div class="proof-lbl">People, No Tickets</div></div>
     </div>
-  </div>
-  <div class="hero-right">
-    <div class="hero-rbg"></div><div class="hero-hex"></div>
+
     <div class="hero-stage">
       <div class="hero-glow"></div><div class="hero-r1"></div><div class="hero-r2"></div>
       <img src="assets/logo.png" class="hero-logo-img" alt="All Pro Building Supplies"/>
     </div>
   </div>
 </section>
+
 <div class="ticker" aria-hidden="true"><div class="ticker-track">
     <div class="t-item g">Building Materials <span class="t-dia">◆</span></div><div class="t-item">Plumbing Supplies <span class="t-dia">◆</span></div>
     <div class="t-item g">Hardware <span class="t-dia">◆</span></div><div class="t-item">Contractor Supplies <span class="t-dia">◆</span></div>
