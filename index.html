@@ -12,11 +12,11 @@
 }
 
 #hero {
-  min-height: 92vh;
   position: relative;
   overflow: hidden;
   display: flex;
   justify-content: center; /* Centers the content pillar */
+  padding: 40px 0; /* Gives a little breathing room from the top bar and the ticker below */
 }
 
 /* Background elements fill the whole screen behind the pillar */
@@ -36,12 +36,12 @@
   z-index: 0;
 }
 
-/* The Center Pillar */
+/* The Center Pillar - Widened to 1200px */
 .hero-content {
   position: relative;
   z-index: 2;
   width: 100%;
-  max-width: 800px; 
+  max-width: 1200px; 
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -71,7 +71,6 @@
   height: auto;
   position: relative;
   z-index: 4;
-  /* Removed heavy opacity/brightness filters, added subtle drop shadow for depth */
   filter: drop-shadow(0 6px 12px rgba(0,0,0,0.3));
 }
 
@@ -98,8 +97,9 @@ h1.htitle {
   line-height: .95;
   letter-spacing: -1px;
   color: var(--white);
-  margin-bottom: 20px; 
+  margin: 0 auto 20px auto; 
   text-align: center;
+  max-width: 800px; /* Keeps title from stretching too far */
 }
 
 h1.htitle em { font-style: normal; color: transparent; -webkit-text-stroke: 2px var(--gold); display: block; }
@@ -110,7 +110,7 @@ h1.htitle strong { color: var(--gold); }
   line-height: 1.7;
   color: var(--silver);
   max-width: 500px;
-  margin-bottom: 32px; 
+  margin: 0 auto 32px auto; /* Centered with auto margins */
   font-weight: 300;
   text-align: center;
 }
@@ -183,7 +183,7 @@ h1.htitle strong { color: var(--gold); }
   .why-grid{grid-template-columns:1fr;gap:48px}
 }
 @media(max-width:768px){
-  .hero-content{padding: 50px 24px; border:none; box-shadow:none;}
+  .hero-content{padding: 40px 24px; border:none; box-shadow:none;}
   h1.htitle{font-size:clamp(38px,10vw,60px);letter-spacing:-.5px}
   .hero-sub{font-size:15px}
   .hero-btns{flex-direction:column; width:100%;}
@@ -227,7 +227,7 @@ h1.htitle strong { color: var(--gold); }
   .why-qbody{font-size:14px; margin-bottom:24px;}
 }
 @media(max-width:480px){
-  .hero-content{padding:40px 16px}
+  .hero-content{padding:32px 16px}
   .hero-proof{gap:20px}
 }
 </style>
