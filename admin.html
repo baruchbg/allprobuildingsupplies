@@ -47,7 +47,7 @@
 .badge.cancelled{background:rgba(255,107,107,.15);color:#ff6b6b;border:1px solid rgba(255,107,107,.3);}
 
 /* MODALS */
-#order-modal-overlay{
+#order-modal-overlay, #user-modal-overlay{
   display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85);
   z-index:9999; overflow-y:auto; padding:40px 20px;
   align-items:flex-start; justify-content:center;
@@ -105,7 +105,7 @@
 /* MOBILE OPTIMIZATIONS */
 @media(max-width:768px){
   .modal-grid{grid-template-columns:1fr;}
-  #order-modal, #email-modal{padding:20px;}
+  #order-modal, #email-modal, .auth-box{padding:20px;}
   .admin-panel{padding:16px;}
   .btn-save, .btn-add, .btn-email-cmd{width:100%; justify-content:center; text-align:center;}
   
@@ -193,9 +193,47 @@
       <tbody id="users-tbody"></tbody>
     </table>
     <div class="action-bar">
-      <div></div>
+      <button class="btn-add" style="border-color:var(--gold);color:var(--gold);" onclick="openUserModal()">+ Create New User</button>
       <button class="btn-save" onclick="saveUsers()">Save Approvals</button>
     </div>
+  </div>
+</div>
+
+<div id="user-modal-overlay" onclick="closeUserModal(event)">
+  <div id="user-modal" onclick="event.stopPropagation()" class="auth-box" style="margin:auto; position:relative; width:100%; max-width:500px; padding:32px; text-align:left;">
+    <button class="modal-close" onclick="closeUserModal(event)">&times;</button>
+    <div class="modal-title" style="color:var(--gold); border-bottom:1px solid rgba(200,152,31,.3); margin-bottom:20px; padding-bottom:12px; font-size:20px;">Add New User</div>
+    
+    <div class="modal-lbl" style="color:var(--white)">First Name *</div>
+    <input type="text" id="new-user-fname" class="data-input" style="margin-bottom:16px;">
+    
+    <div class="modal-lbl" style="color:var(--white)">Last Name *</div>
+    <input type="text" id="new-user-lname" class="data-input" style="margin-bottom:16px;">
+    
+    <div class="modal-lbl" style="color:var(--white)">Email Address *</div>
+    <input type="email" id="new-user-email" class="data-input" style="margin-bottom:16px;">
+    
+    <div class="modal-lbl" style="color:var(--white)">Company Name</div>
+    <input type="text" id="new-user-company" class="data-input" style="margin-bottom:20px;">
+    
+    <div class="modal-grid" style="margin-bottom:24px; gap:16px;">
+      <div>
+        <div class="modal-lbl" style="color:var(--white)">Status</div>
+        <select id="new-user-status" class="data-input">
+          <option value="approved">Approved</option>
+          <option value="pending">Pending</option>
+        </select>
+      </div>
+      <div>
+        <div class="modal-lbl" style="color:var(--white)">Permissions</div>
+        <select id="new-user-pcs" class="data-input">
+          <option value="true">Pieces & Cases</option>
+          <option value="false">Cases Only</option>
+        </select>
+      </div>
+    </div>
+
+    <button class="btn-save" style="width:100%;" onclick="createNewUser(event)">Create User</button>
   </div>
 </div>
 
@@ -313,7 +351,6 @@
 
 <script>
 // --- BULLETPROOF CURSOR FALLBACK ---
-// If main.js ever fails on this page, this script guarantees the cursor still functions.
 document.addEventListener('mousemove', (e) => {
     const cursor = document.getElementById('cursor');
     const ring = document.getElementById('cursor-ring');
@@ -406,10 +443,9 @@ async function loadProducts() {
     const rows = parseCSV(csv); 
     const tbody = document.getElementById('prod-tbody'); tbody.innerHTML = '';
     
-    masterProducts = []; // reset global product catalog
+    masterProducts = []; 
     for(let i=1; i<rows.length; i++) { 
       if(!rows[i][0]) continue;
-      // Build master array for the "Add Item" dropdown
       masterProducts.push({
         code: rows[i][0].trim(),
         description: rows[i][1].trim(),
@@ -465,6 +501,56 @@ async function loadUsers() {
     });
   } catch(e) {}
 }
+
+function openUserModal() {
+  document.getElementById('new-user-fname').value = '';
+  document.getElementById('new-user-lname').value = '';
+  document.getElementById('new-user-email').value = '';
+  document.getElementById('new-user-company').value = '';
+  document.getElementById('new-user-status').value = 'approved';
+  document.getElementById('new-user-pcs').value = 'true';
+  document.getElementById('user-modal-overlay').style.display = 'flex';
+}
+
+function closeUserModal(e) {
+  if(!e || e.target.id === 'user-modal-overlay' || e.target.classList.contains('modal-close')) {
+    document.getElementById('user-modal-overlay').style.display = 'none';
+  }
+}
+
+async function createNewUser(e) {
+  const fname = document.getElementById('new-user-fname').value.trim();
+  const lname = document.getElementById('new-user-lname').value.trim();
+  const email = document.getElementById('new-user-email').value.trim();
+  const company = document.getElementById('new-user-company').value.trim();
+  const status = document.getElementById('new-user-status').value;
+  const canOrderPieces = document.getElementById('new-user-pcs').value === 'true';
+
+  if(!fname || !lname || !email) return alert('First Name, Last Name, and Email are required.');
+
+  const btn = e.target; btn.textContent = 'Saving...'; btn.disabled = true;
+
+  const newUser = {
+    id: 'USR-' + Date.now().toString(36).toUpperCase(),
+    fname, lname, email, company, status, canOrderPieces
+  };
+
+  masterUsers.push(newUser);
+  
+  const payload = { message: 'Admin: Add new user', content: btoa(unescape(encodeURIComponent(JSON.stringify({users: masterUsers}, null, 2)))), branch: 'main', sha: currentUserSha };
+  
+  try {
+    const r = await fetch(WORKER_URL + '/github/users.json', { method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
+    if(r.ok) { 
+      const d = await r.json(); currentUserSha = d.content.sha; 
+      showStatus('User created successfully!', false); 
+      closeUserModal();
+      loadUsers(); 
+    } else throw new Error();
+  } catch(err) { showStatus('Error creating user.', true); masterUsers.pop(); }
+  btn.textContent = 'Create User'; btn.disabled = false;
+}
+
 function deleteUser(idx) { if(confirm("Permanently delete this user?")) { masterUsers.splice(idx, 1); saveUsers(); } }
 async function saveUsers() {
   const btn = event.target; btn.textContent = 'Saving...'; btn.disabled = true;
@@ -522,7 +608,6 @@ function openOrderModal(orderId) {
     activeOrderObj = masterOrders.find(o => o.id === orderId);
     document.getElementById('modal-main-title').textContent = 'Edit Order: ' + activeOrderObj.id;
   } else {
-    // CREATE NEW ORDER MODE
     const newId = 'APB-' + Date.now().toString(36).toUpperCase();
     activeOrderObj = {
       id: newId,
@@ -624,7 +709,6 @@ async function saveOrderChanges() {
   });
   activeOrderObj.total = newTotal;
   
-  // If this is a brand new order, push it to master array before saving
   if(!masterOrders.find(o => o.id === activeOrderObj.id)) {
      masterOrders.push(activeOrderObj);
   }
