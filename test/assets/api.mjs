@@ -2,15 +2,17 @@
  * Contents API traffic. Every page used to duplicate fetch+atob+btoa
  * boilerplate and its own CSV parser; now everything goes through here.
  *
- * Sandbox safety: if the configured WORKER_URL still looks like a
- * placeholder ("SANDBOX", "example.workers.dev", empty string), all
- * GETs return an empty-but-valid payload and all PUTs are a no-op
- * that just logs to the console. That lets the /test/ build load
- * fully and be interacted with, without ever touching real data.
+ * Sandbox safety:
+ *   - GETs always hit the real worker so /test/ can display live
+ *     products, users, and orders. Reads are harmless.
+ *   - PUTs are suppressed whenever APBS_CONFIG.sandbox === true. The
+ *     write is logged to the console and resolves with { sandbox:true }
+ *     so the UI behaves as if the save succeeded, but production data
+ *     is never mutated.
  */
 const CFG = () => (window.APBS_CONFIG || {});
-const isPlaceholder = (u) =>
-  !u || /SANDBOX|example\.workers\.dev/i.test(u);
+const isSandboxMode = () => CFG().sandbox === true;
+const hasWorker = (u) => !!u && !/SANDBOX|example\.workers\.dev/i.test(u);
 
 function decodeContent(b64) {
   if (!b64) return "";
@@ -62,8 +64,8 @@ function placeholderGet(path) {
 /* ---- Low-level fetch ---- */
 async function ghGet(path) {
   const base = CFG().WORKER_URL;
-  if (isPlaceholder(base)) {
-    console.info("[sandbox] api GET", path, "→ empty placeholder");
+  if (!hasWorker(base)) {
+    console.info("[sandbox] api GET", path, "→ no worker configured, empty payload");
     return placeholderGet(path);
   }
   const r = await fetch(base + "/github/" + path);
@@ -78,12 +80,12 @@ async function ghPut(path, content, sha, message) {
     branch: "main",
     ...(sha ? { sha } : {})
   };
-  if (isPlaceholder(base)) {
+  if (isSandboxMode() || !hasWorker(base)) {
     console.info("[sandbox] api PUT suppressed:", path, {
       message: payload.message,
       bytes: content.length
     });
-    return { ok: true, sandbox: true, content: { sha: "sandbox-sha-" + path } };
+    return { ok: true, sandbox: true, content: { sha: sha || "sandbox-sha-" + path } };
   }
   const r = await fetch(base + "/github/" + path, {
     method: "PUT",
@@ -130,7 +132,7 @@ export async function saveOrders(orders, sha, message) {
 }
 
 export function isSandbox() {
-  return isPlaceholder(CFG().WORKER_URL);
+  return isSandboxMode();
 }
 
 /* ---- SHA-256 (shared by auth) ---- */

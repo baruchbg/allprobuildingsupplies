@@ -1,18 +1,18 @@
 /* APBS /test sandbox config
  *
- * This is a fully isolated "test" build of the site. All network writes
- * (orders, users, inventory) are routed through the SANDBOX_WORKER_URL
- * below. To keep production data safe the defaults are placeholders —
- * the api layer refuses PUT/POST when the URL contains "SANDBOX" or
- * "example.workers.dev", and only logs what it would have sent.
+ * Read-only sandbox. /test/ reads the SAME live data as production
+ * (products.csv, users.json, orders.json) so login, inventory, order
+ * history, and the admin dashboard show real content. All WRITES are
+ * suppressed by api.mjs when sandbox === true: no orders are saved,
+ * no inventory is deducted, no user records are changed.
  *
- * To connect this to a real sandbox worker + EmailJS later, replace
- * the strings below. Nothing else in /test/ needs to change.
+ * Emails are also suppressed — the EmailJS placeholder keys below
+ * cause email.mjs to log intended sends instead of calling EmailJS.
  */
 window.APBS_CONFIG = {
   sandbox: true,
-  bannerText: "SANDBOX / TEST BUILD — No production data is touched",
-  WORKER_URL: "https://SANDBOX-WORKER-URL.example.workers.dev",
+  bannerText: "SANDBOX / TEST BUILD — reads are live, writes are disabled",
+  WORKER_URL: "https://allpro-github-proxy.baruch-6d5.workers.dev",
   EMAILJS: {
     service:   "SANDBOX_SERVICE",
     template:  "SANDBOX_TEMPLATE",
