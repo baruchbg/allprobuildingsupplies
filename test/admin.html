@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Admin Panel — All Pro Building Supplies LLC (TEST)</title>
+<link rel="stylesheet" href="assets/style.css"/>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<script src="assets/config.js"></script>
+</head>
+<body>
+<div data-include="partials/cursor.html"></div>
+
+<div id="admin-auth-gate">
+  <div class="auth-box">
+    <img src="assets/logo.png" alt="All Pro" style="width:120px;margin-bottom:20px;"/>
+    <h2 style="font-family:'Oswald',sans-serif;color:var(--white);margin-bottom:24px;letter-spacing:1px;">Admin Portal Login</h2>
+    <input type="password" id="admin-pin" class="data-input" placeholder="Enter Admin Password" style="text-align:center;font-size:16px;padding:14px;margin-bottom:16px;"/>
+    <button class="btn-save" style="width:100%;" id="admin-pin-btn">Access Dashboard</button>
+    <div id="admin-auth-err" style="color:#ff6b6b;font-size:12px;margin-top:12px;display:none;font-family:'DM Mono',monospace;">Incorrect password.</div>
+    <a href="index.html" style="display:block;margin-top:24px;color:var(--silver);font-size:12px;">&larr; Back to Website</a>
+  </div>
+</div>
+
+<nav>
+  <div class="nav-logo">
+    <img src="assets/logo.png" alt="All Pro Building Supplies"/>
+    <div class="nav-brand-text">All Pro Admin <span>Control</span></div>
+  </div>
+  <div class="nav-actions">
+    <a href="index.html" class="nav-cta" style="background:transparent;border:1px solid var(--silver);color:var(--silver);">&larr; Back to Site</a>
+  </div>
+</nav>
+
+<div class="admin-container" id="main-admin-content" style="display:none;">
+  <div id="status-msg"></div>
+
+  <div class="admin-header">
+    <h1 class="admin-title">Database Manager <span>v2.0</span></h1>
+    <div class="admin-tabs">
+      <button class="admin-tab active" data-tab="orders">Orders</button>
+      <button class="admin-tab" data-tab="products">Products (CSV)</button>
+      <button class="admin-tab" data-tab="users">Users (JSON)</button>
+    </div>
+  </div>
+
+  <div id="tab-orders" class="admin-panel active">
+    <p style="color:var(--silver);font-size:14px;margin-bottom:20px;">Manage and edit customer orders.</p>
+    <table class="data-table" id="orders-table">
+      <thead><tr><th>Order ID</th><th>Date</th><th>Customer</th><th>Total</th><th>Status</th><th>Action</th></tr></thead>
+      <tbody id="orders-tbody"></tbody>
+    </table>
+    <div class="action-bar">
+      <button class="btn-add" style="border-color:var(--gold);color:var(--gold);" id="btn-new-order">+ Create New Order</button>
+    </div>
+  </div>
+
+  <div id="tab-products" class="admin-panel">
+    <p style="color:var(--silver);font-size:14px;margin-bottom:20px;">Edit your master inventory.</p>
+    <table class="data-table" id="prod-table">
+      <thead><tr><th>Category Code</th><th>Description</th><th>Size</th><th>Pcs / Ctn</th><th>Inventory Qty</th><th>Unit Price ($)</th><th>Image URL</th><th></th></tr></thead>
+      <tbody id="prod-tbody"></tbody>
+    </table>
+    <div class="action-bar">
+      <button class="btn-add" id="btn-add-product">+ Add New Product Row</button>
+      <button class="btn-save" id="btn-save-products">Save Products</button>
+    </div>
+  </div>
+
+  <div id="tab-users" class="admin-panel">
+    <p style="color:var(--silver);font-size:14px;margin-bottom:20px;">Approve or reject trade accounts.</p>
+    <table class="data-table" id="users-table">
+      <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Company</th><th>Password</th><th>Status</th><th>Pieces Allowed</th><th></th></tr></thead>
+      <tbody id="users-tbody"></tbody>
+    </table>
+    <div class="action-bar">
+      <button class="btn-add" style="border-color:var(--gold);color:var(--gold);" id="btn-new-user">+ Create New User</button>
+      <button class="btn-save" id="btn-save-users">Save Approvals &amp; Passwords</button>
+    </div>
+  </div>
+</div>
+
+<div id="user-modal-overlay">
+  <div id="user-modal" class="auth-box" style="margin:auto;position:relative;width:100%;max-width:500px;padding:32px;text-align:left;">
+    <button class="modal-close">&times;</button>
+    <div class="modal-title" style="color:var(--gold);border-bottom:1px solid rgba(200,152,31,.3);margin-bottom:20px;padding-bottom:12px;font-size:20px;">Add New User</div>
+    <div class="modal-lbl" style="color:var(--white)">First Name *</div>
+    <input type="text" id="new-user-fname" class="data-input" style="margin-bottom:16px;"/>
+    <div class="modal-lbl" style="color:var(--white)">Last Name *</div>
+    <input type="text" id="new-user-lname" class="data-input" style="margin-bottom:16px;"/>
+    <div class="modal-lbl" style="color:var(--white)">Email Address *</div>
+    <input type="email" id="new-user-email" class="data-input" style="margin-bottom:16px;"/>
+    <div class="modal-lbl" style="color:var(--white)">Login Password *</div>
+    <input type="text" id="new-user-password" class="data-input" style="margin-bottom:16px;" value="Welcome1!"/>
+    <div class="modal-lbl" style="color:var(--white)">Company Name</div>
+    <input type="text" id="new-user-company" class="data-input" style="margin-bottom:20px;"/>
+    <div class="modal-grid" style="margin-bottom:24px;gap:16px;">
+      <div>
+        <div class="modal-lbl" style="color:var(--white)">Status</div>
+        <select id="new-user-status" class="data-input">
+          <option value="approved">Approved</option><option value="pending">Pending</option>
+        </select>
+      </div>
+      <div>
+        <div class="modal-lbl" style="color:var(--white)">Permissions</div>
+        <select id="new-user-pcs" class="data-input">
+          <option value="true">Pieces &amp; Cases</option><option value="false">Cases Only</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn-save" style="width:100%;" id="btn-create-user">Create User</button>
+  </div>
+</div>
+
+<div id="order-modal-overlay">
+  <div id="order-modal">
+    <button class="modal-close">&times;</button>
+    <div class="modal-title" id="modal-main-title">Order Details</div>
+    <div id="edit-lock-banner">&#9888; This order is Delivered or Cancelled. Editing disabled.</div>
+    <div class="modal-grid">
+      <div class="modal-box">
+        <div class="modal-lbl">Customer Name</div><input type="text" class="data-input" id="edit-cust-name" style="margin-bottom:12px;"/>
+        <div class="modal-lbl">Company</div><input type="text" class="data-input" id="edit-cust-company" style="margin-bottom:12px;"/>
+        <div class="modal-lbl">Email</div><input type="text" class="data-input" id="edit-cust-email" style="margin-bottom:12px;"/>
+        <div class="modal-lbl">Phone</div><input type="text" class="data-input" id="edit-cust-phone"/>
+      </div>
+      <div class="modal-box">
+        <div class="modal-lbl">Delivery / Logistics</div><textarea class="data-input" id="edit-delivery" style="resize:vertical;min-height:60px;margin-bottom:12px;"></textarea>
+        <div class="modal-lbl">PO Number</div><input type="text" class="data-input" id="edit-po" style="margin-bottom:12px;"/>
+        <div class="modal-lbl">Notes</div><textarea class="data-input" id="edit-notes" style="resize:vertical;min-height:60px;"></textarea>
+      </div>
+    </div>
+
+    <div class="modal-box" style="margin-bottom:24px;padding:0;overflow:hidden;">
+      <table class="data-table" style="margin:0;">
+        <thead><tr><th>Item</th><th>Qty</th><th>Unit Price ($)</th><th style="text-align:right">Line Total</th><th></th></tr></thead>
+        <tbody id="m-items-tbody"></tbody>
+      </table>
+      <div class="add-item-bar" id="add-item-container">
+        <select class="data-input" id="new-item-sel" style="flex:1;">
+          <option value="">-- Select Product to Add --</option>
+        </select>
+        <input type="number" id="new-item-qty" class="data-input" value="1" min="1" style="width:70px;" placeholder="Qty"/>
+        <button class="btn-view" style="margin:0;" id="btn-add-item">+ Add</button>
+      </div>
+      <div style="padding:16px;text-align:right;font-family:'Oswald',sans-serif;font-size:20px;color:var(--gold);border-top:1px solid rgba(255,255,255,.05);">
+        Calculated Total: <span id="m-total" style="color:var(--white)"></span>
+      </div>
+    </div>
+
+    <div style="background:var(--ink);border:1px solid rgba(200,152,31,.2);padding:20px;">
+      <div class="modal-grid" style="margin-bottom:0;gap:20px;">
+        <div>
+          <div class="modal-lbl" style="color:var(--gold)">Order Status</div>
+          <select id="m-status-sel" class="data-input" style="margin-bottom:16px;">
+            <option value="pending">Pending</option><option value="confirmed">Confirmed</option>
+            <option value="delivered">Delivered</option><option value="cancelled">Cancelled</option>
+          </select>
+          <button class="btn-save" style="width:100%;" id="btn-save-order">&#128190; Save All Changes</button>
+        </div>
+        <div>
+          <div class="modal-lbl" style="color:var(--gold)">Communications</div>
+          <p style="font-size:12px;color:var(--silver);margin-bottom:12px;line-height:1.5;">Send formatted emails to customers and admins.</p>
+          <button class="btn-email-cmd" id="btn-open-email">&#9993; Open Email Command Center</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="email-modal-overlay">
+  <div id="email-modal">
+    <button class="modal-close">&times;</button>
+    <div class="modal-title" style="color:#3498db;border-color:rgba(52,152,219,.3);">Email Command Center</div>
+    <div class="modal-lbl" style="color:var(--white)">1. Select Email Format</div>
+    <select id="email-format-sel" class="data-input" style="margin-bottom:24px;border-color:#3498db;">
+      <option value="confirm">Order Confirmation / Update</option>
+      <option value="deliver">Delivery Confirmation (Thank You)</option>
+      <option value="invoice">Formal Invoice (With Payment Info)</option>
+    </select>
+    <div class="modal-lbl" style="color:var(--white)">2. Select Recipients</div>
+    <div style="background:var(--ink2);padding:16px;border:1px solid rgba(139,160,178,.2);margin-bottom:24px;">
+      <label class="chk-row"><input type="checkbox" id="chk-cust" checked/> Send to Customer <span style="color:var(--silver);font-size:12px;" id="lbl-cust-email"></span></label>
+      <label class="chk-row"><input type="checkbox" id="chk-admin"/> Send to Admin</label>
+      <label class="chk-row" style="margin-bottom:0;"><input type="checkbox" id="chk-custom"/> Send to Custom Email...</label>
+      <div id="custom-email-container" style="display:none;margin-top:12px;">
+        <div class="custom-email-row">
+          <input type="email" class="data-input custom-email-input" placeholder="e.g. accounting@builder.com" style="border-color:rgba(255,255,255,.2);"/>
+          <button class="btn-view" data-add-email style="padding:0 12px;font-size:16px;" title="Add another email">+</button>
+        </div>
+      </div>
+    </div>
+    <div id="email-send-msg" style="font-family:'DM Mono',monospace;font-size:12px;margin-bottom:16px;display:none;"></div>
+    <div style="display:flex;gap:12px;">
+      <button class="btn-add" style="flex:1;text-align:center;" onclick="document.getElementById('email-modal-overlay').style.display='none'">Cancel</button>
+      <button class="btn-save" id="btn-execute-send" style="flex:2;background:#3498db;color:#fff;">&#128640; Send Email(s)</button>
+    </div>
+  </div>
+</div>
+
+<script type="module" src="assets/include.mjs"></script>
+<script type="module" src="pages/admin.mjs"></script>
+</body>
+</html>
