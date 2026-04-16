@@ -1,139 +1,172 @@
-/* api.mjs — single source of truth for all Cloudflare Worker / GitHub
- * Contents API traffic. Every page used to duplicate fetch+atob+btoa
- * boilerplate and its own CSV parser; now everything goes through here.
+/* api.mjs — single source of truth for all calls to the allpro-api Worker.
  *
- * Sandbox safety: if the configured WORKER_URL still looks like a
- * placeholder ("SANDBOX", "example.workers.dev", empty string), all
- * GETs return an empty-but-valid payload and all PUTs are a no-op
- * that just logs to the console. That lets the /test/ build load
- * fully and be interacted with, without ever touching real data.
+ * The Worker exposes a plain REST surface (see worker/src/index.js). All
+ * network traffic for the site — auth, products, users, orders, admin —
+ * flows through the helpers in this file so every request can share:
+ *   - X-Sandbox:  true when APBS_CONFIG.sandbox, so the Worker reads &
+ *     writes to the sandbox D1 DB instead of production.
+ *   - Authorization: Bearer <JWT>  for logged-in users.
+ *   - X-Admin-Key: <key>  for admin panel writes (populated on PIN
+ *     unlock, cleared on logout).
+ *   - readOnly mode  — an extra safety net that short-circuits any
+ *     non-GET request with a resolved stub if APBS_CONFIG.readOnly is on.
  */
-const CFG = () => (window.APBS_CONFIG || {});
-const isPlaceholder = (u) =>
-  !u || /SANDBOX|example\.workers\.dev/i.test(u);
 
-function decodeContent(b64) {
-  if (!b64) return "";
-  return decodeURIComponent(escape(atob(String(b64).replace(/\n/g, ""))));
-}
-function encodeContent(str) {
-  return btoa(unescape(encodeURIComponent(str)));
+const CFG       = () => (window.APBS_CONFIG || {});
+const TOKEN_KEY = "apbs_token";
+const ADMIN_KEY = "apbs_admin_key";
+
+export const Session = {
+  getToken: () => sessionStorage.getItem(TOKEN_KEY) || "",
+  setToken: (t) => t ? sessionStorage.setItem(TOKEN_KEY, t) : sessionStorage.removeItem(TOKEN_KEY),
+  getAdminKey: () => sessionStorage.getItem(ADMIN_KEY) || "",
+  setAdminKey: (k) => k ? sessionStorage.setItem(ADMIN_KEY, k) : sessionStorage.removeItem(ADMIN_KEY)
+};
+
+export function isSandbox() { return CFG().sandbox === true; }
+export function isReadOnly() { return CFG().readOnly === true; }
+
+/* ---- Core fetch helper. Every API call goes through this. ---- */
+async function apiFetch(path, { method = "GET", body, headers = {}, raw = false } = {}) {
+  const base = CFG().API_URL;
+  if (!base) throw new Error("APBS_CONFIG.API_URL not set");
+
+  if (isReadOnly() && method !== "GET") {
+    console.info("[readOnly] suppressed:", method, path);
+    return { ok: true, readOnly: true };
+  }
+
+  const h = { "accept": "application/json", ...headers };
+  if (body != null && !(body instanceof FormData) && !h["content-type"] && typeof body !== "string") {
+    h["content-type"] = "application/json";
+  }
+  if (body != null && typeof body !== "string" && !(body instanceof FormData) && !(body instanceof Blob)) {
+    body = JSON.stringify(body);
+  }
+  if (isSandbox())         h["x-sandbox"]    = "true";
+  if (Session.getToken())  h["authorization"] = "Bearer " + Session.getToken();
+  if (Session.getAdminKey()) h["x-admin-key"] = Session.getAdminKey();
+
+  const res = await fetch(base.replace(/\/+$/, "") + path, { method, headers: h, body });
+  if (raw) return res;
+  let data = null;
+  try { data = await res.json(); } catch { /* swallow */ }
+  if (!res.ok) {
+    const msg = (data && data.error) || ("Request failed: " + res.status);
+    const err = new Error(msg);
+    err.status = res.status;
+    err.data = data;
+    throw err;
+  }
+  return data || {};
 }
 
-/* ---- CSV ---- */
+/* Short verbs */
+export const api = {
+  get:   (p, opts)     => apiFetch(p, { ...(opts || {}), method: "GET" }),
+  post:  (p, body, o)  => apiFetch(p, { ...(o || {}), method: "POST",  body }),
+  patch: (p, body, o)  => apiFetch(p, { ...(o || {}), method: "PATCH", body }),
+  del:   (p, o)        => apiFetch(p, { ...(o || {}), method: "DELETE" }),
+  raw:   (p, opts)     => apiFetch(p, { ...(opts || {}), raw: true })
+};
+
+/* ==========================================================
+ * High-level convenience wrappers
+ * ========================================================== */
+
+/* Products */
+export async function loadProducts() {
+  const d = await api.get("/api/products");
+  return { products: d.products || [] };
+}
+export async function createProduct(p)           { return api.post("/api/products", p); }
+export async function updateProduct(code, size, patch) {
+  const qs = "?code=" + encodeURIComponent(code) + "&size=" + encodeURIComponent(size || "");
+  return api.patch("/api/products" + qs, patch);
+}
+export async function deleteProduct(code, size) {
+  const qs = "?code=" + encodeURIComponent(code) + "&size=" + encodeURIComponent(size || "");
+  return api.del("/api/products" + qs);
+}
+export async function importProductsCSV(csvText) {
+  return api.post("/api/products/import", csvText, { headers: { "content-type": "text/csv" } });
+}
+export async function exportProductsCSV() {
+  const res = await api.raw("/api/products/export");
+  if (!res.ok) throw new Error("export failed: " + res.status);
+  return res.text();
+}
+
+/* Users */
+export async function loadUsers() {
+  const d = await api.get("/api/users");
+  return { users: d.users || [] };
+}
+export async function createUser(u)      { return api.post("/api/users", u); }
+export async function updateUser(id, p)  { return api.patch("/api/users/" + encodeURIComponent(id), p); }
+export async function deleteUser(id)     { return api.del("/api/users/" + encodeURIComponent(id)); }
+export async function importUsers(users) { return api.post("/api/users/import", { users }); }
+export async function exportUsers()      { return api.get("/api/users/export"); }
+
+/* Orders */
+export async function loadOrders(filters = {}) {
+  const qs = new URLSearchParams(filters).toString();
+  const d = await api.get("/api/orders" + (qs ? "?" + qs : ""));
+  return { orders: d.orders || [] };
+}
+export async function loadMyOrders() {
+  const d = await api.get("/api/orders?mine=1");
+  return { orders: d.orders || [] };
+}
+export async function placeOrder(order)    { return api.post("/api/orders", order); }
+export async function updateOrder(id, p)   { return api.patch("/api/orders/" + encodeURIComponent(id), p); }
+export async function deleteOrder(id)      { return api.del("/api/orders/" + encodeURIComponent(id)); }
+export async function exportOrdersCSV() {
+  const res = await api.raw("/api/orders/export");
+  if (!res.ok) throw new Error("export failed: " + res.status);
+  return res.text();
+}
+
+/* Admin */
+export async function adminVerifyPin(pin)  { return api.post("/api/admin/verify-pin", { pin }); }
+export async function adminStats()         { return api.get("/api/admin/stats"); }
+export async function adminAudit(limit)    { return api.get("/api/admin/audit" + (limit ? "?limit=" + limit : "")); }
+export async function adminSeed(body)      { return api.post("/api/admin/seed", body); }
+export async function adminWipe()          { return api.post("/api/admin/wipe", {}); }
+export async function adminBackup() {
+  const res = await api.raw("/api/admin/backup");
+  if (!res.ok) throw new Error("backup failed: " + res.status);
+  return res.text();
+}
+
+/* ==========================================================
+ * Utility: CSV parse/stringify (kept for pages that still use them)
+ * ========================================================== */
 export function parseCSV(str) {
   const lines = [];
-  let curLine = [], curStr = "", inQ = false;
+  let cur = [], s = "", inQ = false;
   for (let i = 0; i < str.length; i++) {
     const c = str[i];
     if (c === '"') {
-      if (inQ && str[i + 1] === '"') { curStr += '"'; i++; }
+      if (inQ && str[i + 1] === '"') { s += '"'; i++; }
       else inQ = !inQ;
-    } else if (c === "," && !inQ) {
-      curLine.push(curStr); curStr = "";
-    } else if ((c === "\n" || c === "\r") && !inQ) {
+    } else if (c === "," && !inQ) { cur.push(s); s = ""; }
+    else if ((c === "\n" || c === "\r") && !inQ) {
       if (c === "\r" && str[i + 1] === "\n") i++;
-      curLine.push(curStr); lines.push(curLine); curLine = []; curStr = "";
-    } else {
-      curStr += c;
-    }
+      cur.push(s); lines.push(cur); cur = []; s = "";
+    } else { s += c; }
   }
-  if (curStr !== "" || curLine.length > 0) { curLine.push(curStr); lines.push(curLine); }
+  if (s !== "" || cur.length) { cur.push(s); lines.push(cur); }
   return lines;
 }
 export function stringifyCSV(rows) {
-  return rows.map((row) => row.map((cell) => {
-    const s = String(cell == null ? "" : cell);
+  return rows.map((r) => r.map((c) => {
+    const s = String(c == null ? "" : c);
     return /[,"\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
   }).join(",")).join("\n");
 }
 
-/* ---- Sandbox placeholder payloads ---- */
-const EMPTY = {
-  "products.csv": "Code,Description,Size,Pack,Qty,Price,Image\n",
-  "users.json":   JSON.stringify({ users: [] }, null, 2),
-  "orders.json":  JSON.stringify({ orders: [] }, null, 2)
-};
-function placeholderGet(path) {
-  const content = EMPTY[path] != null ? EMPTY[path] : "";
-  return { content: encodeContent(content), sha: "sandbox-sha-" + path };
-}
-
-/* ---- Low-level fetch ---- */
-async function ghGet(path) {
-  const base = CFG().WORKER_URL;
-  if (isPlaceholder(base)) {
-    console.info("[sandbox] api GET", path, "→ empty placeholder");
-    return placeholderGet(path);
-  }
-  const r = await fetch(base + "/github/" + path);
-  if (!r.ok) throw new Error("GET " + path + " failed: " + r.status);
-  return r.json();
-}
-async function ghPut(path, content, sha, message) {
-  const base = CFG().WORKER_URL;
-  const payload = {
-    message: message || "Update " + path,
-    content: encodeContent(content),
-    branch: "main",
-    ...(sha ? { sha } : {})
-  };
-  if (isPlaceholder(base)) {
-    console.info("[sandbox] api PUT suppressed:", path, {
-      message: payload.message,
-      bytes: content.length
-    });
-    return { ok: true, sandbox: true, content: { sha: "sandbox-sha-" + path } };
-  }
-  const r = await fetch(base + "/github/" + path, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload)
-  });
-  if (!r.ok) {
-    let err = { message: r.status };
-    try { err = await r.json(); } catch {}
-    throw new Error(err.message || "PUT " + path + " failed");
-  }
-  return r.json();
-}
-
-/* ---- High-level typed helpers ---- */
-export async function loadProducts() {
-  const d = await ghGet("products.csv");
-  const csv = decodeContent(d.content);
-  const rows = parseCSV(csv);
-  return { sha: d.sha, rows, csv };
-}
-export async function saveProductsCSV(rows, sha) {
-  return ghPut("products.csv", stringifyCSV(rows), sha, "Admin: Update products.csv");
-}
-
-export async function loadUsers() {
-  const d = await ghGet("users.json");
-  const raw = decodeContent(d.content) || '{"users":[]}';
-  const users = (JSON.parse(raw).users) || [];
-  return { sha: d.sha, users };
-}
-export async function saveUsers(users, sha, message) {
-  return ghPut("users.json", JSON.stringify({ users }, null, 2), sha, message || "Update users.json");
-}
-
-export async function loadOrders() {
-  const d = await ghGet("orders.json");
-  const raw = decodeContent(d.content) || '{"orders":[]}';
-  const orders = (JSON.parse(raw).orders) || [];
-  return { sha: d.sha, orders };
-}
-export async function saveOrders(orders, sha, message) {
-  return ghPut("orders.json", JSON.stringify({ orders }, null, 2), sha, message || "Update orders.json");
-}
-
-export function isSandbox() {
-  return isPlaceholder(CFG().WORKER_URL);
-}
-
-/* ---- SHA-256 (shared by auth) ---- */
+/* SHA-256 helper kept for legacy callers (not used by auth anymore) */
 export async function sha256(str) {
   const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
   return Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, "0")).join("");

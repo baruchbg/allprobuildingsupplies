@@ -1,7 +1,7 @@
 /* account.mjs — user dashboard: profile details + order history. */
 import { $, esc } from "../assets/ui.mjs";
 import { getUser, logout, isLoggedIn } from "../assets/auth.mjs";
-import { loadOrders } from "../assets/api.mjs";
+import { loadMyOrders } from "../assets/api.mjs";
 
 function populate(u) {
   $("#display-name").textContent    = ((u.fname || "") + " " + (u.lname || "")).trim() || "—";
@@ -11,13 +11,11 @@ function populate(u) {
   $("#display-rights").textContent  = u.canOrderPieces === false ? "Cases Only" : "Pieces & Cases";
 }
 
-async function showOrders(u) {
+async function showOrders(_u) {
   const tb = $("#orders-tbody");
   try {
-    const { orders } = await loadOrders();
-    const mine = orders
-      .filter((o) => (o.customer?.email || "").toLowerCase() === (u.email || "").toLowerCase())
-      .sort((a, b) => new Date(b.placedAt) - new Date(a.placedAt));
+    const { orders } = await loadMyOrders();
+    const mine = orders.slice().sort((a, b) => new Date(b.placedAt) - new Date(a.placedAt));
     if (!mine.length) {
       tb.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--silver);">You have not placed any orders yet.</td></tr>`;
       return;

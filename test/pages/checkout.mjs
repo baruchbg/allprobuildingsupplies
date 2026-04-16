@@ -1,7 +1,7 @@
 /* checkout.mjs — order form submission with sandbox-safe persistence. */
 import { $, esc, updateNavCount } from "../assets/ui.mjs";
 import { getCart, clearCart } from "../assets/cart.mjs";
-import { loadOrders, saveOrders, loadProducts, saveProductsCSV } from "../assets/api.mjs";
+import { placeOrder as apiPlaceOrder } from "../assets/api.mjs";
 import { isLoggedIn, getUser } from "../assets/auth.mjs";
 import { initEmail, sendEmail, buildConfirmEmail, orderEmailParams } from "../assets/email.mjs";
 
@@ -44,28 +44,6 @@ function setDelivery(method) {
   $("#pickup-note").style.display = method === "pickup" ? "block" : "none";
 }
 
-async function deductInventory(cart) {
-  const { rows, sha } = await loadProducts();
-  if (!rows.length) return;
-  const deductions = {};
-  cart.forEach((item) => {
-    const key = item.code + "|" + (item.size || "").replace(/"/g, "");
-    deductions[key] = (deductions[key] || 0) + item.qty;
-  });
-  const out = [rows[0]];
-  for (let i = 1; i < rows.length; i++) {
-    const c = rows[i];
-    if (!c[0]) continue;
-    const key = c[0] + "|" + (c[2] || "").replace(/"/g, "").trim();
-    if (deductions[key]) {
-      const cur = parseInt(c[4]) || 0;
-      c[4] = String(Math.max(0, cur - deductions[key]));
-    }
-    out.push(c);
-  }
-  await saveProductsCSV(out, sha);
-}
-
 async function placeOrder() {
   let valid = true;
   if (deliveryMethod === "delivery") {
@@ -106,10 +84,8 @@ async function placeOrder() {
   };
 
   try {
-    const { orders, sha } = await loadOrders();
-    orders.push(order);
-    await saveOrders(orders, sha, "New order: " + order.id);
-    await deductInventory(cart);
+    // Worker handles inventory deduction transactionally inside /api/orders.
+    await apiPlaceOrder(order);
 
     const html = buildConfirmEmail(order);
     const cfg = window.APBS_CONFIG || {};

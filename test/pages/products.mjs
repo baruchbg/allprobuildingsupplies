@@ -11,20 +11,19 @@ function imgPath(src) {
   return /^(images|assets)\//.test(src) ? "../" + src : src;
 }
 
-function groupRows(rows) {
+function groupProducts(products) {
   const groups = {};
-  for (let i = 1; i < rows.length; i++) {
-    const c = rows[i];
-    if (!c[0]) continue;
-    const code = c[0].trim();
+  for (const p of products) {
+    if (!p.code) continue;
+    const code = String(p.code).trim();
     if (!groups[code]) {
-      groups[code] = { desc: c[1] || code, image: c[6] || "../images/logo.png", rows: [] };
+      groups[code] = { desc: p.description || code, image: p.image || "../images/logo.png", rows: [] };
     }
     groups[code].rows.push({
-      size: c[2] || "",
-      pack: c[3] || "",
-      qty:  parseInt(c[4]) || 0,
-      price: parseFloat(c[5]) || 0
+      size: p.size || "",
+      pack: p.pack || "",
+      qty:  parseInt(p.qty)  || 0,
+      price: parseFloat(p.price) || 0
     });
   }
   return groups;
@@ -103,8 +102,8 @@ document.addEventListener("apbs:ready", async () => {
   }
 
   try {
-    const { rows } = await loadProducts();
-    const groups = groupRows(rows);
+    const { products } = await loadProducts();
+    const groups = groupProducts(products);
     const codes = Object.keys(groups);
 
     if (!codes.length) {

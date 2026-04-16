@@ -131,7 +131,7 @@ export function initSandboxBanner() {
     id: "apbs-sandbox-banner",
     html:
       '<strong>' + esc(cfg.bannerText || "SANDBOX BUILD") + '</strong>' +
-      ' <span class="apbs-sb-sub">Worker: ' + esc(cfg.WORKER_URL) + '</span>'
+      ' <span class="apbs-sb-sub">API: ' + esc(cfg.API_URL || cfg.WORKER_URL || "") + '</span>'
   });
   document.body.prepend(bar);
 }
