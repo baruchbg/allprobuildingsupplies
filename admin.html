@@ -188,13 +188,13 @@
     <p style="color:var(--silver);font-size:14px;margin-bottom:20px;">Approve or reject trade accounts. Only 'approved' users can view pricing and place orders.</p>
     <table class="data-table" id="users-table">
       <thead>
-        <tr><th>ID</th><th>Name</th><th>Email</th><th>Company</th><th>Status</th><th>Pieces Allowed</th><th></th></tr>
+        <tr><th>ID</th><th>Name</th><th>Email</th><th>Company</th><th>Password</th><th>Status</th><th>Pieces Allowed</th><th></th></tr>
       </thead>
       <tbody id="users-tbody"></tbody>
     </table>
     <div class="action-bar">
       <button class="btn-add" style="border-color:var(--gold);color:var(--gold);" onclick="openUserModal()">+ Create New User</button>
-      <button class="btn-save" onclick="saveUsers()">Save Approvals</button>
+      <button class="btn-save" onclick="saveUsers()">Save Approvals & Passwords</button>
     </div>
   </div>
 </div>
@@ -212,6 +212,9 @@
     
     <div class="modal-lbl" style="color:var(--white)">Email Address *</div>
     <input type="email" id="new-user-email" class="data-input" style="margin-bottom:16px;">
+
+    <div class="modal-lbl" style="color:var(--white)">Login Password *</div>
+    <input type="text" id="new-user-password" class="data-input" style="margin-bottom:16px;" value="Welcome1!">
     
     <div class="modal-lbl" style="color:var(--white)">Company Name</div>
     <input type="text" id="new-user-company" class="data-input" style="margin-bottom:20px;">
@@ -488,7 +491,7 @@ async function saveProducts() {
   btn.textContent = 'Save Products'; btn.disabled = false;
 }
 
-// --- USERS LOGIC ---
+// --- USERS LOGIC WITH PASSWORDS ---
 async function loadUsers() {
   try {
     const r = await fetch(WORKER_URL + '/github/users.json'); const d = await r.json();
@@ -496,7 +499,29 @@ async function loadUsers() {
     const tbody = document.getElementById('users-tbody'); tbody.innerHTML = '';
     masterUsers.forEach((u, i) => {
       const tr = document.createElement('tr');
-      tr.innerHTML = `<td data-label="ID" style="font-family:monospace;color:var(--silver);">${u.id}</td><td data-label="Name">${u.fname} ${u.lname}</td><td data-label="Email">${u.email}</td><td data-label="Company">${u.company}</td><td data-label="Status"><select class="data-input status-sel" data-idx="${i}" style="background:${u.status==='approved'?'rgba(46,204,113,.1)':'var(--ink3)'}"><option value="pending" ${u.status==='pending'?'selected':''}>Pending</option><option value="approved" ${u.status==='approved'?'selected':''}>Approved</option><option value="rejected" ${u.status==='rejected'?'selected':''}>Rejected</option></select></td><td data-label="Pieces Allowed"><select class="data-input pcs-sel" data-idx="${i}"><option value="true" ${u.canOrderPieces!==false?'selected':''}>Yes (Pieces & Cases)</option><option value="false" ${u.canOrderPieces===false?'selected':''}>No (Cases Only)</option></select></td><td data-label="Action"><button class="btn-del" onclick="deleteUser(${i})">Delete</button></td>`;
+      tr.innerHTML = `
+        <td data-label="ID" style="font-family:monospace;color:var(--silver);">${u.id}</td>
+        <td data-label="Name">${u.fname} ${u.lname}</td>
+        <td data-label="Email">${u.email}</td>
+        <td data-label="Company">${u.company}</td>
+        <td data-label="Password">
+          <input type="text" class="data-input pw-sel" data-idx="${i}" value="${u.password || 'Welcome1!'}" style="width:120px;">
+        </td>
+        <td data-label="Status">
+          <select class="data-input status-sel" data-idx="${i}" style="background:${u.status==='approved'?'rgba(46,204,113,.1)':'var(--ink3)'}">
+            <option value="pending" ${u.status==='pending'?'selected':''}>Pending</option>
+            <option value="approved" ${u.status==='approved'?'selected':''}>Approved</option>
+            <option value="rejected" ${u.status==='rejected'?'selected':''}>Rejected</option>
+          </select>
+        </td>
+        <td data-label="Pieces Allowed">
+          <select class="data-input pcs-sel" data-idx="${i}">
+            <option value="true" ${u.canOrderPieces!==false?'selected':''}>Yes</option>
+            <option value="false" ${u.canOrderPieces===false?'selected':''}>Cases Only</option>
+          </select>
+        </td>
+        <td data-label="Action"><button class="btn-del" onclick="deleteUser(${i})">Delete</button></td>
+      `;
       tbody.appendChild(tr);
     });
   } catch(e) {}
@@ -506,6 +531,7 @@ function openUserModal() {
   document.getElementById('new-user-fname').value = '';
   document.getElementById('new-user-lname').value = '';
   document.getElementById('new-user-email').value = '';
+  document.getElementById('new-user-password').value = 'Welcome1!';
   document.getElementById('new-user-company').value = '';
   document.getElementById('new-user-status').value = 'approved';
   document.getElementById('new-user-pcs').value = 'true';
@@ -522,6 +548,7 @@ async function createNewUser(e) {
   const fname = document.getElementById('new-user-fname').value.trim();
   const lname = document.getElementById('new-user-lname').value.trim();
   const email = document.getElementById('new-user-email').value.trim();
+  const password = document.getElementById('new-user-password').value.trim() || 'Welcome1!';
   const company = document.getElementById('new-user-company').value.trim();
   const status = document.getElementById('new-user-status').value;
   const canOrderPieces = document.getElementById('new-user-pcs').value === 'true';
@@ -532,7 +559,7 @@ async function createNewUser(e) {
 
   const newUser = {
     id: 'USR-' + Date.now().toString(36).toUpperCase(),
-    fname, lname, email, company, status, canOrderPieces
+    fname, lname, email, company, status, canOrderPieces, password
   };
 
   masterUsers.push(newUser);
@@ -552,16 +579,19 @@ async function createNewUser(e) {
 }
 
 function deleteUser(idx) { if(confirm("Permanently delete this user?")) { masterUsers.splice(idx, 1); saveUsers(); } }
+
 async function saveUsers() {
   const btn = event.target; btn.textContent = 'Saving...'; btn.disabled = true;
   document.querySelectorAll('.status-sel').forEach(sel => masterUsers[sel.dataset.idx].status = sel.value);
   document.querySelectorAll('.pcs-sel').forEach(sel => masterUsers[sel.dataset.idx].canOrderPieces = sel.value === 'true');
+  document.querySelectorAll('.pw-sel').forEach(sel => masterUsers[sel.dataset.idx].password = sel.value.trim()); // Save Passwords
+
   const payload = { message: 'Admin: Update users.json', content: btoa(unescape(encodeURIComponent(JSON.stringify({users: masterUsers}, null, 2)))), branch: 'main', sha: currentUserSha };
   try {
     const r = await fetch(WORKER_URL + '/github/users.json', { method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
-    if(r.ok) { const d = await r.json(); currentUserSha = d.content.sha; showStatus('Users saved successfully!', false); loadUsers(); } else throw new Error();
+    if(r.ok) { const d = await r.json(); currentUserSha = d.content.sha; showStatus('Users & Passwords saved successfully!', false); loadUsers(); } else throw new Error();
   } catch(e) { showStatus('Error saving users.', true); }
-  btn.textContent = 'Save Approvals'; btn.disabled = false;
+  btn.textContent = 'Save Approvals & Passwords'; btn.disabled = false;
 }
 
 // --- ORDERS LOGIC ---
