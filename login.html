@@ -2,33 +2,34 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Login — All Pro Building Supplies LLC</title>
+<title>Dealer Login — All Pro Building Supplies</title>
 <link rel="stylesheet" href="assets/style.css"/>
 <style>
-.auth-wrap{min-height:80vh;display:flex;align-items:center;justify-content:center;padding:60px 24px;position:relative}
-.auth-wrap::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 50% 60% at 50% 40%,rgba(200,152,31,.06) 0%,transparent 65%)}
-.auth-box{position:relative;z-index:1;width:100%;max-width:420px}
-.auth-logo{text-align:center;margin-bottom:36px}
-.auth-logo img{height:70px;margin:0 auto 14px}
-.auth-title{font-family:'Oswald',sans-serif;font-size:26px;font-weight:600;color:var(--white);letter-spacing:1px;text-align:center}
-.auth-sub{font-size:14px;color:var(--silver);text-align:center;margin-top:6px;line-height:1.6}
-.auth-card{background:var(--ink2);border:1px solid rgba(200,152,31,.15);padding:40px}
-.fg{display:flex;flex-direction:column;gap:7px;margin-bottom:16px}
-.fl{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--silver)}
-.fi{width:100%;background:var(--ink3);border:1px solid rgba(139,160,178,.18);color:var(--smoke);font-family:'DM Sans',sans-serif;font-size:15px;padding:13px 16px;outline:none;transition:border-color .2s}
-.fi:focus{border-color:var(--gold)}
-.fi::placeholder{color:rgba(139,160,178,.35)}
-.auth-btn{width:100%;background:var(--gold);color:var(--ink);font-family:'Oswald',sans-serif;font-size:15px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;padding:16px;border:none;margin-top:8px;transition:background .2s,transform .2s;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px}
-.auth-btn:hover{background:var(--gold2);transform:translateY(-1px)}
-.auth-btn:disabled{background:var(--ink3);color:var(--silver);transform:none;cursor:not-allowed}
-.auth-note{font-size:12px;color:var(--silver);text-align:center;margin-top:16px;line-height:1.6}
-.auth-note a{color:var(--gold)}
-.global-err{display:none;background:rgba(231,76,60,.1);border:1px solid rgba(231,76,60,.3);color:#E74C3C;padding:12px 16px;font-size:13px;margin-bottom:14px;line-height:1.5}
-.pending-box{display:none;background:rgba(200,152,31,.08);border:1px solid rgba(200,152,31,.25);color:var(--gold);padding:16px;font-size:13px;margin-bottom:14px;line-height:1.6}
-.register-bar{background:var(--ink3);border:1px solid rgba(139,160,178,.1);padding:14px 18px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;font-size:14px;color:var(--silver)}
-.register-bar a{color:var(--gold);font-weight:500}
-@keyframes spin{to{transform:rotate(360deg)}}
-@media(max-width:600px){.auth-card{padding:24px 18px}}
+.auth-wrapper{min-height:85vh;display:flex;align-items:center;justify-content:center;padding:40px 20px;}
+.auth-box{background:var(--ink2);border:1px solid rgba(200,152,31,.2);width:100%;max-width:440px;padding:40px;position:relative;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,.3);}
+.auth-box::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--gold);}
+.auth-tabs{display:flex;gap:12px;margin-bottom:28px;border-bottom:1px solid rgba(255,255,255,.05);padding-bottom:16px;}
+.auth-tab{background:transparent;border:none;color:var(--silver);font-family:'Oswald',sans-serif;font-size:16px;letter-spacing:1px;cursor:pointer;padding:0;transition:color .2s;}
+.auth-tab.active{color:var(--gold);}
+.auth-form{display:none;}
+.auth-form.active{display:block;}
+.form-group{margin-bottom:18px;}
+.form-lbl{display:block;font-size:11px;color:var(--silver);font-family:'DM Mono',monospace;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;}
+.form-inp{width:100%;background:var(--ink3);border:1px solid rgba(139,160,178,.2);color:var(--white);font-family:'DM Sans',sans-serif;font-size:15px;padding:12px 14px;outline:none;transition:border-color .2s;box-sizing:border-box;}
+.form-inp:focus{border-color:var(--gold);}
+.btn-auth{width:100%;background:var(--gold);color:var(--ink);font-family:'Oswald',sans-serif;font-size:15px;font-weight:600;letter-spacing:2px;text-transform:uppercase;padding:14px;border:none;cursor:pointer;transition:transform .2s;margin-top:10px;}
+.btn-auth:hover{transform:translateY(-2px);}
+.auth-msg{font-family:'DM Mono',monospace;font-size:12px;padding:12px;margin-bottom:20px;display:none;border-left:3px solid;}
+.msg-err{background:rgba(255,80,80,.1);border-color:#ff6b6b;color:#ff6b6b;}
+.msg-ok{background:rgba(46,204,113,.1);border-color:#2ecc71;color:#2ecc71;}
+.link-btn{background:none;border:none;color:var(--gold);font-size:12px;font-family:'DM Mono',monospace;cursor:pointer;padding:0;text-decoration:underline;margin-top:16px;display:inline-block;}
+
+/* MOBILE OPTIMIZATIONS */
+@media(max-width:600px){
+  .auth-box{padding:24px;}
+  .auth-tabs{flex-direction:column;gap:8px;border:none;margin-bottom:20px;}
+  .auth-tab{text-align:left;font-size:20px;}
+}
 </style>
 </head>
 <body>
@@ -36,8 +37,8 @@
 
 <div class="topbar">
   <div class="topbar-links">
-    <a href="tel:17328291940"><svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.27-.27.67-.36 1.02-.22 1.12.45 2.32.68 3.58.68.55 0 1 .45 1 1V20c0 .55-.45 1-1 1C10.29 21 3 13.71 3 4.5c0-.55.45-1 1-1H8c.55 0 1 .45 1 1 0 1.27.2 2.48.57 3.62.1.32.03.68-.22.96L6.6 10.8z"/></svg>732-829-1940</a>
-    <a href="mailto:info@allprobuildingsupplies.com"><svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>info@allprobuildingsupplies.com</a>
+    <a href="tel:17328291940" style="cursor:none;">📞 732-829-1940</a>
+    <a href="mailto:info@allprobuildingsupplies.com" style="cursor:none;">✉ info@allprobuildingsupplies.com</a>
   </div>
   <div class="topbar-badge">Contractor-Grade · Fast Response · NJ &amp; Surrounding Areas</div>
 </div>
@@ -53,58 +54,63 @@
     <li><a href="about.html">About</a></li>
     <li><a href="contact.html">Contact</a></li>
   </ul>
-  <div class="nav-actions" id="nav-auth-container">
-    <a href="tel:17328291940" class="nav-tel"><svg viewBox="0 0 24 24" width="16" height="16" fill="var(--gold)"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.27-.27.67-.36 1.02-.22 1.12.45 2.32.68 3.58.68.55 0 1 .45 1 1V20c0 .55-.45 1-1 1C10.29 21 3 13.71 3 4.5c0-.55.45-1 1-1H8c.55 0 1 .45 1 1 0 1.27.2 2.48.57 3.62.1.32.03.68-.22.96L6.6 10.8z"/></svg>732-829-1940</a>
-    <span id="auth-buttons" style="display:inline-flex; align-items:center; gap:8px;">
-      <a href="login.html" class="nav-cta" id="nav-login-btn" style="background:transparent;border:1px solid var(--gold);color:var(--gold);">Login</a>
-      <a href="account.html" class="nav-cta" id="nav-account-btn" style="display:none;background:var(--ink3);border:1px solid rgba(200,152,31,.3);flex-direction:column;align-items:flex-start;padding:6px 12px;line-height:1.3;gap:2px;"><span style="font-size:9px;color:var(--silver);letter-spacing:1px;font-family:'DM Mono',monospace;">LOGGED IN AS</span><span id="nav-logged-in-name" style="font-size:12px;color:var(--white);">My Account</span></a>
-      <a href="cart.html" class="nav-cta" id="nav-cart-btn" style="background:var(--gold);color:var(--ink);border:none;">🛒 Cart <span id="nav-cart-count" class="cart-nav-badge"></span></a>
-    </span>
+  <div class="nav-actions">
+    <a href="tel:17328291940" class="nav-tel">📞 732-829-1940</a>
   </div>
-  <button class="hamburger" id="hamburger" aria-label="Menu">
-    <span></span><span></span><span></span>
-  </button>
+  <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
 </nav>
 
-<div class="mobile-menu" id="mobile-menu"><button class="mobile-menu-close" id="mob-close" aria-label="Close">&#10005;</button>
+<div class="mobile-menu" id="mobile-menu">
+  <button class="mobile-menu-close" id="mob-close">&#10005;</button>
   <a href="index.html">Home</a>
   <a href="products.html">Products</a>
   <a href="about.html">About</a>
   <a href="contact.html">Contact</a>
-  <a href="tel:17328291940" class="mob-tel">📞 732-829-1940</a>
-  <a href="cart.html" class="mob-cta">🛒 Cart →</a>
-  <a href="login.html" class="mob-cta" style="margin-top:10px;background:transparent;border:1px solid var(--gold);color:var(--gold);">Login / Register</a>
 </div>
 
-<div class="auth-wrap">
+<div class="auth-wrapper">
   <div class="auth-box">
-    <div class="auth-logo">
-      <img src="assets/logo.png" onerror="this.style.display='none'"/>
-      <div class="auth-title">Dealer / Trade Login</div>
-      <div class="auth-sub">Log in to view full pricing on all products.</div>
+    
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="switchAuth('login')" id="tab-login">Login</button>
+      <button class="auth-tab" onclick="switchAuth('change')" id="tab-change">Change Password</button>
     </div>
-    <div class="auth-card">
-      <div class="register-bar">Don't have an account? <a href="register.html">Request access →</a></div>
-      <div class="global-err" id="global-err"></div>
-      <div class="pending-box" id="pending-box">
-        ⏳ Your account is <strong>pending approval</strong>. Baruch will review and approve it shortly. Questions? Call <a href="tel:17328291940" style="color:var(--gold)">732-829-1940</a>.
+
+    <div id="form-login" class="auth-form active">
+      <div id="login-msg" class="auth-msg"></div>
+      <div class="form-group">
+        <label class="form-lbl">Email Address</label>
+        <input type="email" id="log-email" class="form-inp" placeholder="contractor@email.com">
       </div>
-      <div class="fg">
-        <label class="fl">Email Address</label>
-        <input class="fi" id="l-email" type="email" placeholder="john@company.com" onkeydown="if(event.key==='Enter')doLogin()"/>
+      <div class="form-group">
+        <label class="form-lbl">Password</label>
+        <input type="password" id="log-pass" class="form-inp" placeholder="••••••••">
       </div>
-      <div class="fg">
-        <label class="fl">Password</label>
-        <input class="fi" id="l-pw" type="password" placeholder="Your password" onkeydown="if(event.key==='Enter')doLogin()"/>
+      <button class="btn-auth" onclick="doLogin(event)" id="btn-login">Sign In</button>
+      <div style="text-align:center;margin-top:20px;font-size:13px;color:var(--silver);">
+        Don't have a trade account? <a href="register.html" style="color:var(--gold);">Request Access</a>
       </div>
-      <button class="auth-btn" id="login-btn" onclick="doLogin()">
-        <span id="login-txt">Log In →</span>
-      </button>
-      <p class="auth-note">
-        No account? <a href="register.html">Request access here</a><br/>
-        Need help? Call <a href="tel:17328291940">732-829-1940</a>
-      </p>
     </div>
+
+    <div id="form-change" class="auth-form">
+      <div id="change-msg" class="auth-msg"></div>
+      <p style="font-size:13px;color:var(--silver);margin-bottom:20px;line-height:1.5;">Enter your current login credentials and choose a new password.</p>
+      
+      <div class="form-group">
+        <label class="form-lbl">Email Address</label>
+        <input type="email" id="chg-email" class="form-inp">
+      </div>
+      <div class="form-group">
+        <label class="form-lbl">Current Password</label>
+        <input type="password" id="chg-old-pass" class="form-inp">
+      </div>
+      <div class="form-group">
+        <label class="form-lbl">New Password</label>
+        <input type="password" id="chg-new-pass" class="form-inp">
+      </div>
+      <button class="btn-auth" onclick="doChangePassword(event)" id="btn-change">Update Password</button>
+    </div>
+
   </div>
 </div>
 
@@ -113,116 +119,150 @@
     <div>
       <img src="assets/logo.png" alt="All Pro Building Supplies" class="ft-logo"/>
       <p class="ft-txt">Contractor-grade building materials, plumbing, hardware, and contractor supplies. Fast response, real people, reliable service.</p>
-      <div class="ft-socials">
-        <a href="mailto:info@allprobuildingsupplies.com" class="soc">✉</a>
-        <a href="tel:17328291940" class="soc">📞</a>
-      </div>
-    </div>
-    <div class="ft-col">
-      <h4>Products</h4>
-      <ul>
-        <li><a href="products.html">Building Materials</a></li>
-        <li><a href="products.html">Plumbing</a></li>
-        <li><a href="products.html">Hardware</a></li>
-        <li><a href="products.html">Contractor Supplies</a></li>
-      </ul>
     </div>
     <div class="ft-col">
       <h4>Company</h4>
       <ul>
         <li><a href="about.html">About Us</a></li>
         <li><a href="contact.html">Contact</a></li>
-        <li><a href="login.html">Dealer Login</a></li>
+        <li><a href="admin.html" style="color:var(--gold);">Admin Dashboard</a></li>
       </ul>
     </div>
   </div>
-  <div class="ft-bot">
-    <p>&copy; 2026 All Pro Building Supplies LLC. All rights reserved.</p>
-  </div>
+  <div class="ft-bot"><p>&copy; 2026 All Pro Building Supplies LLC. All rights reserved.</p></div>
 </footer>
 
-<script src="assets/main.js"></script>
 <script>
-function updateNavCount(){
-  try {
-    var cart = JSON.parse(localStorage.getItem('apbs_cart')||'[]');
-    var total = cart.reduce(function(s,i){ return s+i.qty; }, 0);
-    var el = document.getElementById('nav-cart-count');
-    if(el) el.textContent = total > 0 ? total : '';
-  } catch(e){}
-}
-updateNavCount();
-
-async function sha256(str){
-  const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str));
-  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
-}
-
-// Check if already logged in
-window.addEventListener('DOMContentLoaded',()=>{
-  const u=sessionStorage.getItem('apbs_user');
-  if(u){
-    const user=JSON.parse(u);
-    if(user.status==='approved') window.location.href='products.html';
-  }
+// --- BULLETPROOF CURSOR FALLBACK ---
+document.addEventListener('mousemove', (e) => {
+    const cursor = document.getElementById('cursor');
+    const ring = document.getElementById('cursor-ring');
+    if(cursor) { cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px'; }
+    if(ring) { setTimeout(() => { ring.style.left = e.clientX + 'px'; ring.style.top = e.clientY + 'px'; }, 50); }
 });
 
-async function doLogin(){
-  const email=document.getElementById('l-email').value.trim().toLowerCase();
-  const pw=document.getElementById('l-pw').value;
-  if(!email||!pw){showErr('Please enter your email and password.');return;}
+const WORKER_URL = 'https://allpro-github-proxy.baruch-6d5.workers.dev';
 
-  const btn=document.getElementById('login-btn'),txt=document.getElementById('login-txt');
-  btn.disabled=true;txt.innerHTML='<span style="display:inline-block;animation:spin .8s linear infinite">⟳</span> Logging in...';
-  document.getElementById('global-err').style.display='none';
-  document.getElementById('pending-box').style.display='none';
-
-  try{
-    const res=await fetch('https://allpro-github-proxy.baruch-6d5.workers.dev/github/users.json');
-    if(!res.ok)throw new Error('Could not load user data');
-    const data=await res.json();
-    const {users}=JSON.parse(atob(data.content.replace(/\n/g,'')));
-    const user=users.find(u=>u.email===email);
-
-    if(!user){showErr('No account found with that email. <a href="register.html" style="color:var(--gold)">Register here →</a>');btn.disabled=false;txt.textContent='Log In →';return;}
-
-    const hashed=await sha256(pw);
-    if(user.password!==hashed){showErr('Incorrect password. Please try again.');btn.disabled=false;txt.textContent='Log In →';return;}
-
-    if(user.status==='pending'){
-      document.getElementById('pending-box').style.display='block';
-      btn.disabled=false;txt.textContent='Log In →';return;
-    }
-    if(user.status==='rejected'){
-      showErr('Your account access was not approved. Please contact <a href="tel:17328291940" style="color:var(--gold)">732-829-1940</a> for assistance.');
-      btn.disabled=false;txt.textContent='Log In →';return;
-    }
-
-    // Approved - save session and redirect
-    sessionStorage.setItem('apbs_user', JSON.stringify({
-      id: user.id,
-      fname: user.fname,
-      lname: user.lname,
-      name: (user.fname||'') + ' ' + (user.lname||''),
-      company: user.company,
-      email: user.email,
-      status: user.status,
-      canOrderPieces: user.canOrderPieces !== false
-    }));
-    window.location.href = 'products.html';
-
-  } catch(e){
-    showErr('Login error: ' + e.message + '. Please try again.');
-    btn.disabled=false;
-    txt.textContent='Log In →';
-  }
+function switchAuth(target) {
+  document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+  document.getElementById('tab-'+target).classList.add('active');
+  document.getElementById('form-'+target).classList.add('active');
+  document.querySelectorAll('.auth-msg').forEach(m => m.style.display = 'none');
 }
 
-function showErr(msg){
-  var el = document.getElementById('global-err');
-  el.innerHTML = msg;
+function showMsg(type, msg, isError) {
+  const el = document.getElementById(type + '-msg');
+  el.textContent = msg;
+  el.className = 'auth-msg ' + (isError ? 'msg-err' : 'msg-ok');
   el.style.display = 'block';
 }
+
+// ── LOGIN LOGIC ──
+async function doLogin(e) {
+  const email = document.getElementById('log-email').value.trim();
+  const pass = document.getElementById('log-pass').value.trim();
+  const btn = document.getElementById('btn-login');
+
+  if(!email || !pass) return showMsg('login', 'Please enter your email and password.', true);
+
+  btn.disabled = true; btn.textContent = 'Verifying...';
+  
+  try {
+    const r = await fetch(WORKER_URL + '/github/users.json');
+    const d = await r.json();
+    const jsonStr = decodeURIComponent(escape(atob(d.content)));
+    const masterUsers = JSON.parse(jsonStr).users || [];
+    
+    // Find matching user
+    const user = masterUsers.find(u => u.email.toLowerCase() === email.toLowerCase());
+
+    if(!user) {
+      showMsg('login', 'Account not found. Please request access.', true);
+    } else if (user.password !== pass) {
+      showMsg('login', 'Incorrect password.', true);
+    } else if (user.status === 'pending') {
+      showMsg('login', 'Your account is pending admin approval.', true);
+    } else if (user.status === 'rejected') {
+      showMsg('login', 'Your account access has been revoked.', true);
+    } else if (user.status === 'approved') {
+      // SUCCESS!
+      sessionStorage.setItem('apbs_user', JSON.stringify(user));
+      showMsg('login', 'Login successful! Redirecting...', false);
+      setTimeout(() => { window.location.href = 'products.html'; }, 1000);
+    }
+
+  } catch(err) {
+    showMsg('login', 'Server error. Please try again.', true);
+  }
+  btn.disabled = false; btn.textContent = 'Sign In';
+}
+
+// Allow Enter key to submit login
+document.getElementById('log-pass').addEventListener('keypress', function (e) {
+    if (e.key === 'Enter') doLogin(e);
+});
+
+// ── CHANGE PASSWORD LOGIC ──
+async function doChangePassword(e) {
+  const email = document.getElementById('chg-email').value.trim();
+  const oldPass = document.getElementById('chg-old-pass').value.trim();
+  const newPass = document.getElementById('chg-new-pass').value.trim();
+  const btn = document.getElementById('btn-change');
+
+  if(!email || !oldPass || !newPass) return showMsg('change', 'All fields are required.', true);
+  if(newPass.length < 6) return showMsg('change', 'New password must be at least 6 characters.', true);
+
+  btn.disabled = true; btn.textContent = 'Updating...';
+
+  try {
+    const r = await fetch(WORKER_URL + '/github/users.json');
+    const d = await r.json();
+    const currentSha = d.sha;
+    const jsonStr = decodeURIComponent(escape(atob(d.content)));
+    const masterUsers = JSON.parse(jsonStr).users || [];
+    
+    const userIdx = masterUsers.findIndex(u => u.email.toLowerCase() === email.toLowerCase());
+
+    if(userIdx === -1) {
+      showMsg('change', 'Account not found.', true);
+    } else if (masterUsers[userIdx].password !== oldPass) {
+      showMsg('change', 'Current password is incorrect.', true);
+    } else {
+      // Passwords match, update to new password
+      masterUsers[userIdx].password = newPass;
+      
+      const payload = { 
+        message: 'User self-service password update', 
+        content: btoa(unescape(encodeURIComponent(JSON.stringify({users: masterUsers}, null, 2)))), 
+        branch: 'main', 
+        sha: currentSha 
+      };
+      
+      const putReq = await fetch(WORKER_URL + '/github/users.json', { 
+        method:'PUT', 
+        headers:{'Content-Type':'application/json'}, 
+        body:JSON.stringify(payload) 
+      });
+
+      if(putReq.ok) {
+        showMsg('change', 'Password updated successfully! Please login.', false);
+        // Clear fields
+        document.getElementById('chg-old-pass').value = '';
+        document.getElementById('chg-new-pass').value = '';
+        setTimeout(() => { switchAuth('login'); document.getElementById('log-email').value = email; }, 2000);
+      } else {
+        throw new Error();
+      }
+    }
+
+  } catch(err) {
+    showMsg('change', 'Failed to update password. Please try again.', true);
+  }
+  
+  btn.disabled = false; btn.textContent = 'Update Password';
+}
 </script>
+<script src="assets/main.js"></script>
 </body>
 </html>
