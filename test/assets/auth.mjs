@@ -1,89 +1,119 @@
 /* auth.mjs — session + login/register/change-password helpers.
  *
- * Bug-fix vs production: the old login.html compared raw input to a
- * stored sha-256 hex hash, which always failed. doLogin() below hashes
- * the entered password before comparing. If a legacy account still has
- * a plaintext password (from admin panel "Welcome1!" seed), we fall back
- * to a plaintext match so those keep working.
+ * Now a thin wrapper around the Worker's /auth/* endpoints. The Worker
+ * does bcrypt-equivalent (PBKDF2-SHA256) server-side and returns a signed
+ * JWT that api.mjs attaches to every request. We still cache the user row
+ * in sessionStorage so existing UI code (ui.mjs, nav pills, etc.) can
+ * read it synchronously.
  */
-import { loadUsers, saveUsers, sha256 } from "./api.mjs";
+import { api, Session } from "./api.mjs";
 
-const SESSION_KEY = "apbs_user";
-const ADMIN_KEY   = "apbs_admin_auth";
+const SESSION_USER = "apbs_user";
+const ADMIN_FLAG   = "apbs_admin_auth";
 
 export function getUser() {
-  try { return JSON.parse(sessionStorage.getItem(SESSION_KEY)); }
+  try { return JSON.parse(sessionStorage.getItem(SESSION_USER)); }
   catch { return null; }
 }
 export function setUser(u) {
-  sessionStorage.setItem(SESSION_KEY, JSON.stringify(u));
+  if (u) sessionStorage.setItem(SESSION_USER, JSON.stringify(u));
+  else sessionStorage.removeItem(SESSION_USER);
 }
 export function logout() {
-  sessionStorage.removeItem(SESSION_KEY);
+  setUser(null);
+  Session.setToken(null);
+  setAdmin(false);
 }
 export function isLoggedIn() {
   const u = getUser();
   return !!(u && u.status === "approved");
 }
 
-export function isAdmin() { return sessionStorage.getItem(ADMIN_KEY) === "true"; }
+export function isAdmin() { return sessionStorage.getItem(ADMIN_FLAG) === "true"; }
 export function setAdmin(v) {
-  if (v) sessionStorage.setItem(ADMIN_KEY, "true");
-  else sessionStorage.removeItem(ADMIN_KEY);
+  if (v) sessionStorage.setItem(ADMIN_FLAG, "true");
+  else {
+    sessionStorage.removeItem(ADMIN_FLAG);
+    Session.setAdminKey(null);
+  }
 }
 
-async function passwordMatches(user, entered) {
-  if (!user) return false;
-  const stored = user.password || "";
-  if (stored === entered) return true;                      // legacy plaintext
-  const hashed = await sha256(entered);
-  return stored === hashed;                                 // new hashed path
+/* Admin PIN exchange — talks to /api/admin/verify-pin, stores the
+ * returned adminKey in sessionStorage so subsequent admin requests
+ * authenticate automatically. */
+export async function unlockAdmin(pin) {
+  try {
+    const r = await api.post("/api/admin/verify-pin", { pin });
+    if (r && r.adminKey) {
+      Session.setAdminKey(r.adminKey);
+      setAdmin(true);
+      return { ok: true };
+    }
+    return { ok: false, msg: "Invalid admin PIN." };
+  } catch (e) {
+    return { ok: false, msg: e.message || "Incorrect PIN." };
+  }
 }
+
+/* ---- User auth flows ---- */
 
 export async function doLogin(email, pass) {
   if (!email || !pass) return { ok: false, msg: "Please enter your email and password." };
-  const { users } = await loadUsers();
-  const user = users.find((u) => (u.email || "").toLowerCase() === email.toLowerCase());
-  if (!user) return { ok: false, msg: "Account not found. Please request access." };
-  if (!(await passwordMatches(user, pass))) return { ok: false, msg: "Incorrect password." };
-  if (user.status === "pending")  return { ok: false, msg: "Your account is pending admin approval." };
-  if (user.status === "rejected") return { ok: false, msg: "Your account access has been revoked." };
-  if (user.status === "approved") { setUser(user); return { ok: true, user }; }
-  return { ok: false, msg: "Unknown account status." };
+  try {
+    const r = await api.post("/auth/login", { email, password: pass });
+    Session.setToken(r.token);
+    setUser(r.user);
+    return { ok: true, user: r.user };
+  } catch (e) {
+    return { ok: false, msg: e.message || "Login failed." };
+  }
+}
+
+export async function doRegister(data) {
+  try {
+    const r = await api.post("/auth/register", {
+      fname:    (data.fname    || "").trim(),
+      lname:    (data.lname    || "").trim(),
+      company:  (data.company  || "").trim(),
+      email:    (data.email    || "").trim().toLowerCase(),
+      phone:    (data.phone    || "").trim(),
+      password: data.password || ""
+    });
+    return { ok: true, user: r.user };
+  } catch (e) {
+    return { ok: false, msg: e.message || "Registration failed.", dupe: e.status === 409 };
+  }
 }
 
 export async function doChangePassword(email, oldPass, newPass) {
   if (!email || !oldPass || !newPass) return { ok: false, msg: "All fields are required." };
   if (newPass.length < 6) return { ok: false, msg: "New password must be at least 6 characters." };
-  const { users, sha } = await loadUsers();
-  const idx = users.findIndex((u) => (u.email || "").toLowerCase() === email.toLowerCase());
-  if (idx < 0) return { ok: false, msg: "Account not found." };
-  if (!(await passwordMatches(users[idx], oldPass))) return { ok: false, msg: "Current password is incorrect." };
-  users[idx].password = await sha256(newPass);
-  await saveUsers(users, sha, "User self-service password update");
-  return { ok: true };
+  // If no active session, log in transparently so the Worker can authorize.
+  const hadToken = !!Session.getToken();
+  if (!hadToken) {
+    const r = await doLogin(email, oldPass);
+    if (!r.ok) return r;
+  }
+  try {
+    await api.post("/auth/change-password", { oldPassword: oldPass, newPassword: newPass });
+    if (!hadToken) logout();
+    return { ok: true };
+  } catch (e) {
+    if (!hadToken) logout();
+    return { ok: false, msg: e.message || "Password change failed." };
+  }
 }
 
-export async function doRegister(data) {
-  const { users, sha } = await loadUsers();
-  const email = (data.email || "").trim().toLowerCase();
-  if (users.find((u) => (u.email || "").toLowerCase() === email)) {
-    return { ok: false, msg: "An account with this email already exists.", dupe: true };
+/* Optionally refresh the cached user row from /auth/me — call on app boot
+ * so the nav never shows stale status. Silent on failure. */
+export async function refreshUser() {
+  if (!Session.getToken()) return null;
+  try {
+    const r = await api.get("/auth/me");
+    setUser(r.user);
+    return r.user;
+  } catch {
+    logout();
+    return null;
   }
-  const newUser = {
-    id: Date.now().toString(),
-    fname: data.fname.trim(),
-    lname: data.lname.trim(),
-    company: data.company.trim(),
-    email,
-    phone: data.phone.trim(),
-    password: await sha256(data.password),
-    status: "pending",
-    canOrderPieces: true,
-    registeredAt: new Date().toISOString(),
-    approvedAt: null
-  };
-  users.push(newUser);
-  await saveUsers(users, sha, "New registration: " + newUser.fname + " " + newUser.lname + " (" + newUser.company + ")");
-  return { ok: true, user: newUser };
 }

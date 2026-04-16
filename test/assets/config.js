@@ -1,23 +1,23 @@
 /* APBS /test sandbox config
  *
- * Read-only sandbox. /test/ reads the SAME live data as production
- * (products.csv, users.json, orders.json) so login, inventory, order
- * history, and the admin dashboard show real content. All WRITES are
- * suppressed by api.mjs when sandbox === true: no orders are saved,
- * no inventory is deducted, no user records are changed.
+ * The Worker at API_URL is the SAME one that serves production. It picks
+ * the sandbox D1 database whenever a request carries X-Sandbox: true,
+ * which api.mjs injects on every request from this sandbox build. That
+ * means /test/ can safely read AND write — every change lands in the
+ * `allpro-db-sandbox` database instead of production.
  *
- * Emails are also suppressed — the EmailJS placeholder keys below
- * cause email.mjs to log intended sends instead of calling EmailJS.
+ * To run /test/ against production data for a rehearsal, flip sandbox
+ * to false and reload. For a true read-only mode, flip `readOnly` on.
  */
 window.APBS_CONFIG = {
-  sandbox: true,
-  bannerText: "SANDBOX / TEST BUILD — reads are live, writes are disabled",
-  WORKER_URL: "https://allpro-github-proxy.baruch-6d5.workers.dev",
+  sandbox:    true,
+  readOnly:   false,
+  bannerText: "SANDBOX / TEST BUILD — all changes land in allpro-db-sandbox",
+  API_URL:    "https://allpro-api.baruch-6d5.workers.dev",
   EMAILJS: {
     service:   "SANDBOX_SERVICE",
     template:  "SANDBOX_TEMPLATE",
     publicKey: "SANDBOX_KEY"
   },
-  NOTIFY_EMAIL: "sandbox@example.com",
-  ADMIN_PIN:    "Admin2026!"
+  NOTIFY_EMAIL: "sandbox@example.com"
 };

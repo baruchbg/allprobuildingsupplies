@@ -665,3 +665,23 @@ h1.htitle strong{color:var(--gold)}
   .unit-toggle{flex-wrap:wrap;gap:4px}
   .qty-wrap{gap:4px}
 }
+
+/* Admin v3 — Database stat tiles */
+.stat-tile {
+  background: var(--ink2);
+  border: 1px solid rgba(200,152,31,.2);
+  padding: 18px;
+  text-align: center;
+  font-family: 'DM Mono', monospace;
+  color: var(--silver);
+  font-size: 12px;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+}
+.stat-tile .stat-n {
+  font-family: 'Oswald', sans-serif;
+  font-size: 32px;
+  color: var(--gold);
+  margin-bottom: 4px;
+  letter-spacing: 1px;
+}
