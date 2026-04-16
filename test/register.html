@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Register — All Pro Building Supplies LLC (TEST)</title>
+<link rel="stylesheet" href="assets/style.css"/>
+<script src="assets/config.js"></script>
+</head>
+<body>
+<div data-include="partials/cursor.html"></div>
+<div data-include="partials/topbar.html"></div>
+<div data-include="partials/nav.html"></div>
+<div data-include="partials/mobile-menu.html"></div>
+
+<div class="auth-wrap">
+  <div class="auth-box">
+    <div class="auth-logo">
+      <img src="assets/logo.png" alt="All Pro"/>
+      <div class="auth-title">Request Pricing Access</div>
+      <div class="auth-sub">Fill in your details below. Baruch will review<br/>and approve your account &mdash; usually within 1 business day.</div>
+    </div>
+    <div class="auth-card">
+      <div class="login-bar">Already have an account? <a href="login.html">Log in here &rarr;</a></div>
+      <div id="reg-form">
+        <div class="global-err" id="global-err"></div>
+        <div class="frow">
+          <div class="fg"><label class="fl">First Name <span class="req">*</span></label><input class="fi" id="r-fname" type="text" placeholder="John"/><div class="ferr" id="e-fname">Required</div></div>
+          <div class="fg"><label class="fl">Last Name <span class="req">*</span></label><input class="fi" id="r-lname" type="text" placeholder="Smith"/><div class="ferr" id="e-lname">Required</div></div>
+        </div>
+        <div class="fg"><label class="fl">Company Name <span class="req">*</span></label><input class="fi" id="r-company" type="text" placeholder="ABC Plumbing LLC"/><div class="ferr" id="e-company">Required</div></div>
+        <div class="fg"><label class="fl">Email Address <span class="req">*</span></label><input class="fi" id="r-email" type="email" placeholder="john@company.com"/><div class="ferr" id="e-email">Enter a valid email</div></div>
+        <div class="fg"><label class="fl">Phone Number <span class="req">*</span></label><input class="fi" id="r-phone" type="tel" placeholder="(555) 000-0000"/><div class="ferr" id="e-phone">Required</div></div>
+        <div class="fg"><label class="fl">Password <span class="req">*</span></label><input class="fi" id="r-pw" type="password" placeholder="Choose a password (min 6)"/><div class="ferr" id="e-pw">Minimum 6 characters</div></div>
+        <div class="fg"><label class="fl">Confirm Password <span class="req">*</span></label><input class="fi" id="r-pw2" type="password" placeholder="Repeat password"/><div class="ferr" id="e-pw2">Passwords do not match</div></div>
+        <button class="auth-btn" id="reg-btn"><span id="reg-txt">Submit Request &rarr;</span></button>
+        <p class="auth-note">Questions? Call <a href="tel:17328291940">732-829-1940</a> or email <a href="mailto:info@allprobuildingsupplies.com">info@allprobuildingsupplies.com</a></p>
+      </div>
+      <div class="success-screen" id="reg-success" style="display:none;">
+        <div class="success-icon">&#9989;</div>
+        <div class="success-title">Request Submitted!</div>
+        <div class="success-body">Thanks, <strong id="s-name"></strong>!<br/><br/>Your pricing access request is pending review. You'll receive an email at <strong id="s-email"></strong> once your account is approved.</div>
+        <a href="products.html" class="btn-ghost">&larr; Browse Products</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div data-include="partials/footer.html"></div>
+
+<script type="module" src="assets/include.mjs"></script>
+<script type="module" src="pages/register.mjs"></script>
+</body>
+</html>

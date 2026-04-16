@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>My Account — All Pro Building Supplies LLC (TEST)</title>
+<link rel="stylesheet" href="assets/style.css"/>
+<script src="assets/config.js"></script>
+</head>
+<body>
+<div data-include="partials/cursor.html"></div>
+<div data-include="partials/topbar.html"></div>
+<div data-include="partials/nav.html"></div>
+<div data-include="partials/mobile-menu.html"></div>
+
+<div class="page-hero">
+  <div class="page-hero-inner">
+    <div class="page-breadcrumb"><a href="index.html">Home</a> &rsaquo; My Account</div>
+    <div class="page-title" data-r>Trade <span>Account</span></div>
+    <p class="page-subtitle" data-r>Manage your details and view your order history.</p>
+  </div>
+</div>
+
+<section class="sec" style="background:var(--ink);padding-top:20px;">
+  <div class="sec-inner">
+    <div class="account-layout">
+
+      <div class="acct-sidebar">
+        <div class="acct-name" id="display-name">Loading...</div>
+        <div class="acct-company" id="display-company">-</div>
+
+        <div class="acct-detail"><div class="acct-lbl">Email Address</div><div class="acct-val" id="display-email">-</div></div>
+        <div class="acct-detail"><div class="acct-lbl">Account Status</div><div class="acct-val" id="display-status" style="color:#2ecc71;font-weight:bold;text-transform:capitalize;">-</div></div>
+        <div class="acct-detail"><div class="acct-lbl">Purchasing Rights</div><div class="acct-val" id="display-rights">-</div></div>
+
+        <button class="btn-logout" id="logout-btn">Sign Out</button>
+      </div>
+
+      <div class="acct-main">
+        <h2 class="acct-section-title">Order History</h2>
+        <table class="orders-table">
+          <thead><tr><th>Order ID</th><th>Date Placed</th><th>Items</th><th>Total</th><th>Status</th></tr></thead>
+          <tbody id="orders-tbody">
+            <tr><td colspan="5" style="text-align:center;padding:40px;color:var(--silver);">Loading orders...</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div data-include="partials/footer.html"></div>
+
+<script type="module" src="assets/include.mjs"></script>
+<script type="module" src="pages/account.mjs"></script>
+</body>
+</html>

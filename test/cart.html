@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Cart — All Pro Building Supplies LLC (TEST)</title>
+<link rel="stylesheet" href="assets/style.css"/>
+<script src="assets/config.js"></script>
+</head>
+<body>
+<div data-include="partials/cursor.html"></div>
+<div data-include="partials/topbar.html"></div>
+<div data-include="partials/nav.html"></div>
+<div data-include="partials/mobile-menu.html"></div>
+
+<div class="page-hero">
+  <div class="page-hero-inner">
+    <div class="page-breadcrumb"><a href="index.html">Home</a> &rsaquo; <a href="products.html">Products</a> &rsaquo; Cart</div>
+    <div class="page-title" data-r>Your <span>Cart</span></div>
+    <p class="page-subtitle" data-r>Review your items and quantities before checking out.</p>
+  </div>
+</div>
+
+<div data-include="partials/ticker.html"></div>
+
+<div class="section">
+  <div class="container">
+    <div class="cart-wrap">
+
+      <div id="auth-gate" style="display:none;background:var(--ink2);border:1px solid rgba(200,152,31,.25);border-left:4px solid var(--gold);padding:24px 28px;margin-bottom:32px;">
+        <strong style="color:var(--white);font-size:15px;display:block;margin-bottom:6px;">Trade account required to place orders</strong>
+        <span style="color:var(--silver);font-size:13px;">Please log in or request access to use the cart.</span>
+        <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;">
+          <a href="login.html" class="btn-gold" style="padding:10px 22px;font-size:12px;">Log In</a>
+          <a href="register.html" class="btn-ghost" style="padding:10px 22px;font-size:12px;">Request Access</a>
+        </div>
+      </div>
+
+      <div id="cart-empty" style="display:none;" class="cart-empty">
+        <div class="cart-empty-icon">&#128722;</div>
+        <h2>Your cart is empty</h2>
+        <p>Browse our product catalog and add items to get started.</p>
+        <a href="products.html" class="btn-gold">Browse Products &rarr;</a>
+      </div>
+
+      <div id="cart-contents" style="display:none;">
+        <table class="cart-table" id="cart-table">
+          <thead>
+            <tr>
+              <th>Product</th><th>Unit Price</th><th>Unit</th><th>Qty</th><th>Line Total</th><th></th>
+            </tr>
+          </thead>
+          <tbody id="cart-tbody"></tbody>
+        </table>
+
+        <div style="display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap;">
+          <div style="flex:1;min-width:280px;">
+            <a href="products.html" class="btn-ghost" style="margin-bottom:0;">&larr; Continue Shopping</a>
+          </div>
+          <div style="min-width:320px;">
+            <div class="cart-summary">
+              <div class="cart-summary-row"><span>Subtotal</span><span id="summary-subtotal" class="cart-price">$0.00</span></div>
+              <div class="cart-summary-row"><span>Items</span><span id="summary-items" style="font-family:'DM Mono',monospace;font-size:13px;">0</span></div>
+              <div class="cart-summary-row" style="padding-top:16px;margin-top:4px;"><span class="cart-summary-total">Order Total</span><span class="cart-summary-total-val" id="summary-total">$0.00</span></div>
+              <div class="cart-actions">
+                <button class="btn-ghost" style="flex:1;justify-content:center;" id="clear-cart">Clear Cart</button>
+                <a href="checkout.html" class="btn-gold" style="flex:2;justify-content:center;">Checkout &rarr;</a>
+              </div>
+              <p style="font-size:11px;color:var(--silver);margin-top:14px;text-align:center;font-family:'DM Mono',monospace;">Prices shown are your approved trade pricing.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div data-include="partials/footer.html"></div>
+
+<script type="module" src="assets/include.mjs"></script>
+<script type="module" src="pages/cart.mjs"></script>
+</body>
+</html>
