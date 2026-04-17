@@ -164,7 +164,7 @@
     {
       "id": "APB-MN9BWNA2",
       "placedAt": "2026-04-17T18:00:00.000Z",
-      "status": "delivered",
+      "status": "pending",
       "customer": {
         "id": "1774547143945",
         "name": "Tim Papirnik",
