@@ -501,6 +501,7 @@ async function loadProducts() {
         description: rows[i][1].trim(),
         size: rows[i][2].trim(),
         pack: rows[i][3].trim(),
+        stock: parseInt(rows[i][4]) || 0, // Captured stock limit
         price: parseFloat(rows[i][5])||0
       });
       addProductRow(rows[i]); 
@@ -514,7 +515,7 @@ function populateProductDropdown() {
   if(!sel) return;
   sel.innerHTML = '<option value="">-- Select Product to Add --</option>';
   masterProducts.forEach((p, idx) => {
-    sel.innerHTML += `<option value="${idx}">${p.code} - ${p.description} ${p.size} ($${p.price.toFixed(2)})</option>`;
+    sel.innerHTML += `<option value="${idx}">${p.code} - ${p.description} ${p.size} ($${p.price.toFixed(2)}) [Stock: ${p.stock}]</option>`;
   });
 }
 
@@ -728,14 +729,16 @@ function loadCustomerIntoForm() {
   }
 }
 
-// --- CASES & PIECES CALCULATOR LOGIC ---
+// --- CASES, PIECES & INVENTORY CALCULATOR LOGIC ---
 let currentItemPack = 1;
+let currentItemStock = 0;
 
 function updateItemPack() {
   const sel = document.getElementById('new-item-sel');
   if(sel.value === '') {
      document.getElementById('new-item-pack').value = '';
      currentItemPack = 1;
+     currentItemStock = 0;
      return;
   }
   const prod = masterProducts[sel.value];
@@ -744,6 +747,8 @@ function updateItemPack() {
   if(isNaN(packNum) || packNum <= 0) packNum = 1;
   
   currentItemPack = packNum;
+  currentItemStock = prod.stock;
+  
   document.getElementById('new-item-pack').value = packNum + '/cs';
   
   calcFromPieces();
@@ -751,15 +756,32 @@ function updateItemPack() {
 
 function calcFromCases() {
   const cases = parseFloat(document.getElementById('new-item-cases').value) || 0;
-  document.getElementById('new-item-pcs').value = Math.ceil(cases * currentItemPack);
+  let pcs = Math.ceil(cases * currentItemPack);
+  
+  // Apply Stock Clamp
+  if(pcs > currentItemStock) {
+    pcs = currentItemStock;
+    document.getElementById('new-item-cases').value = Number.isInteger(pcs/currentItemPack) ? (pcs/currentItemPack) : (pcs/currentItemPack).toFixed(2);
+    showStatus('Max stock reached (' + currentItemStock + ' pcs).', true);
+  }
+  
+  document.getElementById('new-item-pcs').value = pcs;
 }
 
 function calcFromPieces() {
-  const pcs = parseInt(document.getElementById('new-item-pcs').value) || 0;
+  let pcsInp = document.getElementById('new-item-pcs');
+  let pcs = parseInt(pcsInp.value) || 0;
+  
+  // Apply Stock Clamp
+  if(pcs > currentItemStock) {
+    pcs = currentItemStock;
+    pcsInp.value = pcs;
+    showStatus('Max stock reached (' + currentItemStock + ' pcs).', true);
+  }
+  
   let cases = pcs / currentItemPack;
   document.getElementById('new-item-cases').value = Number.isInteger(cases) ? cases : cases.toFixed(2);
 }
-
 
 // --- ORDERS LOGIC ---
 async function loadOrders() {
@@ -852,11 +874,13 @@ function openOrderModal(orderId) {
 function addItemToOrder() {
   const sel = document.getElementById('new-item-sel');
   const pcsInput = document.getElementById('new-item-pcs');
-  const qty = parseInt(pcsInput.value) || 1;
+  let qty = parseInt(pcsInput.value) || 1;
   
   if (sel.value === '') return alert('Please select a product to add.');
   
   const prod = masterProducts[sel.value];
+  if(qty > prod.stock) qty = prod.stock; // Final safety clamp
+  
   activeOrderObj.items.push({
     code: prod.code,
     description: prod.description,
@@ -883,21 +907,21 @@ function renderEditableItems() {
     let lineTot = parseFloat(item.qty) * parseFloat(item.unitPrice); 
     calcTotal += lineTot;
     
-    // Parse pack size for existing items
     let packNum = 1;
-    if (item.pcsPerCtn) {
-      packNum = parseInt(String(item.pcsPerCtn).replace(/[^0-9]/g, '')) || 1;
-    }
+    if (item.pcsPerCtn) { packNum = parseInt(String(item.pcsPerCtn).replace(/[^0-9]/g, '')) || 1; }
     
-    // Calculate current cases
+    // Look up max stock: allow them to keep what they have + whatever is currently in inventory
+    let catalogItem = masterProducts.find(p => p.code === item.code);
+    let maxAllowed = catalogItem ? (catalogItem.stock + item.qty) : item.qty;
+    
     let currentCases = item.qty / packNum;
     let displayCases = Number.isInteger(currentCases) ? currentCases : currentCases.toFixed(2);
     
     let tr = document.createElement('tr');
     tr.innerHTML = `
       <td data-label="Item">${item.description} ${item.size}<br><span style="font-size:10px;color:var(--silver)">${item.code} (Pack: ${item.pcsPerCtn || '-'})</span></td>
-      <td data-label="Cases"><input type="number" class="data-input edit-cases" data-idx="${idx}" data-pack="${packNum}" value="${displayCases}" min="0" step="any" style="width:70px;" oninput="rowCalcCases(${idx})"></td>
-      <td data-label="Pieces"><input type="number" class="data-input edit-pcs" data-idx="${idx}" data-pack="${packNum}" value="${item.qty}" min="1" style="width:70px;" oninput="rowCalcPieces(${idx})"></td>
+      <td data-label="Cases"><input type="number" class="data-input edit-cases" data-idx="${idx}" data-pack="${packNum}" data-stock="${maxAllowed}" value="${displayCases}" min="0" step="any" style="width:70px;" oninput="rowCalcCases(${idx})"></td>
+      <td data-label="Pieces"><input type="number" class="data-input edit-pcs" data-idx="${idx}" data-pack="${packNum}" data-stock="${maxAllowed}" value="${item.qty}" min="1" style="width:70px;" oninput="rowCalcPieces(${idx})"></td>
       <td data-label="Unit Price"><input type="number" step="0.01" class="data-input edit-price" data-idx="${idx}" value="${(item.unitPrice||0).toFixed(2)}" style="width:90px;" oninput="liveRecalc()"></td>
       <td data-label="Line Total" class="live-line-tot" style="text-align:right;font-family:monospace;color:var(--white)">$${lineTot.toFixed(2)}</td>
       <td data-label="Action"><button class="btn-del" onclick="removeOrderItem(${idx})">X</button></td>
@@ -909,14 +933,24 @@ function renderEditableItems() {
   toggleEditLock(document.getElementById('m-status-sel').value);
 }
 
-// Row-specific calculations
+// Row-specific inventory calculations
 function rowCalcCases(idx) {
   let casesInp = document.querySelectorAll('.edit-cases')[idx];
   let pcsInp = document.querySelectorAll('.edit-pcs')[idx];
   let pack = parseInt(casesInp.dataset.pack) || 1;
-  let cases = parseFloat(casesInp.value) || 0;
+  let maxStock = parseInt(casesInp.dataset.stock) || 999999;
   
-  pcsInp.value = Math.ceil(cases * pack);
+  let cases = parseFloat(casesInp.value) || 0;
+  let pcs = Math.ceil(cases * pack);
+  
+  // Stock clamp
+  if(pcs > maxStock) {
+    pcs = maxStock;
+    casesInp.value = Number.isInteger(pcs/pack) ? (pcs/pack) : (pcs/pack).toFixed(2);
+    showStatus('Max available inventory reached.', true);
+  }
+  
+  pcsInp.value = pcs;
   liveRecalc();
 }
 
@@ -924,7 +958,16 @@ function rowCalcPieces(idx) {
   let casesInp = document.querySelectorAll('.edit-cases')[idx];
   let pcsInp = document.querySelectorAll('.edit-pcs')[idx];
   let pack = parseInt(pcsInp.dataset.pack) || 1;
+  let maxStock = parseInt(pcsInp.dataset.stock) || 999999;
+  
   let pcs = parseInt(pcsInp.value) || 0;
+  
+  // Stock clamp
+  if(pcs > maxStock) {
+    pcs = maxStock;
+    pcsInp.value = pcs;
+    showStatus('Max available inventory reached.', true);
+  }
   
   let cases = pcs / pack;
   casesInp.value = Number.isInteger(cases) ? cases : cases.toFixed(2);
@@ -1053,6 +1096,7 @@ function addCustomEmailField() {
   container.appendChild(div);
 }
 
+// Breaking massive strings to avoid truncation
 function buildConfirmEmail(order){
   const itemsHtml = order.items.map(function(i){
     return `
