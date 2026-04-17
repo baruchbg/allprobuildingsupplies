@@ -99,8 +99,9 @@
   pointer-events: none; 
 }
 
-/* Add Item Block */
-.add-item-bar { display:flex; gap:8px; background:rgba(200,152,31,.05); padding:12px; border:1px dashed rgba(200,152,31,.3); margin-top:16px; align-items:center;}
+/* Add Item Block - Upgraded for Cases/Pieces */
+.add-item-bar { display:flex; gap:8px; background:rgba(200,152,31,.05); padding:16px; border:1px dashed rgba(200,152,31,.3); margin-top:16px; align-items:flex-end; flex-wrap:wrap;}
+.add-item-col { display:flex; flex-direction:column; gap:4px; }
 
 /* MOBILE OPTIMIZATIONS */
 @media(max-width:768px){
@@ -118,6 +119,7 @@
   .btn-view { width: 100%; text-align: center; margin-top: 8px;}
   
   .add-item-bar { flex-direction:column; align-items:stretch;}
+  .add-item-col { width:100% !important; }
 }
 </style>
 </head>
@@ -247,6 +249,13 @@
     
     <div id="edit-lock-banner">⚠ This order is Delivered or Cancelled. Order editing is disabled. Change status to Pending or Confirmed to unlock fields.</div>
 
+    <div style="background:rgba(200,152,31,.05); border:1px solid rgba(200,152,31,.2); padding:16px; margin-bottom:24px; border-radius:4px;">
+      <div class="modal-lbl" style="color:var(--gold);">Auto-Fill Customer Info</div>
+      <select class="data-input locked-input" id="modal-cust-dropdown" onchange="loadCustomerIntoForm()" style="border-color:var(--gold);">
+        <option value="">-- Select Existing User or Type Manually Below --</option>
+      </select>
+    </div>
+
     <div class="modal-grid">
       <div class="modal-box">
         <div class="modal-lbl">Customer Name</div>
@@ -270,16 +279,36 @@
 
     <div class="modal-box" style="margin-bottom:24px; padding:0; overflow:hidden;">
       <table class="data-table" style="margin:0;">
-        <thead><tr><th>Item</th><th>Qty</th><th>Unit Price ($)</th><th style="text-align:right">Line Total</th><th></th></tr></thead>
+        <thead><tr><th>Item</th><th>Qty (Pcs)</th><th>Unit Price ($)</th><th style="text-align:right">Line Total</th><th></th></tr></thead>
         <tbody id="m-items-tbody"></tbody>
       </table>
       
       <div class="add-item-bar locked-input" id="add-item-container">
-        <select class="data-input" id="new-item-sel" style="flex:1;">
-          <option value="">-- Select Product to Add --</option>
-        </select>
-        <input type="number" id="new-item-qty" class="data-input" value="1" min="1" style="width:70px;" placeholder="Qty">
-        <button class="btn-view" style="margin:0;" onclick="addItemToOrder()">+ Add</button>
+        <div class="add-item-col" style="flex:2; min-width:200px;">
+          <label class="modal-lbl">Select Product</label>
+          <select class="data-input" id="new-item-sel" onchange="updateItemPack()">
+            <option value="">-- Select Product to Add --</option>
+          </select>
+        </div>
+        
+        <div class="add-item-col" style="width:70px;">
+          <label class="modal-lbl">Cases</label>
+          <input type="number" id="new-item-cases" class="data-input" min="0" step="any" placeholder="0" oninput="calcFromCases()">
+        </div>
+        
+        <div style="color:var(--silver); font-size:18px; padding-bottom:6px;">=</div>
+        
+        <div class="add-item-col" style="width:70px;">
+          <label class="modal-lbl" style="color:var(--gold);">Pieces</label>
+          <input type="number" id="new-item-pcs" class="data-input" min="1" value="1" style="border-color:var(--gold);" oninput="calcFromPieces()">
+        </div>
+        
+        <div class="add-item-col" style="width:60px;">
+          <label class="modal-lbl">Pack</label>
+          <input type="text" id="new-item-pack" class="data-input" readonly style="background:transparent; border:none; color:var(--silver); text-align:center; padding:8px 0;" placeholder="-">
+        </div>
+        
+        <button class="btn-view" style="height:38px; padding:0 20px; font-size:13px;" onclick="addItemToOrder()">+ Add to Order</button>
       </div>
 
       <div style="padding:16px; text-align:right; font-family:'Oswald',sans-serif; font-size:20px; color:var(--gold); border-top:1px solid rgba(255,255,255,.05);">
@@ -358,7 +387,6 @@
   </div>
 </div>
 
-
 <script>
 // --- BULLETPROOF CURSOR FALLBACK ---
 document.addEventListener('mousemove', (e) => {
@@ -405,10 +433,15 @@ let currentProdSha = null, currentUserSha = null, currentOrderSha = null;
 let masterUsers = [], masterOrders = [], masterProducts = []; 
 let activeOrderObj = null; 
 
+// Advanced Error Reporter
 function showStatus(msg, isErr) {
   const el = document.getElementById('status-msg');
-  el.textContent = msg; el.className = isErr ? 'status-err' : 'status-success';
-  el.style.display = 'block'; setTimeout(() => el.style.display = 'none', 4000);
+  el.textContent = msg; 
+  el.className = isErr ? 'status-err' : 'status-success';
+  el.style.display = 'block'; 
+  
+  // If it's an error, leave it up longer so the user can read it
+  setTimeout(() => el.style.display = 'none', isErr ? 8000 : 4000);
 }
 
 function switchTab(tab) {
@@ -466,7 +499,7 @@ async function loadProducts() {
       addProductRow(rows[i]); 
     }
     populateProductDropdown();
-  } catch(e) {}
+  } catch(e) { console.error(e); }
 }
 
 function populateProductDropdown() {
@@ -510,8 +543,16 @@ async function saveProducts() {
   
   try {
     const r = await fetch(WORKER_URL + '/github/products.csv', { method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
-    if(r.ok) { const d = await r.json(); currentProdSha = d.content.sha; showStatus('Products saved successfully!', false); loadProducts(); } else throw new Error();
-  } catch(e) { showStatus('Error saving products.', true); }
+    if(!r.ok) {
+        let errTxt = r.statusText;
+        try { const j = await r.json(); if(j.message) errTxt = j.message; } catch(e){}
+        throw new Error(`HTTP ${r.status} - ${errTxt}`);
+    }
+    const d = await r.json(); currentProdSha = d.content.sha; 
+    showStatus('Products saved successfully!', false); 
+    loadProducts(); 
+  } catch(e) { showStatus('Save Failed: ' + e.message, true); }
+  
   btn.textContent = 'Save Products'; btn.disabled = false;
 }
 
@@ -548,7 +589,11 @@ async function loadUsers() {
       `;
       tbody.appendChild(tr);
     });
-  } catch(e) {}
+    
+    // Auto-populate Customer Dropdown in Order Modal
+    populateModalCustomerDropdown();
+    
+  } catch(e) { console.error(e); }
 }
 
 function openUserModal() {
@@ -603,13 +648,17 @@ async function createNewUser(e) {
   
   try {
     const r = await fetch(WORKER_URL + '/github/users.json', { method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
-    if(r.ok) { 
-      const d = await r.json(); currentUserSha = d.content.sha; 
-      showStatus('User created successfully!', false); 
-      closeUserModal();
-      loadUsers(); 
-    } else throw new Error();
-  } catch(err) { showStatus('Error creating user.', true); masterUsers.pop(); }
+    if(!r.ok) {
+        let errTxt = r.statusText;
+        try { const j = await r.json(); if(j.message) errTxt = j.message; } catch(e){}
+        throw new Error(`HTTP ${r.status} - ${errTxt}`);
+    }
+    const d = await r.json(); currentUserSha = d.content.sha; 
+    showStatus('User created successfully!', false); 
+    closeUserModal();
+    loadUsers(); 
+  } catch(err) { showStatus('Save Failed: ' + err.message, true); masterUsers.pop(); }
+  
   btn.textContent = 'Create User'; btn.disabled = false;
 }
 
@@ -630,10 +679,86 @@ async function saveUsers() {
   
   try {
     const r = await fetch(WORKER_URL + '/github/users.json', { method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
-    if(r.ok) { const d = await r.json(); currentUserSha = d.content.sha; showStatus('Users & Passwords saved successfully!', false); loadUsers(); } else throw new Error();
-  } catch(e) { showStatus('Error saving users.', true); }
+    if(!r.ok) {
+        let errTxt = r.statusText;
+        try { const j = await r.json(); if(j.message) errTxt = j.message; } catch(e){}
+        throw new Error(`HTTP ${r.status} - ${errTxt}`);
+    }
+    const d = await r.json(); currentUserSha = d.content.sha; 
+    showStatus('Users & Passwords saved successfully!', false); 
+    loadUsers(); 
+  } catch(e) { showStatus('Save Failed: ' + e.message, true); }
+  
   btn.textContent = 'Save Approvals & Passwords'; btn.disabled = false;
 }
+
+// --- CUSTOMER AUTO-POPULATE LOGIC ---
+function populateModalCustomerDropdown() {
+  const sel = document.getElementById('modal-cust-dropdown');
+  if(!sel) return;
+  sel.innerHTML = '<option value="">-- Select Existing User or Type Manually Below --</option>';
+  masterUsers.forEach(u => {
+    if(u.status === 'approved') {
+       sel.innerHTML += `<option value="${u.email}">${u.fname} ${u.lname} (${u.company || 'Independent'})</option>`;
+    }
+  });
+}
+
+function loadCustomerIntoForm() {
+  const email = document.getElementById('modal-cust-dropdown').value;
+  if(!email) return;
+  
+  const u = masterUsers.find(user => user.email === email);
+  if(u) {
+    document.getElementById('edit-cust-name').value = (u.fname + ' ' + u.lname).trim();
+    document.getElementById('edit-cust-company').value = u.company || '';
+    document.getElementById('edit-cust-email').value = u.email || '';
+    // Highlight the fields briefly to show they updated
+    const inputs = ['edit-cust-name', 'edit-cust-company', 'edit-cust-email'];
+    inputs.forEach(id => {
+      const el = document.getElementById(id);
+      el.style.backgroundColor = 'rgba(200,152,31,.2)';
+      setTimeout(() => { el.style.backgroundColor = 'var(--ink3)'; }, 500);
+    });
+  }
+}
+
+// --- CASES & PIECES CALCULATOR LOGIC ---
+let currentItemPack = 1;
+
+function updateItemPack() {
+  const sel = document.getElementById('new-item-sel');
+  if(sel.value === '') {
+     document.getElementById('new-item-pack').value = '';
+     currentItemPack = 1;
+     return;
+  }
+  const prod = masterProducts[sel.value];
+  
+  // Try to parse the numbers from the Pack string (e.g., "24", "24 pcs", "100/ctn")
+  let packNum = parseInt(prod.pack.replace(/[^0-9]/g, ''));
+  if(isNaN(packNum) || packNum <= 0) packNum = 1;
+  
+  currentItemPack = packNum;
+  document.getElementById('new-item-pack').value = packNum + '/cs';
+  
+  // Automatically recalculate the cases based on the current pieces value
+  calcFromPieces();
+}
+
+function calcFromCases() {
+  const cases = parseFloat(document.getElementById('new-item-cases').value) || 0;
+  // If cases is typed, pieces = cases * pack
+  document.getElementById('new-item-pcs').value = Math.ceil(cases * currentItemPack);
+}
+
+function calcFromPieces() {
+  const pcs = parseInt(document.getElementById('new-item-pcs').value) || 0;
+  // If pieces is typed, cases = pieces / pack (allow fractions for partial cases)
+  let cases = pcs / currentItemPack;
+  document.getElementById('new-item-cases').value = Number.isInteger(cases) ? cases : cases.toFixed(2);
+}
+
 
 // --- ORDERS LOGIC ---
 async function loadOrders() {
@@ -655,13 +780,13 @@ async function loadOrders() {
       `;
       tbody.appendChild(tr);
     });
-  } catch(e) {}
+  } catch(e) { console.error(e); }
 }
 
 function toggleEditLock(status) {
   const isLocked = (status === 'delivered' || status === 'cancelled');
   
-  const fields = ['edit-cust-name', 'edit-cust-company', 'edit-cust-email', 'edit-cust-phone', 'edit-delivery', 'edit-po', 'edit-notes'];
+  const fields = ['edit-cust-name', 'edit-cust-company', 'edit-cust-email', 'edit-cust-phone', 'edit-delivery', 'edit-po', 'edit-notes', 'modal-cust-dropdown'];
   fields.forEach(id => {
     document.getElementById(id).disabled = isLocked;
     document.getElementById(id).style.opacity = isLocked ? '0.6' : '1';
@@ -682,6 +807,12 @@ function toggleEditLock(status) {
 }
 
 function openOrderModal(orderId) {
+  document.getElementById('modal-cust-dropdown').value = '';
+  document.getElementById('new-item-sel').value = '';
+  document.getElementById('new-item-cases').value = '';
+  document.getElementById('new-item-pcs').value = '1';
+  document.getElementById('new-item-pack').value = '';
+
   if (orderId) {
     activeOrderObj = masterOrders.find(o => o.id === orderId);
     document.getElementById('modal-main-title').textContent = 'Edit Order: ' + activeOrderObj.id;
@@ -719,8 +850,8 @@ function openOrderModal(orderId) {
 
 function addItemToOrder() {
   const sel = document.getElementById('new-item-sel');
-  const qtyInput = document.getElementById('new-item-qty');
-  const qty = parseInt(qtyInput.value) || 1;
+  const pcsInput = document.getElementById('new-item-pcs');
+  const qty = parseInt(pcsInput.value) || 1;
   
   if (sel.value === '') return alert('Please select a product to add.');
   
@@ -736,8 +867,10 @@ function addItemToOrder() {
     lineTotal: prod.price * qty
   });
   
-  qtyInput.value = 1;
+  pcsInput.value = 1;
+  document.getElementById('new-item-cases').value = '';
   sel.value = '';
+  document.getElementById('new-item-pack').value = '';
   renderEditableItems();
 }
 
@@ -749,7 +882,7 @@ function renderEditableItems() {
     let tr = document.createElement('tr');
     tr.innerHTML = `
       <td data-label="Item">${item.description} ${item.size}<br><span style="font-size:10px;color:var(--silver)">${item.code}</span></td>
-      <td data-label="Qty"><input type="number" class="data-input edit-qty" data-idx="${idx}" value="${item.qty}" style="width:70px;" onchange="liveRecalc()"></td>
+      <td data-label="Qty (Pcs)"><input type="number" class="data-input edit-qty" data-idx="${idx}" value="${item.qty}" style="width:70px;" onchange="liveRecalc()"></td>
       <td data-label="Unit Price"><input type="number" step="0.01" class="data-input edit-price" data-idx="${idx}" value="${(item.unitPrice||0).toFixed(2)}" style="width:90px;" onchange="liveRecalc()"></td>
       <td data-label="Line Total" class="live-line-tot" style="text-align:right;font-family:monospace;color:var(--white)">$${lineTot.toFixed(2)}</td>
       <td data-label="Action"><button class="btn-del" onclick="removeOrderItem(${idx})">X</button></td>
@@ -784,7 +917,12 @@ function closeOrderModal(e) {
 
 async function saveOrderChanges() {
   if(!activeOrderObj) return;
-  activeOrderObj.customer.name = document.getElementById('edit-cust-name').value.trim();
+  
+  // Input Validation
+  const name = document.getElementById('edit-cust-name').value.trim();
+  if(!name) { alert("Customer Name is required."); return; }
+  
+  activeOrderObj.customer.name = name;
   activeOrderObj.customer.company = document.getElementById('edit-cust-company').value.trim();
   activeOrderObj.customer.email = document.getElementById('edit-cust-email').value.trim();
   activeOrderObj.customer.phone = document.getElementById('edit-cust-phone').value.trim();
@@ -813,9 +951,16 @@ async function saveOrderChanges() {
   
   try {
     const r = await fetch(WORKER_URL + '/github/orders.json', { method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
-    if(r.ok) { const d = await r.json(); currentOrderSha = d.content.sha; showStatus('Order saved successfully!', false); closeOrderModal({target: {id: 'order-modal-overlay'}}); loadOrders(); } 
-    else throw new Error();
-  } catch(e) { showStatus('Error saving order.', true); }
+    if(!r.ok) {
+        let errTxt = r.statusText;
+        try { const j = await r.json(); if(j.message) errTxt = j.message; } catch(e){}
+        throw new Error(`HTTP ${r.status} - ${errTxt}`);
+    }
+    const d = await r.json(); currentOrderSha = d.content.sha; 
+    showStatus('Order saved successfully!', false); 
+    closeOrderModal({target: {id: 'order-modal-overlay'}}); 
+    loadOrders(); 
+  } catch(e) { showStatus('Save Failed: ' + e.message, true); }
 }
 
 // --- CONSOLIDATED EMAIL LOGIC ---
@@ -864,7 +1009,7 @@ function addCustomEmailField() {
   container.appendChild(div);
 }
 
-// Reformatting the massive HTML strings to prevent truncation
+// Breaking massive strings to avoid truncation
 function buildConfirmEmail(order){
   const itemsHtml = order.items.map(function(i){
     return `
