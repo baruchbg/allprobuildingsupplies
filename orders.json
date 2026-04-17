@@ -50,16 +50,6 @@
         {
           "code": "PVC-1/8HH",
           "description": "1/8 BEND (H x H)",
-          "size": "3",
-          "qty": 125,
-          "unit": "carton",
-          "pcsPerCtn": 250,
-          "unitPrice": 2.3,
-          "lineTotal": 287.5
-        },
-        {
-          "code": "PVC-1/8HH",
-          "description": "1/8 BEND (H x H)",
           "size": "4",
           "qty": 90,
           "unit": "carton",
@@ -126,9 +116,19 @@
           "pcsPerCtn": 15,
           "unitPrice": 4.5,
           "lineTotal": 675
+        },
+        {
+          "code": "PVC-1/8HH",
+          "description": "1/8 BEND (H x H)",
+          "size": "3",
+          "pcsPerCtn": "25",
+          "qty": 250,
+          "unit": "piece",
+          "unitPrice": 2.3,
+          "lineTotal": 575
         }
       ],
-      "total": 4403.5,
+      "total": 4691,
       "po": ""
     },
     {
