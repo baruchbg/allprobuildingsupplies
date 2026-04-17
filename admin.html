@@ -54,7 +54,7 @@
 }
 #order-modal{
   background:var(--ink2); border:1px solid rgba(200,152,31,.4);
-  max-width:850px; width:100%; padding:32px;
+  max-width:900px; width:100%; padding:32px;
   margin:auto; position:relative;
 }
 
@@ -99,7 +99,7 @@
   pointer-events: none; 
 }
 
-/* Add Item Block - Upgraded for Cases/Pieces */
+/* Add Item Block */
 .add-item-bar { display:flex; gap:8px; background:rgba(200,152,31,.05); padding:16px; border:1px dashed rgba(200,152,31,.3); margin-top:16px; align-items:flex-end; flex-wrap:wrap;}
 .add-item-col { display:flex; flex-direction:column; gap:4px; }
 
@@ -279,7 +279,16 @@
 
     <div class="modal-box" style="margin-bottom:24px; padding:0; overflow:hidden;">
       <table class="data-table" style="margin:0;">
-        <thead><tr><th>Item</th><th>Qty (Pcs)</th><th>Unit Price ($)</th><th style="text-align:right">Line Total</th><th></th></tr></thead>
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Cases</th>
+            <th>Pieces</th>
+            <th>Unit Price ($)</th>
+            <th style="text-align:right">Line Total</th>
+            <th></th>
+          </tr>
+        </thead>
         <tbody id="m-items-tbody"></tbody>
       </table>
       
@@ -439,8 +448,6 @@ function showStatus(msg, isErr) {
   el.textContent = msg; 
   el.className = isErr ? 'status-err' : 'status-success';
   el.style.display = 'block'; 
-  
-  // If it's an error, leave it up longer so the user can read it
   setTimeout(() => el.style.display = 'none', isErr ? 8000 : 4000);
 }
 
@@ -590,7 +597,6 @@ async function loadUsers() {
       tbody.appendChild(tr);
     });
     
-    // Auto-populate Customer Dropdown in Order Modal
     populateModalCustomerDropdown();
     
   } catch(e) { console.error(e); }
@@ -713,7 +719,6 @@ function loadCustomerIntoForm() {
     document.getElementById('edit-cust-name').value = (u.fname + ' ' + u.lname).trim();
     document.getElementById('edit-cust-company').value = u.company || '';
     document.getElementById('edit-cust-email').value = u.email || '';
-    // Highlight the fields briefly to show they updated
     const inputs = ['edit-cust-name', 'edit-cust-company', 'edit-cust-email'];
     inputs.forEach(id => {
       const el = document.getElementById(id);
@@ -735,26 +740,22 @@ function updateItemPack() {
   }
   const prod = masterProducts[sel.value];
   
-  // Try to parse the numbers from the Pack string (e.g., "24", "24 pcs", "100/ctn")
-  let packNum = parseInt(prod.pack.replace(/[^0-9]/g, ''));
+  let packNum = parseInt(String(prod.pack).replace(/[^0-9]/g, ''));
   if(isNaN(packNum) || packNum <= 0) packNum = 1;
   
   currentItemPack = packNum;
   document.getElementById('new-item-pack').value = packNum + '/cs';
   
-  // Automatically recalculate the cases based on the current pieces value
   calcFromPieces();
 }
 
 function calcFromCases() {
   const cases = parseFloat(document.getElementById('new-item-cases').value) || 0;
-  // If cases is typed, pieces = cases * pack
   document.getElementById('new-item-pcs').value = Math.ceil(cases * currentItemPack);
 }
 
 function calcFromPieces() {
   const pcs = parseInt(document.getElementById('new-item-pcs').value) || 0;
-  // If pieces is typed, cases = pieces / pack (allow fractions for partial cases)
   let cases = pcs / currentItemPack;
   document.getElementById('new-item-cases').value = Number.isInteger(cases) ? cases : cases.toFixed(2);
 }
@@ -792,7 +793,7 @@ function toggleEditLock(status) {
     document.getElementById(id).style.opacity = isLocked ? '0.6' : '1';
   });
   
-  document.querySelectorAll('.edit-qty, .edit-price').forEach(inp => {
+  document.querySelectorAll('.edit-cases, .edit-pcs, .edit-price').forEach(inp => {
     inp.disabled = isLocked;
     inp.style.opacity = isLocked ? '0.6' : '1';
   });
@@ -877,13 +878,27 @@ function addItemToOrder() {
 function renderEditableItems() {
   const tbody = document.getElementById('m-items-tbody'); tbody.innerHTML = '';
   let calcTotal = 0;
+  
   activeOrderObj.items.forEach((item, idx) => {
-    let lineTot = parseFloat(item.qty) * parseFloat(item.unitPrice); calcTotal += lineTot;
+    let lineTot = parseFloat(item.qty) * parseFloat(item.unitPrice); 
+    calcTotal += lineTot;
+    
+    // Parse pack size for existing items
+    let packNum = 1;
+    if (item.pcsPerCtn) {
+      packNum = parseInt(String(item.pcsPerCtn).replace(/[^0-9]/g, '')) || 1;
+    }
+    
+    // Calculate current cases
+    let currentCases = item.qty / packNum;
+    let displayCases = Number.isInteger(currentCases) ? currentCases : currentCases.toFixed(2);
+    
     let tr = document.createElement('tr');
     tr.innerHTML = `
-      <td data-label="Item">${item.description} ${item.size}<br><span style="font-size:10px;color:var(--silver)">${item.code}</span></td>
-      <td data-label="Qty (Pcs)"><input type="number" class="data-input edit-qty" data-idx="${idx}" value="${item.qty}" style="width:70px;" onchange="liveRecalc()"></td>
-      <td data-label="Unit Price"><input type="number" step="0.01" class="data-input edit-price" data-idx="${idx}" value="${(item.unitPrice||0).toFixed(2)}" style="width:90px;" onchange="liveRecalc()"></td>
+      <td data-label="Item">${item.description} ${item.size}<br><span style="font-size:10px;color:var(--silver)">${item.code} (Pack: ${item.pcsPerCtn || '-'})</span></td>
+      <td data-label="Cases"><input type="number" class="data-input edit-cases" data-idx="${idx}" data-pack="${packNum}" value="${displayCases}" min="0" step="any" style="width:70px;" oninput="rowCalcCases(${idx})"></td>
+      <td data-label="Pieces"><input type="number" class="data-input edit-pcs" data-idx="${idx}" data-pack="${packNum}" value="${item.qty}" min="1" style="width:70px;" oninput="rowCalcPieces(${idx})"></td>
+      <td data-label="Unit Price"><input type="number" step="0.01" class="data-input edit-price" data-idx="${idx}" value="${(item.unitPrice||0).toFixed(2)}" style="width:90px;" oninput="liveRecalc()"></td>
       <td data-label="Line Total" class="live-line-tot" style="text-align:right;font-family:monospace;color:var(--white)">$${lineTot.toFixed(2)}</td>
       <td data-label="Action"><button class="btn-del" onclick="removeOrderItem(${idx})">X</button></td>
     `;
@@ -894,10 +909,40 @@ function renderEditableItems() {
   toggleEditLock(document.getElementById('m-status-sel').value);
 }
 
+// Row-specific calculations
+function rowCalcCases(idx) {
+  let casesInp = document.querySelectorAll('.edit-cases')[idx];
+  let pcsInp = document.querySelectorAll('.edit-pcs')[idx];
+  let pack = parseInt(casesInp.dataset.pack) || 1;
+  let cases = parseFloat(casesInp.value) || 0;
+  
+  pcsInp.value = Math.ceil(cases * pack);
+  liveRecalc();
+}
+
+function rowCalcPieces(idx) {
+  let casesInp = document.querySelectorAll('.edit-cases')[idx];
+  let pcsInp = document.querySelectorAll('.edit-pcs')[idx];
+  let pack = parseInt(pcsInp.dataset.pack) || 1;
+  let pcs = parseInt(pcsInp.value) || 0;
+  
+  let cases = pcs / pack;
+  casesInp.value = Number.isInteger(cases) ? cases : cases.toFixed(2);
+  liveRecalc();
+}
+
 function liveRecalc() {
-  let qtys = document.querySelectorAll('.edit-qty'), prices = document.querySelectorAll('.edit-price'), lines = document.querySelectorAll('.live-line-tot'), calcTotal = 0;
-  qtys.forEach((qInput, i) => {
-    let q = parseFloat(qInput.value) || 0, p = parseFloat(prices[i].value) || 0, ltot = q * p; calcTotal += ltot; lines[i].textContent = '$' + ltot.toFixed(2);
+  let pcs = document.querySelectorAll('.edit-pcs');
+  let prices = document.querySelectorAll('.edit-price');
+  let lines = document.querySelectorAll('.live-line-tot');
+  let calcTotal = 0;
+  
+  pcs.forEach((pInput, i) => {
+    let q = parseInt(pInput.value) || 0;
+    let p = parseFloat(prices[i].value) || 0;
+    let ltot = q * p; 
+    calcTotal += ltot; 
+    lines[i].textContent = '$' + ltot.toFixed(2);
   });
   document.getElementById('m-total').textContent = '$' + calcTotal.toFixed(2);
 }
@@ -918,7 +963,6 @@ function closeOrderModal(e) {
 async function saveOrderChanges() {
   if(!activeOrderObj) return;
   
-  // Input Validation
   const name = document.getElementById('edit-cust-name').value.trim();
   if(!name) { alert("Customer Name is required."); return; }
   
@@ -931,7 +975,7 @@ async function saveOrderChanges() {
   activeOrderObj.notes = document.getElementById('edit-notes').value.trim();
   activeOrderObj.status = document.getElementById('m-status-sel').value;
 
-  let qtys = document.querySelectorAll('.edit-qty'), prices = document.querySelectorAll('.edit-price'), newTotal = 0;
+  let qtys = document.querySelectorAll('.edit-pcs'), prices = document.querySelectorAll('.edit-price'), newTotal = 0;
   qtys.forEach((qInput, i) => {
     let q = parseInt(qInput.value) || 0, p = parseFloat(prices[i].value) || 0;
     activeOrderObj.items[i].qty = q; activeOrderObj.items[i].unitPrice = p; activeOrderObj.items[i].lineTotal = q * p; newTotal += (q * p);
@@ -1009,7 +1053,6 @@ function addCustomEmailField() {
   container.appendChild(div);
 }
 
-// Breaking massive strings to avoid truncation
 function buildConfirmEmail(order){
   const itemsHtml = order.items.map(function(i){
     return `
