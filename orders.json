@@ -91,11 +91,11 @@
           "code": "PVC-SANTEE",
           "description": "SANITARY TEE (ALL HUB)",
           "size": "2",
-          "qty": 280,
+          "qty": 105,
           "unit": "carton",
           "pcsPerCtn": 35,
           "unitPrice": 1.4,
-          "lineTotal": 392
+          "lineTotal": 147
         },
         {
           "code": "PVC-WYEHUB",
@@ -111,11 +111,11 @@
           "code": "PVC-WYEHUB",
           "description": "WYE (ALL HUB)",
           "size": "3",
-          "qty": 150,
+          "qty": 75,
           "unit": "carton",
           "pcsPerCtn": 15,
           "unitPrice": 4.5,
-          "lineTotal": 675
+          "lineTotal": 337.5
         },
         {
           "code": "PVC-1/8HH",
@@ -128,7 +128,7 @@
           "lineTotal": 575
         }
       ],
-      "total": 4691,
+      "total": 4108.5,
       "po": ""
     },
     {
