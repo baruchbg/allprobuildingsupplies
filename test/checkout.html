@@ -4,451 +4,223 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>Checkout — All Pro Building Supplies LLC</title>
-<link rel="stylesheet" href="assets/style.css"/>
+  <link rel="stylesheet" href="../assets/style.css"/>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-
 </head>
 <body>
-<div id="cursor"></div><div id="cursor-ring"></div>
 
+<div id="cursor"></div><div id="cursor-ring"></div>
 
 <div id="global-header"></div>
 
-  <div class="topbar-badge">Contractor-Grade · Fast Response · NJ &amp; Surrounding Areas</div>
-</div>
-
-
-
-
-
-<div class="page-hero">
-  <div class="page-hero-inner">
-    <div class="page-breadcrumb"><a href="index.html">Home</a> › <a href="cart.html">Cart</a> › Checkout</div>
-    <div class="page-title" data-r>Check<span>out</span></div>
-    <p class="page-subtitle" data-r>Complete your order details below.</p>
+<header class="pg-hdr" style="margin-top:60px; padding-bottom:40px;">
+  <div class="pg-hdr-inner">
+    <h1 class="pg-title" data-r>Submit <span>Order.</span></h1>
   </div>
-</div>
-<div class="ticker" aria-hidden="true"><div class="ticker-track">
-  <div class="t-item g">Building Materials <span class="t-dia">◆</span></div><div class="t-item">Plumbing Supplies <span class="t-dia">◆</span></div>
-  <div class="t-item g">PVC Pipe &amp; Fittings <span class="t-dia">◆</span></div><div class="t-item">Fast Response <span class="t-dia">◆</span></div>
-  <div class="t-item g">Building Materials <span class="t-dia">◆</span></div><div class="t-item">Plumbing Supplies <span class="t-dia">◆</span></div>
-</div></div>
-<div class="section">
-  <div class="container">
+</header>
 
-    <div id="auth-gate" style="display:none;background:var(--ink2);border:1px solid rgba(200,152,31,.25);border-left:4px solid var(--gold);padding:24px 28px;margin-bottom:32px;max-width:600px;">
-      <strong style="color:var(--white);font-size:15px;display:block;margin-bottom:6px;">Trade account required</strong>
-      <a href="login.html" style="color:var(--gold);">Log in →</a>
-    </div>
-
-    <div id="empty-gate" style="display:none;text-align:center;padding:60px;">
-      <p style="color:var(--silver);margin-bottom:20px;">Your cart is empty.</p>
-      <a href="products.html" class="btn-gold" style="background:var(--gold);color:var(--ink);font-family:Oswald,sans-serif;font-size:13px;letter-spacing:2px;padding:12px 28px;text-decoration:none;">Browse Products →</a>
-    </div>
-
-    <div id="success-screen">
-      <div class="success-icon">✅</div>
-      <h2 class="success-title">Order Placed!</h2>
-      <div class="success-order-num" id="success-order-num"></div>
-      <p class="success-sub">Thank you! Your order has been received. Baruch will review and confirm it shortly. You'll be contacted at <strong id="success-email"></strong> with confirmation details.</p>
-      <a href="products.html" style="background:var(--gold);color:var(--ink);font-family:Oswald,sans-serif;font-size:13px;letter-spacing:2px;padding:14px 32px;text-decoration:none;display:inline-block;">Continue Shopping</a>
-    </div>
-
-    <div id="checkout-wrap">
-      <div id="global-err"></div>
-      <div class="checkout-grid">
-
-        <div>
-          <div class="checkout-form-wrap" style="margin-bottom:24px;">
-            <div class="checkout-section-title">Delivery Method</div>
-            <div class="delivery-toggle">
-              <div class="del-opt active" id="opt-delivery" onclick="setDelivery('delivery')">🚚 Delivery</div>
-              <div class="del-opt" id="opt-pickup" onclick="setDelivery('pickup')">🏭 Pickup</div>
+<section class="sec" style="padding-top:0;">
+  <div class="sec-inner" data-r id="co-wrap">
+    <div class="checkout-grid">
+      
+      <div>
+        <div class="checkout-form-wrap">
+          <h3 class="checkout-section-title">Delivery & Logistics</h3>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Method</label>
+              <select class="form-input" id="co-method" onchange="toggleAddress(this.value)">
+                <option value="delivery">Jobsite Delivery</option>
+                <option value="pickup">Will Call (Pickup)</option>
+              </select>
             </div>
-            <div id="delivery-fields">
-              <div class="form-row full"><div class="form-group">
-                <label class="form-label">Delivery Address *</label>
-                <input class="form-input" id="f-address" placeholder="Street address" type="text"/>
-                <span class="err-msg" id="e-address">Required</span>
-              </div></div>
-              <div class="form-row">
-                <div class="form-group">
-                  <label class="form-label">City *</label>
-                  <input class="form-input" id="f-city" placeholder="City" type="text"/>
-                  <span class="err-msg" id="e-city">Required</span>
-                </div>
-                <div class="form-group">
-                  <label class="form-label">State / ZIP *</label>
-                  <input class="form-input" id="f-statzip" placeholder="NJ  07001" type="text"/>
-                  <span class="err-msg" id="e-statzip">Required</span>
-                </div>
-              </div>
-            </div>
-            <div id="pickup-note" style="display:none;background:rgba(200,152,31,.06);border:1px solid rgba(200,152,31,.2);padding:14px 16px;font-size:13px;color:var(--silver);">
-              📍 Pickup at our warehouse. We'll contact you to confirm a pickup time.
+            <div class="form-group">
+              <label class="form-label">PO Number (Optional)</label>
+              <input type="text" class="form-input" id="co-po" placeholder="e.g. PO-10492">
             </div>
           </div>
-
-          <div class="checkout-form-wrap" style="margin-bottom:24px;">
-            <div class="checkout-section-title">Contact &amp; Company</div>
-            <div class="form-row">
-              <div class="form-group">
-                <label class="form-label">Contact Name *</label>
-                <input class="form-input" id="f-name" placeholder="Your name" type="text"/>
-                <span class="err-msg" id="e-name">Required</span>
-              </div>
-              <div class="form-group">
-                <label class="form-label">Phone *</label>
-                <input class="form-input" id="f-phone" placeholder="(732) 000-0000" type="tel"/>
-                <span class="err-msg" id="e-phone">Required</span>
-              </div>
+          <div class="form-row full" id="co-address-row">
+            <div class="form-group">
+              <label class="form-label">Delivery Address / ZIP</label>
+              <input type="text" class="form-input" id="co-address" placeholder="Enter full address or ZIP code">
             </div>
-            <div class="form-row full">
-              <div class="form-group">
-                <label class="form-label">Company</label>
-                <input class="form-input" id="f-company" type="text" readonly style="opacity:.6;"/>
-              </div>
-            </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label class="form-label">PO Number <span style="color:var(--silver);font-size:10px;">(optional)</span></label>
-                <input class="form-input" id="f-po" placeholder="PO-0000" type="text"/>
-              </div>
-              <div class="form-group">
-                <label class="form-label">Email</label>
-                <input class="form-input" id="f-email" type="text" readonly style="opacity:.6;"/>
-              </div>
-            </div>
-            <div class="form-row full">
-              <div class="form-group">
-                <label class="form-label">Special Notes <span style="color:var(--silver);font-size:10px;">(optional)</span></label>
-                <textarea class="form-textarea" id="f-notes" placeholder="Delivery instructions, special requirements, etc."></textarea>
-              </div>
+          </div>
+          <div class="form-row full">
+            <div class="form-group">
+              <label class="form-label">Order Notes (Optional)</label>
+              <textarea class="form-input" id="co-notes" style="resize:vertical; min-height:80px;" placeholder="Gate codes, receiving hours, special instructions..."></textarea>
             </div>
           </div>
         </div>
-
-        <div>
-          <div class="order-summary">
-            <div class="order-summary-title">Order Summary</div>
-            <div id="order-lines"></div>
-            <div class="order-total-row">
-              <span class="order-total-label">Total</span>
-              <span class="order-total-val" id="order-total">$0.00</span>
-            </div>
-            <button class="place-order-btn" id="place-btn" onclick="placeOrder()">
-              Place Order →
-            </button>
-            <p style="font-size:11px;color:var(--silver);margin-top:12px;text-align:center;font-family:'DM Mono',monospace;line-height:1.6;">By placing this order you agree to our standard trade terms. Payment due on delivery.</p>
-          </div>
-        </div>
-
       </div>
+
+      <div>
+        <div class="checkout-summary">
+          <h3 class="checkout-section-title">Order Summary</h3>
+          <div id="co-summary-items" style="margin-bottom:20px; font-size:13px; color:var(--silver);"></div>
+          <div style="border-top:1px solid rgba(255,255,255,.05); padding-top:16px; display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
+            <span style="font-family:'Oswald',sans-serif;font-size:16px;color:var(--white);">ESTIMATED TOTAL</span>
+            <span style="font-family:'Oswald',sans-serif;font-size:24px;color:var(--gold);" id="co-summary-total"></span>
+          </div>
+          <button class="btn-gold" style="width:100%; justify-content:center;" id="btn-submit" onclick="submitOrder()">Submit Order</button>
+          <div id="co-status" style="margin-top:16px;font-size:12px;text-align:center;font-family:'DM Mono',monospace;display:none;"></div>
+        </div>
+      </div>
+
     </div>
   </div>
-</div>
-
+  
+  <div class="sec-inner" id="co-success" style="display:none; text-align:center; padding:80px 20px;">
+    <div style="font-size:64px; margin-bottom:24px;">✅</div>
+    <h2 style="font-family:'Oswald',sans-serif; font-size:36px; color:var(--gold); margin-bottom:16px;">Order Received.</h2>
+    <p style="color:var(--silver); font-size:16px; margin-bottom:32px; max-width:500px; margin-left:auto; margin-right:auto;">Your order <strong style="color:var(--white);" id="succ-order-id"></strong> has been submitted. We will email you shortly with confirmation and logistics.</p>
+    <a href="index.html" class="btn-ghost">Return to Home</a>
+  </div>
+</section>
 
 <div id="global-footer"></div>
 
-
+  <script src="../assets/main.js"></script>
 <script>
-// ── CONFIG ────────────────────────────────────────────────────────
-const WORKER_URL   = 'https://allpro-github-proxy.baruch-6d5.workers.dev';
-const EMAILJS_SVC  = 'service_qefaa3x';   // ← fill in after EmailJS setup
-const EMAILJS_TPL  = 'template_nh3iqob';  // ← fill in after EmailJS setup
-const EMAILJS_KEY  = 'MNDXK3JgE890yvoA6';   // ← fill in after EmailJS setup
+const WORKER_URL = 'https://allpro-github-proxy.baruch-6d5.workers.dev';
+const EMAILJS_SVC  = 'service_qefaa3x';   
+const EMAILJS_TPL  = 'template_nh3iqob';  
+const EMAILJS_KEY  = 'MNDXK3JgE890yvoA6';   
 const NOTIFY_EMAIL = 'orders@allprobuildingsupplies.com';
+if(window.emailjs) emailjs.init(EMAILJS_KEY);
 
-// ── AUTH & CART ───────────────────────────────────────────────────
-var currentUser = null;
-try{ currentUser = JSON.parse(sessionStorage.getItem('apbs_user')); }catch(e){}
+let cart = [];
+let user = null;
+let currentSha = null;
+let masterOrders = [];
 
-function getCart(){ try{ return JSON.parse(localStorage.getItem('apbs_cart')||'[]'); }catch(e){return [];} }
-function saveCart(c){ localStorage.setItem('apbs_cart', JSON.stringify(c)); }
-
-(function init(){
-  var acctBtn = document.getElementById('nav-account-btn');
-  var loginBtn = document.getElementById('nav-login-btn');
-  var nameEl = document.getElementById('nav-logged-in-name');
-
-  if(!currentUser || currentUser.status !== 'approved'){
-    document.getElementById('auth-gate').style.display = 'block';
-    document.getElementById('checkout-wrap').style.display = 'none';
-    if(loginBtn) loginBtn.style.display='inline-flex';
-    if(acctBtn) acctBtn.style.display='none';
-    return;
-  }
-  
-  // Set up logged-in header state
-  if(acctBtn) acctBtn.style.display='inline-flex';
-  if(loginBtn) loginBtn.style.display='none';
-  if(nameEl){ nameEl.textContent = currentUser.name || ((currentUser.fname||'') + ' ' + (currentUser.lname||'')).trim(); }
-
-  var cart = getCart();
-  if(!cart.length){
-    document.getElementById('empty-gate').style.display = 'block';
-    document.getElementById('checkout-wrap').style.display = 'none';
-    return;
-  }
-  
-  // Pre-fill user info
-  document.getElementById('f-name').value    = (currentUser.fname||'')+' '+(currentUser.lname||'');
-  document.getElementById('f-email').value   = currentUser.email||'';
-  document.getElementById('f-company').value = currentUser.company||'';
-
-  renderSummary(cart);
-  emailjs.init(EMAILJS_KEY);
-})();
-
-// ── DELIVERY TOGGLE ───────────────────────────────────────────────
-var deliveryMethod = 'delivery';
-function setDelivery(method){
-  deliveryMethod = method;
-  document.getElementById('opt-delivery').classList.toggle('active', method==='delivery');
-  document.getElementById('opt-pickup').classList.toggle('active', method==='pickup');
-  document.getElementById('delivery-fields').style.display = method==='delivery'?'block':'none';
-  document.getElementById('pickup-note').style.display     = method==='pickup'?'block':'none';
+function toggleAddress(val){
+  document.getElementById('co-address-row').style.display = val === 'pickup' ? 'none' : 'grid';
 }
 
-// ── ORDER SUMMARY RENDER ──────────────────────────────────────────
-function renderSummary(cart){
-  var linesEl = document.getElementById('order-lines');
-  var total = 0;
-  linesEl.innerHTML = '';
-  cart.forEach(function(item){
-    var lineTotal = parseFloat(item.unitPrice) * item.qty;
-    total += lineTotal;
-    var unitLabel = item.unit==='carton'
-      ? Math.ceil(item.qty/item.pcsPerCtn)+' ctn ('+item.qty+' pcs)'
-      : item.qty+' pcs';
-    linesEl.innerHTML +=
-      '<div class="order-line">'
-      +'<div><div class="order-line-name">'+item.description+' '+item.size+'</div>'
-      +'<div class="order-line-sub">'+unitLabel+' × $'+parseFloat(item.unitPrice).toFixed(2)+'</div></div>'
-      +'<div class="order-line-price">$'+lineTotal.toFixed(2)+'</div>'
-      +'</div>';
-  });
-  document.getElementById('order-total').textContent = '$'+total.toFixed(2);
+async function loadData() {
+  try {
+    user = JSON.parse(sessionStorage.getItem('apbs_user'));
+    if(!user || user.status !== 'approved') { window.location.href = 'login.html'; return; }
+    
+    cart = JSON.parse(localStorage.getItem('apbs_cart') || '[]');
+    if(cart.length === 0) { window.location.href = 'cart.html'; return; }
+
+    let html = '';
+    let total = 0;
+    cart.forEach(i => {
+      let lTot = i.qty * i.unitPrice;
+      total += lTot;
+      html += `<div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                 <span style="flex:1;">${i.qty}x ${i.description} ${i.size}</span>
+                 <span style="font-family:'DM Mono',monospace;color:var(--white);">$${lTot.toFixed(2)}</span>
+               </div>`;
+    });
+    document.getElementById('co-summary-items').innerHTML = html;
+    document.getElementById('co-summary-total').textContent = '$' + total.toFixed(2);
+
+    const r = await fetch(WORKER_URL + '/github/orders.json');
+    const d = await r.json();
+    currentSha = d.sha;
+    masterOrders = JSON.parse(decodeURIComponent(escape(atob(d.content)))).orders || [];
+
+  } catch(e) { alert("Session expired or error loading checkout. Please log in again."); window.location.href='login.html'; }
 }
 
-// ── VALIDATION ────────────────────────────────────────────────────
-function req(id, errId){ 
-  var val = document.getElementById(id).value.trim();
-  var ok = val.length > 0;
-  document.getElementById(id).classList.toggle('err',!ok);
-  document.getElementById(errId).style.display = ok?'none':'block';
-  return ok;
+function showStatus(msg, isErr) {
+  const el = document.getElementById('co-status');
+  el.textContent = msg; 
+  el.style.color = isErr ? '#ff6b6b' : '#2ecc71';
+  el.style.display = 'block';
 }
 
-// ── PLACE ORDER ───────────────────────────────────────────────────
-async function placeOrder(){
-  // Validate
-  var valid = true;
-  if(deliveryMethod==='delivery'){
-    valid = req('f-address','e-address') & req('f-city','e-city') & req('f-statzip','e-statzip') & valid;
-  }
-  valid = req('f-name','e-name') & req('f-phone','e-phone') & valid;
-  if(!valid){ document.getElementById('global-err').style.display='none'; return; }
-
-  var btn = document.getElementById('place-btn');
-  btn.disabled = true;
-  btn.textContent = 'Placing Order...';
-  document.getElementById('global-err').style.display = 'none';
-
-  var cart = getCart();
-  var orderId = 'APB-'+Date.now().toString(36).toUpperCase();
-  var now = new Date().toISOString();
-  var total = cart.reduce(function(s,i){return s+parseFloat(i.unitPrice)*i.qty;},0);
-
-  var deliveryAddr = deliveryMethod==='pickup' ? 'PICKUP'
-    : [document.getElementById('f-address').value.trim(),
-       document.getElementById('f-city').value.trim(),
-       document.getElementById('f-statzip').value.trim()].join(', ');
-
-  var order = {
-    id: orderId,
-    placedAt: now,
-    status: 'pending',
-    customer: {
-      id: currentUser.id,
-      name: document.getElementById('f-name').value.trim(),
-      email: currentUser.email,
-      company: currentUser.company,
-      phone: document.getElementById('f-phone').value.trim()
-    },
-    delivery: {
-      method: deliveryMethod,
-      address: deliveryAddr
-    },
-    po: document.getElementById('f-po').value.trim(),
-    notes: document.getElementById('f-notes').value.trim(),
-    items: cart.map(function(item){
-      return {
-        code: item.code,
-        description: item.description,
-        size: item.size,
-        qty: item.qty,
-        unit: item.unit,
-        pcsPerCtn: item.pcsPerCtn,
-        unitPrice: parseFloat(item.unitPrice),
-        lineTotal: parseFloat(item.unitPrice)*item.qty
-      };
-    }),
-    total: total,
-    confirmedAt: null,
-    cancelledAt: null
-  };
-
-  try{
-    // 1. Save order to orders.json
-    await saveOrder(order);
-    // 2. Deduct inventory from products.csv
-    await deductInventory(cart);
-    // 3. Send email notification
-    await sendNotification(order);
-    // 4. Clear cart & show success
-    saveCart([]);
-    document.getElementById('checkout-wrap').style.display = 'none';
-    document.getElementById('success-screen').style.display = 'block';
-    document.getElementById('success-order-num').textContent = orderId;
-    document.getElementById('success-email').textContent = currentUser.email;
-  }catch(e){
-    console.error(e);
-    document.getElementById('global-err').textContent = 'Something went wrong — please try again or call 732-829-1940.';
-    document.getElementById('global-err').style.display = 'block';
-    btn.disabled = false;
-    btn.textContent = 'Place Order →';
-  }
-}
-
-// ── SAVE ORDER ────────────────────────────────────────────────────
-async function saveOrder(order){
-  var r = await fetch(WORKER_URL+'/github/orders.json');
-  var d = await r.json();
-  var sha = d.sha;
-  var data = JSON.parse(atob(d.content.replace(/\n/g,'')));
-  data.orders.push(order);
-  var payload = JSON.stringify({
-    message:'New order: '+order.id,
-    content: btoa(unescape(encodeURIComponent(JSON.stringify(data,null,2)))),
-    branch:'main', sha:sha
-  });
-  var pr = await fetch(WORKER_URL+'/github/orders.json',{method:'PUT',headers:{'Content-Type':'application/json'},body:payload});
-  if(!pr.ok){ var e=await pr.json(); throw new Error(e.message||'Failed to save order'); }
-}
-
-// ── DEDUCT INVENTORY ──────────────────────────────────────────────
-async function deductInventory(cart){
-  var r = await fetch(WORKER_URL+'/github/products.csv');
-  var d = await r.json();
-  var sha = d.sha;
-  var csv = atob(d.content.replace(/\n/g,''));
-  var lines = csv.trim().split('\n');
-  var headers = lines[0];
-
-  // Build deduction map: "code|size" -> qty to deduct (normalize quotes)
-  var deductions = {};
-  cart.forEach(function(item){
-    var key = item.code+'|'+item.size.replace(/"/g,'');
-    deductions[key] = (deductions[key]||0) + item.qty;
-  });
-
-  // Update CSV lines
-  var newLines = [headers];
-  for(var i=1;i<lines.length;i++){
-    var cols = parseCSVLine(lines[i]);
-    if(!cols[0]) continue;
-    var key = cols[0]+'|'+stripQuotes(cols[2]).replace(/"/g,'');
-    if(deductions[key]){
-      var current = parseInt(cols[4])||0;
-      cols[4] = Math.max(0, current - deductions[key]).toString();
-    }
-    newLines.push(cols.map(function(c){
-      return c.indexOf(',')>=0||c.indexOf('"')>=0 ? '"'+c.replace(/"/g,'""')+'"' : c;
-    }).join(','));
-  }
-
-  var newCSV = newLines.join('\n')+'\n';
-  var payload = JSON.stringify({
-    message:'Inventory update after order',
-    content: btoa(unescape(encodeURIComponent(newCSV))),
-    branch:'main', sha:sha
-  });
-  var pr = await fetch(WORKER_URL+'/github/products.csv',{method:'PUT',headers:{'Content-Type':'application/json'},body:payload});
-  if(!pr.ok) throw new Error('Failed to update inventory');
-}
-
-function parseCSVLine(line){
-  var result=[],cur='',inQ=false;
-  for(var i=0;i<line.length;i++){
-    var c=line[i];
-    if(c==='"'){inQ=!inQ;}
-    else if(c===','&&!inQ){result.push(cur);cur='';}
-    else{cur+=c;}
-  }
-  result.push(cur);
-  return result;
-}
-function stripQuotes(s){ return (s||'').replace(/^"+|"+$/g,'').trim(); }
-
-// ── EMAIL NOTIFICATION ────────────────────────────────────────────
 function buildConfirmEmail(order){
-  var itemLines = order.items.map(function(i){
-    return i.description+' '+i.size+' — '+i.qty+' pcs @ $'+i.unitPrice.toFixed(2)+' = $'+i.lineTotal.toFixed(2);
-  }).join('\n');
-  var html = `<!DOCTYPE html><html><head><meta charset="UTF-8"/></head><body style="margin:0;padding:0;background:#f4f4f4;font-family:'Helvetica Neue',Arial,sans-serif;"><table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;padding:32px 0;"><tr><td align="center"><table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:4px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);"><tr><td style="background:#0C1117;padding:28px 36px;border-bottom:4px solid #C8981F;"><table width="100%" cellpadding="0" cellspacing="0"><tr><td><div style="font-family:'Arial Black',Arial,sans-serif;font-size:20px;font-weight:900;color:#FFFFFF;letter-spacing:2px;text-transform:uppercase;">ALL PRO BUILDING SUPPLIES</div><div style="font-size:11px;color:#C8981F;letter-spacing:3px;text-transform:uppercase;margin-top:3px;">LLC</div></td><td align="right"><div style="background:#C8981F;color:#0C1117;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:6px 14px;border-radius:2px;">ORDER RECEIVED</div></td></tr></table></td></tr><tr><td style="padding:32px 36px 0;"><p style="margin:0;font-size:16px;color:#222;">Hi <strong>${order.customer.name}</strong>,</p><p style="margin:12px 0 0;font-size:15px;color:#444;line-height:1.6;">Thank you for your order! We've received it and will be in touch shortly to confirm availability and arrange delivery or pickup.</p></td></tr><tr><td style="padding:24px 36px 0;"><table width="100%" cellpadding="0" cellspacing="0" style="background:#f8f8f8;border-radius:4px;border:1px solid #e8e8e8;"><tr><td style="padding:16px 20px;border-right:1px solid #e8e8e8;"><div style="font-size:10px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Order ID</div><div style="font-size:14px;font-weight:700;color:#C8981F;font-family:monospace;">${order.id}</div></td><td style="padding:16px 20px;border-right:1px solid #e8e8e8;"><div style="font-size:10px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Date</div><div style="font-size:14px;color:#222;">${new Date(order.placedAt).toLocaleDateString()}</div></td><td style="padding:16px 20px;"><div style="font-size:10px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Delivery</div><div style="font-size:13px;color:#222;">${order.delivery.address}</div></td></tr></table></td></tr><tr><td style="padding:24px 36px 0;"><div style="font-size:11px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;font-weight:700;">Items Ordered</div><table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #e8e8e8;border-radius:4px;overflow:hidden;"><tr style="background:#0C1117;"><td style="padding:10px 14px;font-size:11px;color:#C8981F;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;">Product</td><td style="padding:10px 14px;font-size:11px;color:#C8981F;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;text-align:right;">Total</td></tr>${order.items.map(function(i){return '<tr><td style="padding:10px 14px;font-size:13px;color:#333;border-bottom:1px solid #f0f0f0;">'+i.description+' '+i.size+'<br/><span style=\"font-size:11px;color:#888\">'+i.qty+' pcs @ $'+i.unitPrice.toFixed(2)+'</span></td><td style="padding:10px 14px;font-size:13px;color:#333;text-align:right;border-bottom:1px solid #f0f0f0;">$'+i.lineTotal.toFixed(2)+'</td></tr>';}).join('')}</table></td></tr><tr><td style="padding:0 36px;"><table width="100%" cellpadding="0" cellspacing="0"><tr><td></td><td style="padding:16px 0;border-top:2px solid #C8981F;width:220px;" align="right"><span style="font-size:13px;color:#888;text-transform:uppercase;letter-spacing:1px;">Order Total&nbsp;&nbsp;</span><span style="font-size:22px;font-weight:700;color:#0C1117;">$${order.total.toFixed(2)}</span></td></tr></table></td></tr>${order.po||order.notes?'<tr><td style="padding:0 36px 24px;"><table width="100%" cellpadding="0" cellspacing="0" style="background:#fffbf0;border:1px solid #f0e0a0;border-radius:4px;"><tr><td style="padding:14px 18px;"><div style="font-size:12px;color:#666;margin-bottom:4px;"><strong style=\"color:#333\">PO Number:</strong> '+(order.po||'N/A')+'</div><div style="font-size:12px;color:#666;"><strong style=\"color:#333\">Notes:</strong> '+(order.notes||'None')+'</div></td></tr></table></td></tr>':''}<tr><td style="padding:0 36px;"><hr style="border:none;border-top:1px solid #eee;margin:0;"/></td></tr><tr><td style="padding:24px 36px;"><p style="margin:0;font-size:14px;color:#444;line-height:1.7;">Questions about your order?</p><p style="margin:10px 0 0;font-size:14px;color:#444;">📞 <a href="tel:17328291940" style="color:#C8981F;text-decoration:none;font-weight:600;">732-829-1940</a></p><p style="margin:4px 0 0;font-size:14px;color:#444;">✉️ <a href="mailto:info@allprobuildingsupplies.com" style="color:#C8981F;text-decoration:none;">info@allprobuildingsupplies.com</a></p></td></tr><tr><td style="background:#0C1117;padding:20px 36px;text-align:center;"><div style="font-size:12px;color:#888;">© 2026 All Pro Building Supplies LLC &nbsp;·&nbsp; <a href="https://allprobuildingsupplies.com" style="color:#C8981F;text-decoration:none;">allprobuildingsupplies.com</a></div></td></tr></table></td></tr></table></body></html>`;
-  return html;
+  return `<!DOCTYPE html><html><body style="font-family:Arial,sans-serif;color:#333;background:#f4f4f4;padding:20px;">
+    <div style="background:#fff;max-width:600px;margin:0 auto;padding:30px;border-top:4px solid #C8981F;">
+      <h2 style="color:#0C1117;">Order Received</h2>
+      <p><strong>Order ID:</strong> ${order.id}</p>
+      <p><strong>Customer:</strong> ${order.customer.name} (${order.customer.company})</p>
+      <p><strong>Total:</strong> $${order.total.toFixed(2)}</p>
+      <p>We are reviewing your order and will reach out with a final confirmation shortly.</p>
+    </div>
+  </body></html>`;
 }
 
-function buildStatusEmail(order, status){
-  var isConfirmed = status === 'confirmed';
-  var statusWord = isConfirmed ? 'Confirmed' : 'Cancelled';
-  var statusMsg  = isConfirmed
-    ? 'Your order has been confirmed and is being processed. We will contact you shortly to arrange delivery or pickup.'
-    : 'Your order has been cancelled. If you have any questions or believe this was an error, please contact us right away.';
-  var badgeColor = isConfirmed ? '#2ecc71' : '#e74c3c';
+async function submitOrder() {
+  if(!user || cart.length === 0) return;
+  
+  const method = document.getElementById('co-method').value;
+  const address = document.getElementById('co-address').value.trim();
+  const po = document.getElementById('co-po').value.trim();
+  const notes = document.getElementById('co-notes').value.trim();
+  
+  if(method === 'delivery' && !address) { alert("Please enter a delivery address or ZIP."); return; }
 
-  return `<!DOCTYPE html><html><head><meta charset="UTF-8"/></head><body style="margin:0;padding:0;background:#f4f4f4;font-family:'Helvetica Neue',Arial,sans-serif;"><table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;padding:32px 0;"><tr><td align="center"><table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:4px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);"><tr><td style="background:#0C1117;padding:28px 36px;border-bottom:4px solid #C8981F;"><table width="100%" cellpadding="0" cellspacing="0"><tr><td><div style="font-family:'Arial Black',Arial,sans-serif;font-size:20px;font-weight:900;color:#FFFFFF;letter-spacing:2px;text-transform:uppercase;">ALL PRO BUILDING SUPPLIES</div><div style="font-size:11px;color:#C8981F;letter-spacing:3px;text-transform:uppercase;margin-top:3px;">LLC</div></td><td align="right"><div style="background:${badgeColor};color:#fff;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:6px 14px;border-radius:2px;">ORDER ${statusWord.toUpperCase()}</div></td></tr></table></td></tr><tr><td style="padding:0;"><div style="background:#f8f8f8;border-left:4px solid ${badgeColor};padding:20px 36px;font-size:15px;color:#444;">Hi <strong>${order.customer.name}</strong> — your order <strong style="color:#C8981F;font-family:monospace;">${order.id}</strong> has been <strong>${statusWord}</strong>.</div></td></tr><tr><td style="padding:28px 36px 0;"><p style="margin:0;font-size:15px;color:#444;line-height:1.7;">${statusMsg}</p></td></tr><tr><td style="padding:24px 36px 0;"><table width="100%" cellpadding="0" cellspacing="0" style="background:#f8f8f8;border-radius:4px;border:1px solid #e8e8e8;"><tr><td style="padding:16px 20px;border-right:1px solid #e8e8e8;"><div style="font-size:10px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Order ID</div><div style="font-size:14px;font-weight:700;color:#C8981F;font-family:monospace;">${order.id}</di2)}</div></td><td style="padding:16px 20px;"><div style="font-size:10px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Delivery</div><div style="font-size:13px;color:#222;">${order.delivery.address}</div></td></tr></table></td></tr><tr><td style="padding:24px 36px 8px;"><hr style="border:none;border-top:1px solid #eee;margin:0;"/></td></tr><tr><td style="padding:8px 36px 28px;"><p style="margin:0;font-size:14px;color:#444;line-height:1.7;">Questions? We're here to help:</p><p style="margin:10px 0 0;font-size:14px;color:#444;">📞 <a href="tel:17328291940" style="color:#C8981F;text-decoration:none;font-weight:600;">732-829-1940</a></p><p style="margin:4px 0 0;font-size:14px;color:#444;">✉️ <a href="mailto:info@allprobuildingsupplies.com" style="color:#C8981F;text-decoration:none;">info@allprobuildingsupplies.com</a></p></td></tr><tr><td style="background:#0C1117;padding:20px 36px;text-align:center;"><div style="font-size:12px;color:#888;">© 2026 All Pro Building Supplies LLC &nbsp;·&nbsp; <a href="https://allprobuildingsupplies.com" style="color:#C8981F;text-decoration:none;">allprobuildingsupplies.com</a></div></td></tr></table></td></tr></table></body></html>`;
-}
+  const btn = document.getElementById('btn-submit');
+  btn.disabled = true; btn.textContent = 'Processing...';
+  showStatus('Submitting order securely...', false);
 
-async function sendNotification(order){
-  var params = {
-    to_email:    NOTIFY_EMAIL,
-    cust_email:  order.customer.email,
-    email_subject: 'New Order ' + order.id + ' — ' + order.customer.name + ' (' + order.customer.company + ')',
-    email_body:  buildConfirmEmail(order),
-    order_id:    order.id,
-    customer:    order.customer.name + ' (' + order.customer.company + ')',
-    phone:       order.customer.phone,
-    cust_email:  order.customer.email,
-    delivery:    order.delivery.method.toUpperCase() + ': ' + order.delivery.address,
-    po:          order.po || 'N/A',
-    notes:       order.notes || 'None',
-    total:       '$' + order.total.toFixed(2),
-    placed_at:   new Date(order.placedAt).toLocaleString(),
-    admin_link:  'https://allprobuildingsupplies.com/admin.html',
-    cust_name:   order.customer.name,
-    items:       order.items.map(function(i){ return i.description+' '+i.size+' — '+i.qty+' pcs = $'+i.lineTotal.toFixed(2); }).join('\n')
+  const orderId = 'APB-' + Date.now().toString(36).toUpperCase();
+  const total = cart.reduce((s,i) => s + (i.qty * i.unitPrice), 0);
+
+  const newOrder = {
+    id: orderId,
+    placedAt: new Date().toISOString(),
+    status: 'pending',
+    customer: { id: user.id, name: user.fname + ' ' + user.lname, email: user.email, company: user.company, phone: user.phone },
+    delivery: { method: method, address: method === 'pickup' ? 'Will Call (Pickup)' : address },
+    po: po,
+    notes: notes,
+    items: cart,
+    total: total
   };
-  // Send to admin
-  try{
-    await emailjs.send(EMAILJS_SVC, EMAILJS_TPL, Object.assign({}, params, {
-      cust_email: NOTIFY_EMAIL,
-      email_subject: 'New Order ' + order.id + ' — ' + order.customer.name + ' (' + order.customer.company + ')',
-      email_body: buildConfirmEmail(order)
-    }));
-  }catch(e){ console.warn('Admin email failed:', e); }
-  // Send to customer
-  try{
-    await emailjs.send(EMAILJS_SVC, EMAILJS_TPL, Object.assign({}, params, {
-      cust_email: order.customer.email,
-      email_subject: 'Order Received — ' + order.id + ' | All Pro Building Supplies',
-      email_body: buildConfirmEmail(order)
-    }));
-  } catch(e){ console.warn('Customer email failed:', e); }
+
+  masterOrders.push(newOrder);
+
+  const payload = { 
+    message: 'New Order Placed: ' + orderId, 
+    content: btoa(unescape(encodeURIComponent(JSON.stringify({orders: masterOrders}, null, 2)))), 
+    branch: 'main', 
+    sha: currentSha 
+  };
+
+  try {
+    const r = await fetch(WORKER_URL + '/github/orders.json', { method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
+    if(!r.ok) throw new Error("Database write failed");
+    
+    let params = {
+      order_id:    newOrder.id,
+      customer:    newOrder.customer.name + ' (' + newOrder.customer.company + ')',
+      phone:       newOrder.customer.phone,
+      cust_email:  newOrder.customer.email,
+      delivery:    newOrder.delivery.method.toUpperCase() + ': ' + newOrder.delivery.address,
+      po:          newOrder.po || 'N/A',
+      notes:       newOrder.notes || 'None',
+      total:       '$' + newOrder.total.toFixed(2),
+      placed_at:   new Date(newOrder.placedAt).toLocaleString(),
+      admin_link:  'https://allprobuildingsupplies.com/admin.html',
+      cust_name:   newOrder.customer.name,
+      items:       newOrder.items.map(function(i){ return i.description+' '+i.size+' — '+i.qty+' pcs = $'+i.lineTotal.toFixed(2); }).join('\\n')
+    };
+
+    try{ await emailjs.send(EMAILJS_SVC, EMAILJS_TPL, Object.assign({}, params, { cust_email: NOTIFY_EMAIL, email_subject: 'New Order ' + newOrder.id, email_body: buildConfirmEmail(newOrder) })); }catch(e){}
+    try{ await emailjs.send(EMAILJS_SVC, EMAILJS_TPL, Object.assign({}, params, { email_subject: 'Order Received - ' + newOrder.id, email_body: buildConfirmEmail(newOrder) })); }catch(e){}
+
+    localStorage.removeItem('apbs_cart');
+    document.getElementById('co-wrap').style.display = 'none';
+    document.getElementById('co-success').style.display = 'block';
+    document.getElementById('succ-order-id').textContent = orderId;
+    
+    var el = document.getElementById('nav-cart-count');
+    if(el) el.textContent = '';
+
+  } catch(e) {
+    showStatus('Error saving order. Please call us.', true);
+    btn.disabled = false; btn.textContent = 'Submit Order';
+  }
 }
+
+document.addEventListener('DOMContentLoaded', loadData);
 </script>
-<script src="assets/main.js"></script>
 </body>
 </html>

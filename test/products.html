@@ -4,125 +4,54 @@
 <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>Products — All Pro Building Supplies LLC</title>
 <meta name="description" content="Browse All Pro Building Supplies product catalog — PVC pipe, DWV fittings, bends, tees, wyes, and more. Call 732-829-1940 for pricing."/>
-<link rel="stylesheet" href="assets/style.css"/>
-
+  <link rel="stylesheet" href="../assets/style.css"/>
 </head>
 <body>
 
 <div id="cursor"></div><div id="cursor-ring"></div>
 
-
 <div id="global-header"></div>
 
-  <div class="topbar-badge">Contractor-Grade · Fast Response · NJ &amp; Surrounding Areas</div>
-</div>
-
-
-
-
-
-<div class="page-hero">
-  <div class="page-hero-inner">
-    <div class="page-breadcrumb"><a href="index.html">Home</a> › Products</div>
-    <div class="page-title" data-r>Product <span>Catalog</span></div>
-    <p class="page-subtitle" data-r>Contractor-grade PVC, DWV fittings, pipes, and more. Pricing shown per piece. Call or email for bulk quotes.</p>
+<header class="pg-hdr" style="margin-top:60px;">
+  <div class="pg-hdr-inner">
+    <div class="lbl" data-r>Master Catalog</div>
+    <h1 class="pg-title" data-r>Our <span>Products.</span></h1>
+    <p class="pg-sub" data-r>Log in to view your approved pricing and place orders directly. Don't see an item? <a href="contact.html" style="color:var(--gold);">Contact us</a> for special sourcing.</p>
   </div>
-</div>
+</header>
 
-<section class="sec" style="background:var(--ink)">
+<section class="sec" style="background:var(--ink2); border-top:1px solid rgba(200,152,31,.1)">
   <div class="sec-inner">
-
-    <div class="note-box" id="how-to-order-box">
-      <strong>How to Order:</strong> Call <a href="tel:17328291940" style="color:var(--gold)">732-829-1940</a> or email
-      <a href="mailto:info@allprobuildingsupplies.com?subject=Pricing%20Request&body=Code%2C%20Size%2C%20Qty%2C%20Delivery%20ZIP" style="color:var(--gold)">info@allprobuildingsupplies.com</a>
-      with your <strong>Item Code &middot; Size &middot; Quantity &middot; Delivery ZIP</strong>.
-      Volume pricing available. Don&#39;t see what you need? We can source it &mdash; just ask.
-    </div>
-    
-    <div id="login-banner" style="display:none;">
-      <div style="font-size:14px;color:var(--smoke)"><strong style="color:var(--white)">&#128274; Pricing visible to approved trade accounts only</strong><br/><span style="font-size:13px;color:var(--silver)">Log in or request access to see wholesale pricing and order online.</span></div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap">
-        <a href="login.html" class="btn-gold" style="padding:10px 22px;font-size:12px;letter-spacing:1.5px">LOG IN &rarr;</a>
-        <a href="register.html" class="btn-ghost" style="padding:10px 22px;font-size:12px;letter-spacing:1.5px">REQUEST ACCESS</a>
-      </div>
-    </div>
-
-    <div class="search-wrap">
-      <span class="search-icon">&#128269;</span>
-      <input class="search-input" type="text" id="prod-search" placeholder="Search by code, description, or size..."/>
-    </div>
     
     <div class="mobile-filter-wrap">
-      <select class="mobile-filter-sel" id="mobile-filter-select" onchange="setFilter(this.value, null)">
-        <option value="all">View All Categories</option>
-        </select>
+      <select class="mobile-filter-sel" id="mob-filter" onchange="filterProducts(this.value)">
+        <option value="ALL">All Categories</option>
+        <option value="PIPE">Pipe</option>
+        <option value="PVC">PVC Fittings</option>
+      </select>
     </div>
 
-    <div class="filter-bar" id="dynamic-filters">
-      <button class="filter-btn on" onclick="setFilter('all',this)">All</button>
-      </div>
-    
-    <div id="prod-sections">
-      <div style="text-align:center;padding:40px;color:var(--silver);font-family:'DM Mono',monospace;">Loading Live Inventory...</div>
+    <div class="filter-bar" id="desk-filter" data-r>
+      <button class="filter-btn on" onclick="filterProducts('ALL', this)">All Categories</button>
+      <button class="filter-btn" onclick="filterProducts('PIPE', this)">Pipe</button>
+      <button class="filter-btn" onclick="filterProducts('PVC', this)">PVC Fittings</button>
     </div>
-    
+
+    <div id="products-container" data-r>
+      <p style="color:var(--silver);">Loading inventory...</p>
+    </div>
+
   </div>
 </section>
-
-<div id="img-lightbox" onclick="closeLightbox()">
-  <div id="img-lb-inner" onclick="event.stopPropagation()">
-    <img id="img-lb-img" src="" alt=""/>
-    <div id="img-lb-title"></div>
-  </div>
-</div>
-
-<section class="cta-band">
-  <div class="cta-band-inner">
-    <div><div class="cta-h">Ready to Get Your Supplies?</div><div class="cta-s">Call or email with your list — we respond fast with pricing and availability.</div></div>
-    <div class="cta-acts">
-      <a href="tel:17328291940" class="btn-dark">📞 Call 732-829-1940</a>
-      <a href="mailto:info@allprobuildingsupplies.com" class="btn-dark">✉ Email for Pricing</a>
-    </div>
-  </div>
-</section>
-
 
 <div id="global-footer"></div>
 
-
-<script src="assets/main.js"></script>
-
+  <script src="../assets/main.js"></script>
 <script>
 const WORKER_URL = 'https://allpro-github-proxy.baruch-6d5.workers.dev';
-
-// --- AUTH LOGIC ---
+let allProducts = [];
 let isLoggedIn = false;
-(function(){
-  var sess = sessionStorage.getItem('apbs_user');
-  var user = null; try{ if(sess) user = JSON.parse(sess); }catch(e){}
-  isLoggedIn = user && user.status === 'approved';
-  
-  var loginBanner = document.getElementById('login-banner');
-  var howToOrder  = document.getElementById('how-to-order-box');
-  var acctBtn     = document.getElementById('nav-account-btn');
-  var loginBtn    = document.getElementById('nav-login-btn');
-  var nameEl      = document.getElementById('nav-logged-in-name');
 
-  if(isLoggedIn){
-    if(loginBanner) loginBanner.style.display = 'none';
-    if(howToOrder) howToOrder.style.display = 'none';
-    if(acctBtn) acctBtn.style.display = 'inline-flex';
-    if(loginBtn) loginBtn.style.display = 'none';
-    if(nameEl) nameEl.textContent = user.name || ((user.fname||'') + ' ' + (user.lname||'')).trim();
-  } else {
-    if(loginBanner) loginBanner.style.display = 'flex';
-    if(howToOrder) howToOrder.style.display = 'block';
-    if(acctBtn) acctBtn.style.display = 'none';
-    if(loginBtn) loginBtn.style.display = 'inline-flex';
-  }
-})();
-
-// --- CSV PARSER ---
 function parseCSV(str) {
   var lines = [], curLine = [], curStr = '', inQ = false;
   for(var i=0; i<str.length; i++) {
@@ -140,168 +69,81 @@ function parseCSV(str) {
   return lines;
 }
 
-// --- DYNAMIC PRODUCT RENDERER ---
-async function fetchAndRenderProducts() {
+async function loadProducts() {
   try {
+    const userSess = sessionStorage.getItem('apbs_user');
+    if(userSess) {
+      const u = JSON.parse(userSess);
+      if(u.status === 'approved') isLoggedIn = true;
+    }
+
     const r = await fetch(WORKER_URL + '/github/products.csv');
     const d = await r.json();
     const csv = decodeURIComponent(escape(atob(d.content)));
     const rows = parseCSV(csv);
     
-    let groups = {};
-    
-    // Rows: Code [0], Desc [1], Size [2], Pack [3], Qty [4], Price [5], Image [6]
     for(let i=1; i<rows.length; i++) {
-      let cols = rows[i];
-      if(!cols[0]) continue;
-      let code = cols[0].trim();
-      if(!groups[code]) {
-        groups[code] = { desc: cols[1], image: cols[6] || 'images/logo.png', rows: [] };
-      }
-      groups[code].rows.push({ size: cols[2], pack: cols[3], qty: parseInt(cols[4])||0, price: parseFloat(cols[5])||0 });
-    }
-
-    const container = document.getElementById('prod-sections');
-    const filterBar = document.getElementById('dynamic-filters');
-    const mobileSelect = document.getElementById('mobile-filter-select');
-    container.innerHTML = '';
-    
-    for (const [code, data] of Object.entries(groups)) {
-      // Build Desktop Filters
-      let fBtn = document.createElement('button');
-      fBtn.className = 'filter-btn';
-      fBtn.textContent = code;
-      fBtn.onclick = function() { setFilter(code, this); };
-      filterBar.appendChild(fBtn);
-      
-      // Build Mobile Filter Dropdown
-      let fOpt = document.createElement('option');
-      fOpt.value = code;
-      fOpt.textContent = code;
-      mobileSelect.appendChild(fOpt);
-      
-      // Build Section
-      let html = `
-        <div class="prod-section" id="${code}" data-code="${code}">
-          <div class="prod-section-hdr" onclick="toggleSection(this)">
-            <div class="prod-section-thumb" onclick="event.stopPropagation();openLightbox('${data.image}','${data.desc.replace(/'/g,"\\'").replace(/"/g,"&quot;")}')">
-              <img src="${data.image}" alt="${data.desc.replace(/"/g,"&quot;")}" class="cat-img" loading="lazy">
-            </div>
-            <div class="prod-section-meta">
-              <div class="prod-section-code">${code}</div>
-              <div class="prod-section-title">${data.desc}</div>
-            </div>
-            <span class="prod-section-chevron">&#9660;</span>
-          </div>
-          <div class="prod-section-body">
-            <table class="prod-inner-table">
-              <thead><tr><th>Size</th><th>Pack</th><th>Availability</th><th class="price-col-hdr">${isLoggedIn ? 'Unit Price' : 'Unit Price &#128274;'}</th><th></th></tr></thead>
-              <tbody>
-      `;
-      
-      data.rows.forEach(item => {
-        let isOOS = item.qty <= 0;
-        let availHtml = isOOS ? `<span style="color:var(--silver)">Call for Availability</span>` : `<span style="color:#4CAF50">&#9679; In Stock</span> <span class="qty-badge">${item.qty}</span>`;
-        let priceHtml = isLoggedIn ? `<span style="color:var(--white);font-weight:500">$${item.price.toFixed(2)}</span>` : `<span class="price-locked">&#128274; Login to view</span>`;
-        let btnHtml = '';
-        
-        let sizeClean = item.size.replace(/"/g,"&quot;");
-        let descClean = data.desc.replace(/"/g,"&quot;");
-        
-        if (isOOS) {
-           btnHtml = `<button class="add-to-cart-btn" disabled style="border-color:#555;color:#555;cursor:not-allowed;">Out of Stock</button>`;
-        } else {
-           btnHtml = `<button class="add-to-cart-btn" data-code="${code}" data-size="${sizeClean}" data-desc="${descClean}" data-pcs="${item.pack}" data-price="${item.price}" data-qty="${item.qty}" onclick="addToCart(this)">+ Cart</button>`;
-        }
-        
-        html += `
-          <tr data-code="${code}">
-            <td>
-              ${item.size}
-              <div class="mobile-pack">${item.pack}/CTN</div>
-            </td>
-            <td><span class="qty-badge">${item.pack}/CTN</span></td>
-            <td>${availHtml}</td>
-            <td class="price">${priceHtml}</td>
-            <td>${btnHtml}</td>
-          </tr>
-        `;
+      if(!rows[i][0]) continue;
+      allProducts.push({
+        code: rows[i][0].trim(),
+        description: rows[i][1].trim(),
+        size: rows[i][2].trim(),
+        pack: rows[i][3].trim(),
+        qty: parseInt(rows[i][4]) || 0,
+        price: parseFloat(rows[i][5]) || 0,
+        image: rows[i][6] ? rows[i][6].trim() : ''
       });
-      
-      html += `</tbody></table></div></div>`;
-      container.innerHTML += html;
     }
+    renderProducts(allProducts);
   } catch(e) {
-    document.getElementById('prod-sections').innerHTML = `<div style="text-align:center;padding:40px;color:#ff6b6b;">Error loading product database. Please contact support.</div>`;
+    document.getElementById('products-container').innerHTML = '<p style="color:#ff6b6b;">Error loading products. Please refresh.</p>';
   }
 }
-fetchAndRenderProducts();
 
-// --- UI INTERACTIONS ---
-function toggleSection(hdr){
-  var sec = hdr.parentElement;
-  sec.classList.toggle('open');
-  var chev = hdr.querySelector('.prod-section-chevron');
-  if(chev) chev.style.transform = sec.classList.contains('open') ? 'rotate(180deg)' : '';
-}
+function renderProducts(list) {
+  const container = document.getElementById('products-container');
+  container.innerHTML = '';
+  
+  list.forEach(p => {
+    let priceHTML = isLoggedIn 
+      ? `<div class="prod-price">$${p.price.toFixed(2)} <span>/ ea</span></div>` 
+      : `<div class="prod-price" style="font-size:14px;color:var(--gold);">Log in for pricing</div>`;
+      
+    let actionHTML = isLoggedIn
+      ? `<button class="prod-action" onclick="addToCart(this)" data-code="${p.code}" data-size="${p.size}" data-desc="${p.description}" data-pcs="${p.pack.replace(/[^0-9]/g, '')||1}" data-price="${p.price}" data-qty="${p.qty}">+ Add to Cart</button>`
+      : `<button class="prod-action" onclick="window.location.href='login.html'">Log In</button>`;
 
-function setFilter(code, btn){
-  // Handle Desktop Buttons
-  document.querySelectorAll('.filter-btn').forEach(function(b){ b.classList.remove('on'); });
-  if(btn) btn.classList.add('on');
-  
-  // Sync the Mobile Dropdown if triggered from desktop
-  let sel = document.getElementById('mobile-filter-select');
-  if(sel) sel.value = code;
-  
-  // Filter sections
-  document.querySelectorAll('.prod-section').forEach(function(s){
-    s.style.display = (code==='all' || s.dataset.code===code) ? '' : 'none';
+    let imgHTML = p.image ? `<img src="../${p.image}" class="prod-img" onerror="this.style.display='none'" />` : `<div class="prod-img" style="display:flex;align-items:center;justify-content:center;color:#ccc;">No Image</div>`;
+
+    container.innerHTML += `
+      <div class="prod-card">
+        ${imgHTML}
+        <div class="prod-code">${p.code}</div>
+        <div class="prod-name">${p.description}</div>
+        <div class="prod-details">
+          <div class="prod-size">Size: ${p.size}<br><span style="font-size:11px;">Pack: ${p.pack}</span></div>
+          ${priceHTML}
+        </div>
+        ${actionHTML}
+      </div>
+    `;
   });
 }
 
-var searchInput = document.getElementById('prod-search');
-if(searchInput){
-  searchInput.addEventListener('input', function(){
-    var q = this.value.trim().toLowerCase();
-    document.querySelectorAll('.prod-section').forEach(function(sec){
-      if(!q){ sec.style.display=''; return; }
-      var text = sec.textContent.toLowerCase();
-      sec.style.display = text.includes(q) ? '' : 'none';
-      if(q && text.includes(q)) sec.classList.add('open');
-    });
-  });
+function filterProducts(cat, btn) {
+  if(btn) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('on'));
+    btn.classList.add('on');
+  }
+  document.getElementById('mob-filter').value = cat;
+  
+  if(cat === 'ALL') { renderProducts(allProducts); return; }
+  const filtered = allProducts.filter(p => p.code.startsWith(cat));
+  renderProducts(filtered);
 }
 
-function openLightbox(src, title){
-  if(!src) return;
-  var lb = document.getElementById('img-lightbox');
-  var img = document.getElementById('img-lb-img');
-  var ttl = document.getElementById('img-lb-title');
-  if(!lb||!img) return;
-  img.src = src; img.alt = title||'';
-  if(ttl) ttl.textContent = title||'';
-  lb.style.display = 'flex';
-  document.body.style.overflow = 'hidden';
-}
-function closeLightbox(){
-  var lb = document.getElementById('img-lightbox');
-  if(lb) lb.style.display = 'none';
-  document.body.style.overflow = '';
-}
-document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeLightbox(); });
-
-// --- CART LOGIC ---
-var cartKey = 'apbs_cart';
-function getCart(){ try{ return JSON.parse(localStorage.getItem(cartKey)||'[]'); }catch(e){ return []; } }
-function saveCart(c){ localStorage.setItem(cartKey, JSON.stringify(c)); updateNavCount(); }
-function updateNavCount(){
-  var cart = getCart();
-  var total = cart.reduce(function(s,i){ return s+i.qty; }, 0);
-  var el = document.getElementById('nav-cart-count');
-  if(el) el.textContent = total > 0 ? total : '';
-}
-updateNavCount();
+function getCart(){ return JSON.parse(localStorage.getItem('apbs_cart')||'[]'); }
+function saveCart(c){ localStorage.setItem('apbs_cart', JSON.stringify(c)); }
 
 function addToCart(btn){
   var code  = btn.dataset.code;
@@ -326,21 +168,25 @@ function addToCart(btn){
   } else {
     var defaultUnit = (sess && sess.canOrderPieces===false) ? 'carton' : 'piece';
     var defaultQty  = defaultUnit==='carton' ? pcs : 1;
-    cart.push({code:code, size:size, description:desc, pcsPerCtn:pcs,
-               unitPrice:price, qty:defaultQty, unit:defaultUnit, maxQty:maxQty});
+    cart.push({code:code, size:size, description:desc, pcsPerCtn:pcs, unitPrice:price, qty:defaultQty, unit:defaultUnit, maxQty:maxQty});
   }
   saveCart(cart);
-  btn.textContent = 'Added!';
-  btn.style.background = 'rgba(46,204,113,.15)';
-  btn.style.borderColor = '#2ecc71';
-  btn.style.color = '#2ecc71';
+  
+  btn.innerHTML = "✓ Added";
+  btn.style.background = "var(--gold)";
+  btn.style.color = "var(--ink)";
   setTimeout(function(){
-    btn.textContent = '+ Cart';
-    btn.style.background = '';
-    btn.style.borderColor = '';
-    btn.style.color = '';
-  }, 1200);
+    btn.innerHTML = "+ Add to Cart";
+    btn.style.background = "transparent";
+    btn.style.color = "var(--gold)";
+  }, 1500);
+
+  var total = cart.reduce(function(s,i){ return s+i.qty; }, 0);
+  var el = document.getElementById('nav-cart-count');
+  if(el) el.textContent = total > 0 ? total : '';
 }
+
+document.addEventListener('DOMContentLoaded', loadProducts);
 </script>
 </body>
 </html>
