@@ -5,14 +5,14 @@
 <title>Admin Panel — All Pro Building Supplies LLC</title>
 <link rel="stylesheet" href="assets/style.css"/>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+
 </head>
 <body>
 <div id="cursor"></div><div id="cursor-ring"></div>
 
-<!-- ADMIN SECURE LOGIN GATE -->
 <div id="admin-auth-gate">
   <div class="auth-box">
-    <img src="assets/logo.png" alt="All Pro" style="width:120px;margin-bottom:20px;" onerror="this.style.display='none'">
+    <img src="assets/logo.png" alt="All Pro" style="width:120px;margin-bottom:20px;">
     <h2 style="font-family:'Oswald',sans-serif;color:var(--white);margin-bottom:24px;letter-spacing:1px;">Admin Portal Login</h2>
     <input type="password" id="admin-pin" class="data-input" placeholder="Enter Admin Password" style="text-align:center;font-size:16px;padding:14px;margin-bottom:16px;">
     <button class="btn-save" style="width:100%;" onclick="checkAdminAuth()">Access Dashboard</button>
@@ -21,15 +21,9 @@
   </div>
 </div>
 
-<nav>
-  <div class="nav-logo">
-    <img src="assets/logo.png" alt="All Pro Building Supplies" onerror="this.style.display='none'"/>
-    <div class="nav-brand-text">All Pro Admin <span>Control</span></div>
-  </div>
-  <div class="nav-actions">
-    <a href="index.html" class="nav-cta" style="background:transparent;border:1px solid var(--silver);color:var(--silver);">← Back to Site</a>
-  </div>
-</nav>
+
+<div id="global-header"></div>
+
 
 <div class="admin-container" id="main-admin-content" style="display:none;">
   <div id="status-msg"></div>
@@ -43,7 +37,6 @@
     </div>
   </div>
 
-  <!-- ORDERS TAB -->
   <div id="tab-orders" class="admin-panel active">
     <p style="color:var(--silver);font-size:14px;margin-bottom:20px;">Manage and edit customer orders. Click 'View Details' to edit order contents, change status, and send invoices.</p>
     <table class="data-table" id="orders-table">
@@ -53,12 +46,10 @@
       <tbody id="orders-tbody"></tbody>
     </table>
     <div class="action-bar">
-      <!-- CREATE NEW ORDER BUTTON -->
       <button class="btn-add" style="border-color:var(--gold);color:var(--gold);" onclick="openOrderModal(null)">+ Create New Order</button>
     </div>
   </div>
 
-  <!-- PRODUCTS TAB -->
   <div id="tab-products" class="admin-panel">
     <p style="color:var(--silver);font-size:14px;margin-bottom:20px;">Edit your master inventory. This data feeds directly into the live Products and Checkout pages.</p>
     <table class="data-table" id="prod-table">
@@ -73,7 +64,6 @@
     </div>
   </div>
 
-  <!-- USERS TAB -->
   <div id="tab-users" class="admin-panel">
     <p style="color:var(--silver);font-size:14px;margin-bottom:20px;">Approve or reject trade accounts. Only 'approved' users can view pricing and place orders.</p>
     <table class="data-table" id="users-table">
@@ -89,7 +79,6 @@
   </div>
 </div>
 
-<!-- NEW USER MODAL -->
 <div id="user-modal-overlay" onclick="closeUserModal(event)">
   <div id="user-modal" onclick="event.stopPropagation()" class="auth-box" style="margin:auto; position:relative; width:100%; max-width:500px; padding:32px; text-align:left;">
     <button class="modal-close" onclick="closeUserModal(event)">&times;</button>
@@ -131,7 +120,6 @@
   </div>
 </div>
 
-<!-- EDIT / CREATE ORDER MODAL -->
 <div id="order-modal-overlay" onclick="closeOrderModal(event)">
   <div id="order-modal" onclick="event.stopPropagation()">
     <button class="modal-close" onclick="closeOrderModal(event)">&times;</button>
@@ -139,7 +127,6 @@
     
     <div id="edit-lock-banner">⚠ This order is Delivered or Cancelled. Order editing is disabled. Change status to Pending or Confirmed to unlock fields.</div>
 
-    <!-- CUSTOMER LOAD DROPDOWN -->
     <div style="background:rgba(200,152,31,.05); border:1px solid rgba(200,152,31,.2); padding:16px; margin-bottom:24px; border-radius:4px;">
       <div class="modal-lbl" style="color:var(--gold);">Auto-Fill Customer Info</div>
       <select class="data-input locked-input" id="modal-cust-dropdown" onchange="loadCustomerIntoForm()" style="border-color:var(--gold);">
@@ -168,7 +155,6 @@
       </div>
     </div>
 
-    <!-- Editable Items Table -->
     <div class="modal-box" style="margin-bottom:24px; padding:0; overflow:hidden;">
       <table class="data-table" style="margin:0;">
         <thead>
@@ -184,7 +170,6 @@
         <tbody id="m-items-tbody"></tbody>
       </table>
       
-      <!-- ADD NEW ITEM BAR WITH CASES/PIECES CALCULATOR -->
       <div class="add-item-bar locked-input" id="add-item-container">
         <div class="add-item-col" style="flex:2; min-width:200px;">
           <label class="modal-lbl">Select Product</label>
@@ -218,11 +203,9 @@
       </div>
     </div>
 
-    <!-- Management Controls -->
     <div style="background:var(--ink); border:1px solid rgba(200,152,31,.2); padding:20px; border-radius:4px;">
       <div class="modal-grid" style="margin-bottom:0; gap:20px;">
         
-        <!-- Status & Save -->
         <div>
           <div class="modal-lbl" style="color:var(--gold)">Order Status</div>
           <select id="m-status-sel" class="data-input" style="margin-bottom:16px;" onchange="toggleEditLock(this.value)">
@@ -234,7 +217,6 @@
           <button class="btn-save" style="width:100%;" onclick="saveOrderChanges()">💾 Save All Changes</button>
         </div>
         
-        <!-- Email Launcher -->
         <div>
           <div class="modal-lbl" style="color:var(--gold)">Communications</div>
           <p style="font-size:12px; color:var(--silver); margin-bottom:12px; line-height:1.5;">Send formatted confirmation emails, delivery notifications, or invoices to customers and admins.</p>
@@ -247,7 +229,6 @@
   </div>
 </div>
 
-<!-- EMAIL COMMAND CENTER MODAL -->
 <div id="email-modal-overlay" onclick="closeEmailModal(event)">
   <div id="email-modal" onclick="event.stopPropagation()">
     <button class="modal-close" onclick="closeEmailModal(event)">&times;</button>
@@ -990,6 +971,7 @@ function addCustomEmailField() {
   container.appendChild(div);
 }
 
+// Breaking massive strings to avoid truncation
 function buildConfirmEmail(order, note){
   const noteHtml = note ? `
     <tr>
@@ -1107,7 +1089,8 @@ function buildConfirmEmail(order, note){
           </table>
         </td></tr>
       </table>
-    </body></html>
+      <script src="assets/main.js"></script>
+</body></html>
   `;
 }
 
@@ -1174,7 +1157,8 @@ function buildDeliveredEmail(order, note){
           </table>
         </td></tr>
       </table>
-    </body></html>
+      <script src="assets/main.js"></script>
+</body></html>
   `;
 }
 
@@ -1293,10 +1277,12 @@ function buildInvoiceEmail(order, note){
           </table>
         </td></tr>
       </table>
-    </body></html>
+      <script src="assets/main.js"></script>
+</body></html>
   `;
 }
 
+// Master Send Function
 async function executeSendEmail() {
   if(!activeOrderObj) return;
 
@@ -1362,9 +1348,11 @@ async function executeSendEmail() {
   }
 }
 
+// Init
 document.addEventListener('DOMContentLoaded', () => { 
   switchTab('orders'); loadOrders(); loadProducts(); loadUsers(); 
 });
 </script>
+  <script src="assets/main.js"></script>
 </body>
 </html>

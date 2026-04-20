@@ -4,105 +4,126 @@
 <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>My Account — All Pro Building Supplies LLC</title>
 <link rel="stylesheet" href="assets/style.css"/>
+
 </head>
 <body>
 
 <div id="cursor"></div><div id="cursor-ring"></div>
 
-<!-- JS INJECTS HEADER HERE -->
-<div id="global-header"></div> 
 
-<header class="pg-hdr" style="margin-top:60px; padding-bottom:40px;">
-  <div class="pg-hdr-inner">
-    <h1 class="pg-title" data-r>Account <span>Dashboard.</span></h1>
+<div id="global-header"></div>
+
+  <div class="topbar-badge">Contractor-Grade · Fast Response · NJ &amp; Surrounding Areas</div>
+</div>
+
+
+
+
+
+<div class="page-hero">
+  <div class="page-hero-inner">
+    <div class="page-breadcrumb"><a href="index.html">Home</a> › My Account</div>
+    <div class="page-title" data-r>Trade <span>Account</span></div>
+    <p class="page-subtitle" data-r>Manage your details and view your order history.</p>
   </div>
-</header>
+</div>
 
-<section class="sec" style="padding-top:0;">
-  <div class="sec-inner" data-r>
+<section class="sec" style="background:var(--ink);padding-top:20px;">
+  <div class="sec-inner">
     <div class="account-layout">
       
-      <!-- Sidebar -->
       <div class="acct-sidebar">
-        <h2 class="acct-name" id="d-name">Loading...</h2>
-        <div class="acct-company" id="d-comp">Loading...</div>
+        <div class="acct-name" id="display-name">Loading...</div>
+        <div class="acct-company" id="display-company">-</div>
         
-        <div class="acct-detail"><div class="acct-lbl">Email Address</div><div class="acct-val" id="d-email">...</div></div>
-        <div class="acct-detail"><div class="acct-lbl">Phone Number</div><div class="acct-val" id="d-phone">...</div></div>
-        <div class="acct-detail"><div class="acct-lbl">Account Status</div><div class="acct-val"><span class="badge confirmed">Approved Trade Account</span></div></div>
-        
-        <div style="margin-top:32px; border-top:1px solid rgba(255,255,255,.05); padding-top:24px;">
-          <button class="btn-ghost" style="width:100%; justify-content:center; border-color:#ff6b6b; color:#ff6b6b;" onclick="logout()">Secure Logout</button>
+        <div class="acct-detail">
+          <div class="acct-lbl">Email Address</div>
+          <div class="acct-val" id="display-email">-</div>
         </div>
+        <div class="acct-detail">
+          <div class="acct-lbl">Account Status</div>
+          <div class="acct-val" id="display-status" style="color:#2ecc71;font-weight:bold;text-transform:capitalize;">-</div>
+        </div>
+        <div class="acct-detail">
+          <div class="acct-lbl">Purchasing Rights</div>
+          <div class="acct-val" id="display-rights">-</div>
+        </div>
+
+        <button class="btn-logout" onclick="logout()">Sign Out</button>
       </div>
 
-      <!-- Main Content -->
-      <div>
-        <h2 style="font-family:'Oswald',sans-serif;font-size:20px;color:var(--gold);margin-bottom:20px;letter-spacing:1px;text-transform:uppercase;">Recent Orders</h2>
-        
-        <div style="background:var(--ink2);border:1px solid rgba(200,152,31,.15);padding:24px;">
-          <table class="data-table" style="margin:0;">
-            <thead>
-              <tr>
-                <th>Order ID</th>
-                <th>Date Placed</th>
-                <th>Items</th>
-                <th>Total</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody id="orders-tbody">
-              <tr><td colspan="5" style="text-align:center;padding:32px;color:var(--silver);">Loading order history...</td></tr>
-            </tbody>
-          </table>
-        </div>
+      <div class="acct-main">
+        <h2 class="acct-section-title">Order History</h2>
+        <table class="orders-table">
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Date Placed</th>
+              <th>Items</th>
+              <th>Total</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="orders-tbody">
+            <tr><td colspan="5" style="text-align:center;padding:40px;color:var(--silver);">Loading orders...</td></tr>
+          </tbody>
+        </table>
       </div>
 
     </div>
   </div>
 </section>
 
-<!-- JS INJECTS FOOTER HERE -->
+
 <div id="global-footer"></div>
+
 
 <script src="assets/main.js"></script>
 <script>
 const WORKER_URL = 'https://allpro-github-proxy.baruch-6d5.workers.dev';
+var currentUser = null;
 
-document.addEventListener('DOMContentLoaded', () => {
+(function init() {
   try {
-    const user = JSON.parse(sessionStorage.getItem('apbs_user'));
-    if(!user || user.status !== 'approved') { window.location.href = 'login.html'; return; }
-    
-    document.getElementById('d-name').textContent = user.fname + ' ' + user.lname;
-    document.getElementById('d-comp').textContent = user.company || 'Independent';
-    document.getElementById('d-email').textContent = user.email;
-    document.getElementById('d-phone').textContent = user.phone;
-    
-    loadUserOrders(user.email);
-  } catch(e) { window.location.href = 'login.html'; }
-});
+    currentUser = JSON.parse(sessionStorage.getItem('apbs_user'));
+  } catch(e) {}
+  
+  if (!currentUser) {
+    window.location.href = 'login.html';
+    return;
+  }
 
-async function loadUserOrders(email) {
+  // Populate User Info
+  document.getElementById('display-name').textContent = (currentUser.fname || '') + ' ' + (currentUser.lname || '');
+  document.getElementById('display-company').textContent = currentUser.company || 'N/A';
+  document.getElementById('display-email').textContent = currentUser.email || 'N/A';
+  document.getElementById('display-status').textContent = currentUser.status || 'Pending';
+  document.getElementById('display-rights').textContent = currentUser.canOrderPieces === false ? 'Cases Only' : 'Pieces & Cases';
+  document.getElementById('nav-logged-in-name').textContent = (currentUser.fname || '') + ' ' + (currentUser.lname || '');
+
+  loadOrders();
+})();
+
+async function loadOrders() {
   try {
     const r = await fetch(WORKER_URL + '/github/orders.json');
-    if(!r.ok) throw new Error();
     const d = await r.json();
-    const allOrders = JSON.parse(decodeURIComponent(escape(atob(d.content)))).orders || [];
+    const data = JSON.parse(atob(d.content.replace(/\n/g,'')));
     
-    const myOrders = allOrders.filter(o => o.customer.email.toLowerCase() === email.toLowerCase());
-    myOrders.sort((a,b) => new Date(b.placedAt) - new Date(a.placedAt));
+    let myOrders = data.orders.filter(o => o.customer.email === currentUser.email);
+    myOrders.sort((a, b) => new Date(b.placedAt) - new Date(a.placedAt));
     
-    if(myOrders.length === 0) {
-      document.getElementById('orders-tbody').innerHTML = '<tr><td colspan="5" style="text-align:center;padding:32px;color:var(--silver);">No order history found.</td></tr>';
+    const tbody = document.getElementById('orders-tbody');
+    
+    if (myOrders.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--silver);">You have not placed any orders yet.</td></tr>';
       return;
     }
-    
-    document.getElementById('orders-tbody').innerHTML = myOrders.map(o => {
-      let statusClass = 'pending';
-      if (o.status === 'confirmed') statusClass = 'confirmed';
-      if (o.status === 'delivered') statusClass = 'delivered';
-      if (o.status === 'cancelled') statusClass = 'cancelled';
+
+    tbody.innerHTML = myOrders.map(o => {
+      let statusClass = 'status-pending';
+      if (o.status === 'confirmed') statusClass = 'status-confirmed';
+      if (o.status === 'cancelled') statusClass = 'status-cancelled';
       
       let itemsCount = o.items ? o.items.reduce((sum, i) => sum + i.qty, 0) : 0;
 
@@ -112,13 +133,13 @@ async function loadUserOrders(email) {
           <td data-label="Date Placed">${new Date(o.placedAt).toLocaleDateString()}</td>
           <td data-label="Items">${itemsCount} pcs</td>
           <td data-label="Total">$${(o.total || 0).toFixed(2)}</td>
-          <td data-label="Status"><span class="badge ${statusClass}">${o.status}</span></td>
+          <td data-label="Status"><span class="status-badge ${statusClass}">${o.status}</span></td>
         </tr>
       `;
     }).join('');
 
   } catch(e) {
-    document.getElementById('orders-tbody').innerHTML = '<tr><td colspan="5" style="color:#ff6b6b;padding:20px;text-align:center;">Failed to load order history.</td></tr>';
+    document.getElementById('orders-tbody').innerHTML = '<tr><td colspan="5" style="color:#ff6b6b;padding:20px;">Failed to load order history.</td></tr>';
   }
 }
 
@@ -126,6 +147,17 @@ function logout() {
   sessionStorage.removeItem('apbs_user');
   window.location.href = 'login.html';
 }
+
+// Nav Cart Count
+function updateNavCount(){
+  try{
+    var cart = JSON.parse(localStorage.getItem('apbs_cart')||'[]');
+    var total = cart.reduce(function(s,i){ return s+i.qty; }, 0);
+    var el = document.getElementById('nav-cart-count');
+    if(el) el.textContent = total > 0 ? total : '';
+  }catch(e){}
+}
+updateNavCount();
 </script>
 </body>
 </html>
