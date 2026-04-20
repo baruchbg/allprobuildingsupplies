@@ -94,7 +94,7 @@
 
 /* --- BULLETPROOF CURSOR FIX --- */
 #cursor, #cursor-ring { 
-  z-index: 9999999 !important; 
+  z-index: 999999 !important; 
   position: fixed; 
   pointer-events: none; 
 }
@@ -385,6 +385,9 @@
         </div>
       </div>
     </div>
+    
+    <div class="modal-lbl" style="color:var(--white)">3. Add Note to Email (Optional)</div>
+    <textarea id="email-custom-note" class="data-input" style="margin-bottom:24px; resize:vertical; min-height:80px;" placeholder="Type a custom message to include in the email (e.g., Backorders, substitutes, delivery timing...)"></textarea>
 
     <div id="email-send-msg" style="font-family:'DM Mono',monospace;font-size:12px;margin-bottom:16px;display:none;"></div>
 
@@ -758,7 +761,6 @@ function calcFromCases() {
   const cases = parseFloat(document.getElementById('new-item-cases').value) || 0;
   let pcs = Math.ceil(cases * currentItemPack);
   
-  // Apply Stock Clamp
   if(pcs > currentItemStock) {
     pcs = currentItemStock;
     document.getElementById('new-item-cases').value = Number.isInteger(pcs/currentItemPack) ? (pcs/currentItemPack) : (pcs/currentItemPack).toFixed(2);
@@ -772,7 +774,6 @@ function calcFromPieces() {
   let pcsInp = document.getElementById('new-item-pcs');
   let pcs = parseInt(pcsInp.value) || 0;
   
-  // Apply Stock Clamp
   if(pcs > currentItemStock) {
     pcs = currentItemStock;
     pcsInp.value = pcs;
@@ -879,7 +880,7 @@ function addItemToOrder() {
   if (sel.value === '') return alert('Please select a product to add.');
   
   const prod = masterProducts[sel.value];
-  if(qty > prod.stock) qty = prod.stock; // Final safety clamp
+  if(qty > prod.stock) qty = prod.stock; 
   
   activeOrderObj.items.push({
     code: prod.code,
@@ -910,7 +911,6 @@ function renderEditableItems() {
     let packNum = 1;
     if (item.pcsPerCtn) { packNum = parseInt(String(item.pcsPerCtn).replace(/[^0-9]/g, '')) || 1; }
     
-    // Look up max stock: allow them to keep what they have + whatever is currently in inventory
     let catalogItem = masterProducts.find(p => p.code === item.code);
     let maxAllowed = catalogItem ? (catalogItem.stock + item.qty) : item.qty;
     
@@ -933,7 +933,6 @@ function renderEditableItems() {
   toggleEditLock(document.getElementById('m-status-sel').value);
 }
 
-// Row-specific inventory calculations
 function rowCalcCases(idx) {
   let casesInp = document.querySelectorAll('.edit-cases')[idx];
   let pcsInp = document.querySelectorAll('.edit-pcs')[idx];
@@ -943,7 +942,6 @@ function rowCalcCases(idx) {
   let cases = parseFloat(casesInp.value) || 0;
   let pcs = Math.ceil(cases * pack);
   
-  // Stock clamp
   if(pcs > maxStock) {
     pcs = maxStock;
     casesInp.value = Number.isInteger(pcs/pack) ? (pcs/pack) : (pcs/pack).toFixed(2);
@@ -962,7 +960,6 @@ function rowCalcPieces(idx) {
   
   let pcs = parseInt(pcsInp.value) || 0;
   
-  // Stock clamp
   if(pcs > maxStock) {
     pcs = maxStock;
     pcsInp.value = pcs;
@@ -1060,9 +1057,9 @@ function openEmailModal(e) {
   document.getElementById('chk-cust').checked = true;
   document.getElementById('chk-admin').checked = false;
   document.getElementById('chk-custom').checked = false;
+  document.getElementById('email-custom-note').value = ''; // Clear custom note
   
   document.getElementById('custom-email-container').style.display = 'none';
-  
   const container = document.getElementById('custom-email-container');
   container.innerHTML = '';
   const initialDiv = document.createElement('div');
@@ -1097,7 +1094,18 @@ function addCustomEmailField() {
 }
 
 // Breaking massive strings to avoid truncation
-function buildConfirmEmail(order){
+function buildConfirmEmail(order, note){
+  const noteHtml = note ? `
+    <tr>
+      <td style="padding:20px 36px 0;">
+        <div style="background:#fffbf0; border-left:4px solid #C8981F; padding:16px; border-radius:0 4px 4px 0;">
+          <div style="font-size:11px;color:#C8981F;font-weight:bold;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Message from All Pro:</div>
+          <div style="font-size:14px;color:#333;line-height:1.6;">${note.replace(/\n/g, '<br>')}</div>
+        </div>
+      </td>
+    </tr>
+  ` : '';
+
   const itemsHtml = order.items.map(function(i){
     return `
       <tr>
@@ -1150,6 +1158,7 @@ function buildConfirmEmail(order){
               <p style="margin:0;font-size:16px;color:#222;">Hi <strong>${order.customer.name}</strong>,</p>
               <p style="margin:12px 0 0;font-size:15px;color:#444;line-height:1.6;">Here is a copy of your order. If any changes were made by our team, they are reflected below.</p>
             </td></tr>
+            ${noteHtml}
             <tr><td style="padding:24px 36px 0;">
               <table width="100%" cellpadding="0" cellspacing="0" style="background:#f8f8f8;border-radius:4px;border:1px solid #e8e8e8;">
                 <tr>
@@ -1206,7 +1215,18 @@ function buildConfirmEmail(order){
   `;
 }
 
-function buildDeliveredEmail(order){
+function buildDeliveredEmail(order, note){
+  const noteHtml = note ? `
+    <tr>
+      <td style="padding:20px 36px 0;">
+        <div style="background:#fffbf0; border-left:4px solid #C8981F; padding:16px; border-radius:0 4px 4px 0;">
+          <div style="font-size:11px;color:#C8981F;font-weight:bold;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Message from All Pro:</div>
+          <div style="font-size:14px;color:#333;line-height:1.6;">${note.replace(/\n/g, '<br>')}</div>
+        </div>
+      </td>
+    </tr>
+  ` : '';
+
   return `
     <!DOCTYPE html><html><head><meta charset="UTF-8"/></head>
     <body style="margin:0;padding:0;background:#f4f4f4;font-family:'Helvetica Neue',Arial,sans-serif;">
@@ -1231,6 +1251,7 @@ function buildDeliveredEmail(order){
               <p style="margin:12px 0 0;font-size:15px;color:#444;line-height:1.6;">Great news! Your order <strong>${order.id}</strong> has been successfully delivered/picked up.</p>
               <p style="margin:16px 0 0;font-size:15px;color:#444;line-height:1.6;">Thank you for your business. We truly appreciate you choosing All Pro Building Supplies, and we look forward to outfitting your next job.</p>
             </td></tr>
+            ${noteHtml}
             <tr><td style="padding:24px 36px 0;">
               <table width="100%" cellpadding="0" cellspacing="0" style="background:#f8f8f8;border-radius:4px;border:1px solid #e8e8e8;">
                 <tr>
@@ -1261,7 +1282,18 @@ function buildDeliveredEmail(order){
   `;
 }
 
-function buildInvoiceEmail(order){
+function buildInvoiceEmail(order, note){
+  const noteHtml = note ? `
+    <tr>
+      <td style="padding:20px 36px 0;">
+        <div style="background:#fffbf0; border-left:4px solid #C8981F; padding:16px; border-radius:0 4px 4px 0;">
+          <div style="font-size:11px;color:#C8981F;font-weight:bold;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Message from All Pro:</div>
+          <div style="font-size:14px;color:#333;line-height:1.6;">${note.replace(/\n/g, '<br>')}</div>
+        </div>
+      </td>
+    </tr>
+  ` : '';
+
   const itemsHtml = order.items.map(function(i){
     return `
       <tr>
@@ -1299,6 +1331,7 @@ function buildInvoiceEmail(order){
               <p style="margin:0;font-size:16px;color:#222;">Hi <strong>${order.customer.name}</strong>,</p>
               <p style="margin:12px 0 0;font-size:15px;color:#444;line-height:1.6;">Please find your invoice for the order below. Thank you for your business!</p>
             </td></tr>
+            ${noteHtml}
             <tr><td style="padding:24px 36px 0;">
               <table width="100%" cellpadding="0" cellspacing="0" style="background:#f8f8f8;border-radius:4px;border:1px solid #e8e8e8;">
                 <tr>
@@ -1376,6 +1409,7 @@ async function executeSendEmail() {
   const sendCust = document.getElementById('chk-cust').checked;
   const sendAdmin = document.getElementById('chk-admin').checked;
   const sendCustom = document.getElementById('chk-custom').checked;
+  const customNote = document.getElementById('email-custom-note').value.trim();
   
   let recipients = [];
   if(sendCust && activeOrderObj.customer.email) recipients.push(activeOrderObj.customer.email);
@@ -1394,9 +1428,9 @@ async function executeSendEmail() {
   }
 
   let htmlBody = '', subject = '';
-  if(type === 'confirm') { htmlBody = buildConfirmEmail(activeOrderObj); subject = 'Order Update / Confirmation — ' + activeOrderObj.id; } 
-  else if(type === 'deliver') { htmlBody = buildDeliveredEmail(activeOrderObj); subject = 'Order Delivered — Thank You! | All Pro Building Supplies'; } 
-  else if(type === 'invoice') { htmlBody = buildInvoiceEmail(activeOrderObj); subject = 'Invoice — Order ' + activeOrderObj.id + ' | All Pro Building Supplies'; }
+  if(type === 'confirm') { htmlBody = buildConfirmEmail(activeOrderObj, customNote); subject = 'Order Update / Confirmation — ' + activeOrderObj.id; } 
+  else if(type === 'deliver') { htmlBody = buildDeliveredEmail(activeOrderObj, customNote); subject = 'Order Delivered — Thank You! | All Pro Building Supplies'; } 
+  else if(type === 'invoice') { htmlBody = buildInvoiceEmail(activeOrderObj, customNote); subject = 'Invoice — Order ' + activeOrderObj.id + ' | All Pro Building Supplies'; }
 
   let baseParams = {
     email_body:  htmlBody,
