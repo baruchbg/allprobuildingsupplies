@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Dealer Login — All Pro Building Supplies</title>
+<link rel="stylesheet" href="assets/style.css"/>
+</head>
+<body>
+
+<div id="cursor"></div><div id="cursor-ring"></div>
+
+<!-- JS INJECTS HEADER HERE -->
+<div id="global-header"></div> 
+
+<div class="auth-wrapper">
+  <div class="auth-box">
+    
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="switchAuth('login')" id="tab-login">Login</button>
+      <button class="auth-tab" onclick="switchAuth('change')" id="tab-change">Change Password</button>
+    </div>
+
+    <!-- LOGIN FORM -->
+    <div id="form-login">
+      <div class="auth-logo"><img src="assets/logo.png" alt="All Pro" onerror="this.style.display='none'"/><div class="auth-title">Dealer Access</div><div class="auth-sub">Enter your email and password to access trade pricing and place orders.</div></div>
+      <div class="form-group" style="margin-bottom:16px;">
+        <label class="form-label">Email Address</label>
+        <input type="email" id="log-email" class="form-input" placeholder="contractor@domain.com">
+      </div>
+      <div class="form-group" style="margin-bottom:24px;">
+        <label class="form-label">Password</label>
+        <input type="password" id="log-pass" class="form-input" placeholder="••••••••">
+      </div>
+      <button class="btn-gold" style="width:100%; justify-content:center;" onclick="executeLogin(this)">Secure Login</button>
+      <div id="log-msg" style="margin-top:16px;font-size:12px;font-family:'DM Mono',monospace;display:none;text-align:center;"></div>
+      <div style="margin-top:24px;text-align:center;font-size:13px;color:var(--silver);">Don't have an account? <a href="register.html" style="color:var(--gold);text-decoration:underline;">Apply for access</a></div>
+    </div>
+
+    <!-- CHANGE PASSWORD FORM -->
+    <div id="form-change" style="display:none;">
+      <div class="auth-logo"><div class="auth-title">Update Password</div><div class="auth-sub">Change your initial or current password here.</div></div>
+      <div class="form-group" style="margin-bottom:16px;">
+        <label class="form-label">Email Address</label>
+        <input type="email" id="chg-email" class="form-input" placeholder="contractor@domain.com">
+      </div>
+      <div class="form-group" style="margin-bottom:16px;">
+        <label class="form-label">Current Password</label>
+        <input type="password" id="chg-old-pass" class="form-input" placeholder="Current or temporary password">
+      </div>
+      <div class="form-group" style="margin-bottom:24px;">
+        <label class="form-label">New Password</label>
+        <input type="password" id="chg-new-pass" class="form-input" placeholder="New strong password">
+      </div>
+      <button class="btn-gold" style="width:100%; justify-content:center;" onclick="executeChangePassword(this)">Update Password</button>
+      <div id="chg-msg" style="margin-top:16px;font-size:12px;font-family:'DM Mono',monospace;display:none;text-align:center;"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- JS INJECTS FOOTER HERE -->
+<div id="global-footer"></div>
+
+<script src="assets/main.js"></script>
+<script>
+const WORKER_URL = 'https://allpro-github-proxy.baruch-6d5.workers.dev';
+
+function switchAuth(mode) {
+  document.getElementById('tab-login').classList.remove('active');
+  document.getElementById('tab-change').classList.remove('active');
+  document.getElementById('form-login').style.display = 'none';
+  document.getElementById('form-change').style.display = 'none';
+  document.getElementById('log-msg').style.display = 'none';
+  document.getElementById('chg-msg').style.display = 'none';
+
+  document.getElementById('tab-' + mode).classList.add('active');
+  document.getElementById('form-' + mode).style.display = 'block';
+}
+
+function showMsg(mode, msg, isErr) {
+  const el = document.getElementById(mode === 'login' ? 'log-msg' : 'chg-msg');
+  el.textContent = msg;
+  el.style.color = isErr ? '#ff6b6b' : '#2ecc71';
+  el.style.display = 'block';
+}
+
+async function executeLogin(btn) {
+  const email = document.getElementById('log-email').value.trim();
+  const pass = document.getElementById('log-pass').value.trim();
+  
+  if(!email || !pass) return showMsg('login', 'Please enter email and password.', true);
+  
+  btn.disabled = true; btn.textContent = 'Authenticating...';
+  
+  try {
+    const r = await fetch(WORKER_URL + '/github/users.json');
+    if(!r.ok) throw new Error("Could not connect to database.");
+    const d = await r.json();
+    const users = JSON.parse(decodeURIComponent(escape(atob(d.content)))).users || [];
+    
+    const user = users.find(u => u.email.toLowerCase() === email.toLowerCase());
+    
+    if(!user || user.password !== pass) {
+      showMsg('login', 'Invalid email or password.', true);
+    } else if(user.status !== 'approved') {
+      showMsg('login', 'Account is pending admin approval.', true);
+    } else {
+      sessionStorage.setItem('apbs_user', JSON.stringify(user));
+      window.location.href = 'products.html';
+    }
+  } catch(err) {
+    showMsg('login', 'Error connecting to server.', true);
+  }
+  
+  btn.disabled = false; btn.textContent = 'Secure Login';
+}
+
+async function executeChangePassword(btn) {
+  const email = document.getElementById('chg-email').value.trim();
+  const oldPass = document.getElementById('chg-old-pass').value.trim();
+  const newPass = document.getElementById('chg-new-pass').value.trim();
+
+  if(!email || !oldPass || !newPass) return showMsg('change', 'All fields are required.', true);
+
+  btn.disabled = true; btn.textContent = 'Updating...';
+
+  try {
+    const r = await fetch(WORKER_URL + '/github/users.json');
+    if(!r.ok) throw new Error("Database read failed.");
+    const d = await r.json();
+    const currentSha = d.sha;
+    const masterUsers = JSON.parse(decodeURIComponent(escape(atob(d.content)))).users || [];
+
+    const userIdx = masterUsers.findIndex(u => u.email.toLowerCase() === email.toLowerCase());
+
+    if(userIdx === -1) {
+      showMsg('change', 'Account not found.', true);
+    } else if (masterUsers[userIdx].password !== oldPass) {
+      showMsg('change', 'Current password is incorrect.', true);
+    } else {
+      masterUsers[userIdx].password = newPass;
+      
+      const payload = { 
+        message: 'User self-service password update', 
+        content: btoa(unescape(encodeURIComponent(JSON.stringify({users: masterUsers}, null, 2)))), 
+        branch: 'main', 
+        sha: currentSha 
+      };
+      
+      const putReq = await fetch(WORKER_URL + '/github/users.json', { method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
+
+      if(putReq.ok) {
+        showMsg('change', 'Password updated successfully! Please login.', false);
+        document.getElementById('chg-old-pass').value = '';
+        document.getElementById('chg-new-pass').value = '';
+        setTimeout(() => { switchAuth('login'); document.getElementById('log-email').value = email; }, 2000);
+      } else {
+        throw new Error("Write failed");
+      }
+    }
+  } catch(err) {
+    showMsg('change', 'Server error. Please try again.', true);
+  }
+
+  btn.disabled = false; btn.textContent = 'Update Password';
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Cart — All Pro Building Supplies LLC</title>
+<link rel="stylesheet" href="assets/style.css"/>
+</head>
+<body>
+
+<div id="cursor"></div><div id="cursor-ring"></div>
+
+<!-- JS INJECTS HEADER HERE -->
+<div id="global-header"></div> 
+
+<header class="pg-hdr" style="margin-top:60px; padding-bottom:40px;">
+  <div class="pg-hdr-inner">
+    <h1 class="pg-title" data-r>Your <span>Cart.</span></h1>
+  </div>
+</header>
+
+<section class="sec" style="padding-top:0;">
+  <div class="sec-inner cart-wrap" id="cart-container" data-r>
+    <!-- Cart populated by JS -->
+  </div>
+</section>
+
+<!-- JS INJECTS FOOTER HERE -->
+<div id="global-footer"></div>
+
+<script src="assets/main.js"></script>
+<script>
+function getCart(){ return JSON.parse(localStorage.getItem('apbs_cart')||'[]'); }
+function saveCart(c){ localStorage.setItem('apbs_cart', JSON.stringify(c)); }
+
+function renderCart() {
+  var cart = getCart();
+  var container = document.getElementById('cart-container');
+  var user = null; try{ user = JSON.parse(sessionStorage.getItem('apbs_user')); }catch(e){}
+  var canPieces = user ? user.canOrderPieces : true;
+  
+  if(cart.length === 0){
+    container.innerHTML = `
+      <div class="cart-empty">
+        <div class="cart-empty-icon">🛒</div>
+        <h2>Your Cart is Empty</h2>
+        <p>Browse our catalog to add materials to your job order.</p>
+        <a href="products.html" class="btn-gold" style="cursor:none;">Browse Products</a>
+      </div>
+    `;
+    return;
+  }
+  
+  var html = '<table class="cart-table"><thead><tr><th>Product</th><th>Unit</th><th>Qty</th><th>Price</th><th>Total</th><th></th></tr></thead><tbody>';
+  var grandTotal = 0;
+  
+  cart.forEach(function(item, idx){
+    var lineTot = item.qty * item.unitPrice;
+    grandTotal += lineTot;
+    
+    var unitOptions = '';
+    if(canPieces){
+       unitOptions = `<select class="data-input" style="width:90px;" onchange="setUnit(${idx}, this.value)">
+                        <option value="piece" ${item.unit==='piece'?'selected':''}>Pieces</option>
+                        <option value="carton" ${item.unit==='carton'?'selected':''}>Cases</option>
+                      </select>`;
+    } else {
+       unitOptions = `<span style="font-size:12px;color:var(--silver);">Cases Only</span>`;
+    }
+
+    var step = (item.unit==='carton' && item.pcsPerCtn) ? item.pcsPerCtn : 1;
+
+    html += `
+      <tr>
+        <td>
+          <div style="font-family:'Oswald',sans-serif;font-size:16px;color:var(--white);">${item.description}</div>
+          <div style="font-size:12px;color:var(--silver);margin-top:4px;">Size: ${item.size} | Code: <span style="color:var(--gold);">${item.code}</span></div>
+          <div style="font-size:11px;color:var(--silver);margin-top:2px;">Pack: ${item.pcsPerCtn}</div>
+        </td>
+        <td>${unitOptions}</td>
+        <td>
+          <input type="number" class="cart-qty-input" value="${item.qty}" min="${step}" step="${step}" max="${item.maxQty||9999}" onchange="updateQty(${idx}, this.value, ${item.maxQty})">
+        </td>
+        <td>$${item.unitPrice.toFixed(2)}</td>
+        <td style="color:var(--white);font-family:'DM Mono',monospace;">$${lineTot.toFixed(2)}</td>
+        <td><button class="cart-del-btn" onclick="removeItem(${idx})">&times;</button></td>
+      </tr>
+    `;
+  });
+  
+  html += `
+      <tr style="border:none;">
+        <td colspan="4" style="text-align:right;font-family:'Oswald',sans-serif;font-size:20px;color:var(--white);">Estimated Total:</td>
+        <td colspan="2" style="font-family:'Oswald',sans-serif;font-size:24px;color:var(--gold);">$${grandTotal.toFixed(2)}</td>
+      </tr>
+    </tbody></table>
+    
+    <div style="display:flex;justify-content:flex-end;gap:16px;margin-top:24px;">
+      <button class="btn-ghost" onclick="window.location.href='products.html'">Continue Shopping</button>
+      <button class="btn-gold" onclick="window.location.href='checkout.html'">Proceed to Checkout →</button>
+    </div>
+  `;
+  container.innerHTML = html;
+  
+  // Update Nav Count
+  var total = cart.reduce(function(s,i){ return s+i.qty; }, 0);
+  var el = document.getElementById('nav-cart-count');
+  if(el) el.textContent = total > 0 ? total : '';
+}
+
+function updateQty(idx, val, maxQty){
+  var cart = getCart();
+  var newQty = parseInt(val)||1;
+  if(newQty < 1) newQty = 1;
+  if(maxQty && newQty > maxQty) newQty = maxQty;
+  cart[idx].qty = newQty;
+  saveCart(cart);
+  renderCart();
+}
+
+function setUnit(idx, unit){
+  var cart = getCart();
+  var _u = null; try{ _u = JSON.parse(sessionStorage.getItem('apbs_user')); }catch(e){}
+  if(unit === 'piece' && _u && _u.canOrderPieces === false) return;
+  cart[idx].unit = unit;
+  if(unit === 'carton'){
+    var pcs = cart[idx].pcsPerCtn || 1;
+    cart[idx].qty = Math.round(cart[idx].qty / pcs) * pcs;
+  }
+  saveCart(cart);
+  renderCart();
+}
+
+function removeItem(idx){
+  var cart = getCart();
+  cart.splice(idx, 1);
+  saveCart(cart);
+  renderCart();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  try{
+    var u = JSON.parse(sessionStorage.getItem('apbs_user'));
+    if(u && u.status==='approved') renderCart();
+    else window.location.href = 'login.html';
+  }catch(e){ window.location.href = 'login.html'; }
+});
+</script>
+</body>
+</html>

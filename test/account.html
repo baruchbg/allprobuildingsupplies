@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>My Account — All Pro Building Supplies LLC</title>
+<link rel="stylesheet" href="assets/style.css"/>
+</head>
+<body>
+
+<div id="cursor"></div><div id="cursor-ring"></div>
+
+<!-- JS INJECTS HEADER HERE -->
+<div id="global-header"></div> 
+
+<header class="pg-hdr" style="margin-top:60px; padding-bottom:40px;">
+  <div class="pg-hdr-inner">
+    <h1 class="pg-title" data-r>Account <span>Dashboard.</span></h1>
+  </div>
+</header>
+
+<section class="sec" style="padding-top:0;">
+  <div class="sec-inner" data-r>
+    <div class="account-layout">
+      
+      <!-- Sidebar -->
+      <div class="acct-sidebar">
+        <h2 class="acct-name" id="d-name">Loading...</h2>
+        <div class="acct-company" id="d-comp">Loading...</div>
+        
+        <div class="acct-detail"><div class="acct-lbl">Email Address</div><div class="acct-val" id="d-email">...</div></div>
+        <div class="acct-detail"><div class="acct-lbl">Phone Number</div><div class="acct-val" id="d-phone">...</div></div>
+        <div class="acct-detail"><div class="acct-lbl">Account Status</div><div class="acct-val"><span class="badge confirmed">Approved Trade Account</span></div></div>
+        
+        <div style="margin-top:32px; border-top:1px solid rgba(255,255,255,.05); padding-top:24px;">
+          <button class="btn-ghost" style="width:100%; justify-content:center; border-color:#ff6b6b; color:#ff6b6b;" onclick="logout()">Secure Logout</button>
+        </div>
+      </div>
+
+      <!-- Main Content -->
+      <div>
+        <h2 style="font-family:'Oswald',sans-serif;font-size:20px;color:var(--gold);margin-bottom:20px;letter-spacing:1px;text-transform:uppercase;">Recent Orders</h2>
+        
+        <div style="background:var(--ink2);border:1px solid rgba(200,152,31,.15);padding:24px;">
+          <table class="data-table" style="margin:0;">
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Date Placed</th>
+                <th>Items</th>
+                <th>Total</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="orders-tbody">
+              <tr><td colspan="5" style="text-align:center;padding:32px;color:var(--silver);">Loading order history...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- JS INJECTS FOOTER HERE -->
+<div id="global-footer"></div>
+
+<script src="assets/main.js"></script>
+<script>
+const WORKER_URL = 'https://allpro-github-proxy.baruch-6d5.workers.dev';
+
+document.addEventListener('DOMContentLoaded', () => {
+  try {
+    const user = JSON.parse(sessionStorage.getItem('apbs_user'));
+    if(!user || user.status !== 'approved') { window.location.href = 'login.html'; return; }
+    
+    document.getElementById('d-name').textContent = user.fname + ' ' + user.lname;
+    document.getElementById('d-comp').textContent = user.company || 'Independent';
+    document.getElementById('d-email').textContent = user.email;
+    document.getElementById('d-phone').textContent = user.phone;
+    
+    loadUserOrders(user.email);
+  } catch(e) { window.location.href = 'login.html'; }
+});
+
+async function loadUserOrders(email) {
+  try {
+    const r = await fetch(WORKER_URL + '/github/orders.json');
+    if(!r.ok) throw new Error();
+    const d = await r.json();
+    const allOrders = JSON.parse(decodeURIComponent(escape(atob(d.content)))).orders || [];
+    
+    const myOrders = allOrders.filter(o => o.customer.email.toLowerCase() === email.toLowerCase());
+    myOrders.sort((a,b) => new Date(b.placedAt) - new Date(a.placedAt));
+    
+    if(myOrders.length === 0) {
+      document.getElementById('orders-tbody').innerHTML = '<tr><td colspan="5" style="text-align:center;padding:32px;color:var(--silver);">No order history found.</td></tr>';
+      return;
+    }
+    
+    document.getElementById('orders-tbody').innerHTML = myOrders.map(o => {
+      let statusClass = 'pending';
+      if (o.status === 'confirmed') statusClass = 'confirmed';
+      if (o.status === 'delivered') statusClass = 'delivered';
+      if (o.status === 'cancelled') statusClass = 'cancelled';
+      
+      let itemsCount = o.items ? o.items.reduce((sum, i) => sum + i.qty, 0) : 0;
+
+      return `
+        <tr>
+          <td data-label="Order ID"><span style="color:var(--gold);font-family:'DM Mono',monospace;font-size:13px;">${o.id}</span></td>
+          <td data-label="Date Placed">${new Date(o.placedAt).toLocaleDateString()}</td>
+          <td data-label="Items">${itemsCount} pcs</td>
+          <td data-label="Total">$${(o.total || 0).toFixed(2)}</td>
+          <td data-label="Status"><span class="badge ${statusClass}">${o.status}</span></td>
+        </tr>
+      `;
+    }).join('');
+
+  } catch(e) {
+    document.getElementById('orders-tbody').innerHTML = '<tr><td colspan="5" style="color:#ff6b6b;padding:20px;text-align:center;">Failed to load order history.</td></tr>';
+  }
+}
+
+function logout() {
+  sessionStorage.removeItem('apbs_user');
+  window.location.href = 'login.html';
+}
+</script>
+</body>
+</html>

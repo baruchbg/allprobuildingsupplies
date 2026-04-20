@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Checkout — All Pro Building Supplies LLC</title>
+<link rel="stylesheet" href="assets/style.css"/>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+</head>
+<body>
+
+<div id="cursor"></div><div id="cursor-ring"></div>
+
+<!-- JS INJECTS HEADER HERE -->
+<div id="global-header"></div> 
+
+<header class="pg-hdr" style="margin-top:60px; padding-bottom:40px;">
+  <div class="pg-hdr-inner">
+    <h1 class="pg-title" data-r>Submit <span>Order.</span></h1>
+  </div>
+</header>
+
+<section class="sec" style="padding-top:0;">
+  <div class="sec-inner" data-r id="co-wrap">
+    <div class="checkout-grid">
+      
+      <!-- Form Side -->
+      <div>
+        <div class="checkout-form-wrap">
+          <h3 class="checkout-section-title">Delivery & Logistics</h3>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Method</label>
+              <select class="form-input" id="co-method" onchange="toggleAddress(this.value)">
+                <option value="delivery">Jobsite Delivery</option>
+                <option value="pickup">Will Call (Pickup)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">PO Number (Optional)</label>
+              <input type="text" class="form-input" id="co-po" placeholder="e.g. PO-10492">
+            </div>
+          </div>
+          <div class="form-row full" id="co-address-row">
+            <div class="form-group">
+              <label class="form-label">Delivery Address / ZIP</label>
+              <input type="text" class="form-input" id="co-address" placeholder="Enter full address or ZIP code">
+            </div>
+          </div>
+          <div class="form-row full">
+            <div class="form-group">
+              <label class="form-label">Order Notes (Optional)</label>
+              <textarea class="form-input" id="co-notes" style="resize:vertical; min-height:80px;" placeholder="Gate codes, receiving hours, special instructions..."></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Summary Side -->
+      <div>
+        <div class="checkout-summary">
+          <h3 class="checkout-section-title">Order Summary</h3>
+          <div id="co-summary-items" style="margin-bottom:20px; font-size:13px; color:var(--silver);"></div>
+          <div style="border-top:1px solid rgba(255,255,255,.05); padding-top:16px; display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
+            <span style="font-family:'Oswald',sans-serif;font-size:16px;color:var(--white);">ESTIMATED TOTAL</span>
+            <span style="font-family:'Oswald',sans-serif;font-size:24px;color:var(--gold);" id="co-summary-total"></span>
+          </div>
+          <button class="btn-gold" style="width:100%; justify-content:center;" id="btn-submit" onclick="submitOrder()">Submit Order</button>
+          <div id="co-status" style="margin-top:16px;font-size:12px;text-align:center;font-family:'DM Mono',monospace;display:none;"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  
+  <!-- Success Screen -->
+  <div class="sec-inner" id="co-success" style="display:none; text-align:center; padding:80px 20px;">
+    <div style="font-size:64px; margin-bottom:24px;">✅</div>
+    <h2 style="font-family:'Oswald',sans-serif; font-size:36px; color:var(--gold); margin-bottom:16px;">Order Received.</h2>
+    <p style="color:var(--silver); font-size:16px; margin-bottom:32px; max-width:500px; margin-left:auto; margin-right:auto;">Your order <strong style="color:var(--white);" id="succ-order-id"></strong> has been submitted. We will email you shortly with confirmation and logistics.</p>
+    <a href="index.html" class="btn-ghost">Return to Home</a>
+  </div>
+</section>
+
+<!-- JS INJECTS FOOTER HERE -->
+<div id="global-footer"></div>
+
+<script src="assets/main.js"></script>
+<script>
+const WORKER_URL = 'https://allpro-github-proxy.baruch-6d5.workers.dev';
+const EMAILJS_SVC  = 'service_qefaa3x';   
+const EMAILJS_TPL  = 'template_nh3iqob';  
+const EMAILJS_KEY  = 'MNDXK3JgE890yvoA6';   
+const NOTIFY_EMAIL = 'orders@allprobuildingsupplies.com';
+if(window.emailjs) emailjs.init(EMAILJS_KEY);
+
+let cart = [];
+let user = null;
+let currentSha = null;
+let masterOrders = [];
+
+function toggleAddress(val){
+  document.getElementById('co-address-row').style.display = val === 'pickup' ? 'none' : 'grid';
+}
+
+async function loadData() {
+  try {
+    user = JSON.parse(sessionStorage.getItem('apbs_user'));
+    if(!user || user.status !== 'approved') { window.location.href = 'login.html'; return; }
+    
+    cart = JSON.parse(localStorage.getItem('apbs_cart') || '[]');
+    if(cart.length === 0) { window.location.href = 'cart.html'; return; }
+
+    let html = '';
+    let total = 0;
+    cart.forEach(i => {
+      let lTot = i.qty * i.unitPrice;
+      total += lTot;
+      html += `<div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                 <span style="flex:1;">${i.qty}x ${i.description} ${i.size}</span>
+                 <span style="font-family:'DM Mono',monospace;color:var(--white);">$${lTot.toFixed(2)}</span>
+               </div>`;
+    });
+    document.getElementById('co-summary-items').innerHTML = html;
+    document.getElementById('co-summary-total').textContent = '$' + total.toFixed(2);
+
+    const r = await fetch(WORKER_URL + '/github/orders.json');
+    const d = await r.json();
+    currentSha = d.sha;
+    masterOrders = JSON.parse(decodeURIComponent(escape(atob(d.content)))).orders || [];
+
+  } catch(e) { alert("Session expired or error loading checkout. Please log in again."); window.location.href='login.html'; }
+}
+
+function showStatus(msg, isErr) {
+  const el = document.getElementById('co-status');
+  el.textContent = msg; 
+  el.style.color = isErr ? '#ff6b6b' : '#2ecc71';
+  el.style.display = 'block';
+}
+
+function buildConfirmEmail(order){
+  return `<!DOCTYPE html><html><body style="font-family:Arial,sans-serif;color:#333;background:#f4f4f4;padding:20px;">
+    <div style="background:#fff;max-width:600px;margin:0 auto;padding:30px;border-top:4px solid #C8981F;">
+      <h2 style="color:#0C1117;">Order Received</h2>
+      <p><strong>Order ID:</strong> ${order.id}</p>
+      <p><strong>Customer:</strong> ${order.customer.name} (${order.customer.company})</p>
+      <p><strong>Total:</strong> $${order.total.toFixed(2)}</p>
+      <p>We are reviewing your order and will reach out with a final confirmation shortly.</p>
+    </div>
+  </body></html>`;
+}
+
+async function submitOrder() {
+  if(!user || cart.length === 0) return;
+  
+  const method = document.getElementById('co-method').value;
+  const address = document.getElementById('co-address').value.trim();
+  const po = document.getElementById('co-po').value.trim();
+  const notes = document.getElementById('co-notes').value.trim();
+  
+  if(method === 'delivery' && !address) { alert("Please enter a delivery address or ZIP."); return; }
+
+  const btn = document.getElementById('btn-submit');
+  btn.disabled = true; btn.textContent = 'Processing...';
+  showStatus('Submitting order securely...', false);
+
+  const orderId = 'APB-' + Date.now().toString(36).toUpperCase();
+  const total = cart.reduce((s,i) => s + (i.qty * i.unitPrice), 0);
+
+  const newOrder = {
+    id: orderId,
+    placedAt: new Date().toISOString(),
+    status: 'pending',
+    customer: { id: user.id, name: user.fname + ' ' + user.lname, email: user.email, company: user.company, phone: user.phone },
+    delivery: { method: method, address: method === 'pickup' ? 'Will Call (Pickup)' : address },
+    po: po,
+    notes: notes,
+    items: cart,
+    total: total
+  };
+
+  masterOrders.push(newOrder);
+
+  const payload = { 
+    message: 'New Order Placed: ' + orderId, 
+    content: btoa(unescape(encodeURIComponent(JSON.stringify({orders: masterOrders}, null, 2)))), 
+    branch: 'main', 
+    sha: currentSha 
+  };
+
+  try {
+    const r = await fetch(WORKER_URL + '/github/orders.json', { method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
+    if(!r.ok) throw new Error("Database write failed");
+    
+    let params = {
+      order_id:    newOrder.id,
+      customer:    newOrder.customer.name + ' (' + newOrder.customer.company + ')',
+      phone:       newOrder.customer.phone,
+      cust_email:  newOrder.customer.email,
+      delivery:    newOrder.delivery.method.toUpperCase() + ': ' + newOrder.delivery.address,
+      po:          newOrder.po || 'N/A',
+      notes:       newOrder.notes || 'None',
+      total:       '$' + newOrder.total.toFixed(2),
+      placed_at:   new Date(newOrder.placedAt).toLocaleString(),
+      admin_link:  'https://allprobuildingsupplies.com/admin.html',
+      cust_name:   newOrder.customer.name,
+      items:       newOrder.items.map(function(i){ return i.description+' '+i.size+' — '+i.qty+' pcs = $'+i.lineTotal.toFixed(2); }).join('\n')
+    };
+
+    try{ await emailjs.send(EMAILJS_SVC, EMAILJS_TPL, Object.assign({}, params, { cust_email: NOTIFY_EMAIL, email_subject: 'New Order ' + newOrder.id, email_body: buildConfirmEmail(newOrder) })); }catch(e){}
+    try{ await emailjs.send(EMAILJS_SVC, EMAILJS_TPL, Object.assign({}, params, { email_subject: 'Order Received - ' + newOrder.id, email_body: buildConfirmEmail(newOrder) })); }catch(e){}
+
+    localStorage.removeItem('apbs_cart');
+    document.getElementById('co-wrap').style.display = 'none';
+    document.getElementById('co-success').style.display = 'block';
+    document.getElementById('succ-order-id').textContent = orderId;
+    
+    // Update Nav Count
+    var el = document.getElementById('nav-cart-count');
+    if(el) el.textContent = '';
+
+  } catch(e) {
+    showStatus('Error saving order. Please call us.', true);
+    btn.disabled = false; btn.textContent = 'Submit Order';
+  }
+}
+
+document.addEventListener('DOMContentLoaded', loadData);
+</script>
+</body>
+</html>

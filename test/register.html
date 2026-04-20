@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Request Pricing Access — All Pro Building Supplies LLC</title>
+<link rel="stylesheet" href="assets/style.css"/>
+</head>
+<body>
+
+<div id="cursor"></div><div id="cursor-ring"></div>
+
+<!-- JS INJECTS HEADER HERE -->
+<div id="global-header"></div> 
+
+<div class="auth-wrap">
+  <div class="auth-box large">
+    <div id="reg-form">
+      <div class="auth-logo">
+        <img src="assets/logo.png" alt="All Pro" onerror="this.style.display='none'"/>
+        <div class="auth-title">Apply For Trade Access</div>
+        <div class="auth-sub">Submit your details below to request access to our product catalog and trade pricing.</div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">First Name *</label><input type="text" id="r-fname" class="form-input" required></div>
+        <div class="form-group"><label class="form-label">Last Name *</label><input type="text" id="r-lname" class="form-input" required></div>
+      </div>
+      <div class="form-group" style="margin-bottom:16px;">
+        <label class="form-label">Company Name *</label>
+        <input type="text" id="r-company" class="form-input" required>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Email Address *</label><input type="email" id="r-email" class="form-input" required></div>
+        <div class="form-group"><label class="form-label">Phone Number *</label><input type="tel" id="r-phone" class="form-input" required></div>
+      </div>
+      <div class="form-group" style="margin-bottom:24px;">
+        <label class="form-label">Create Initial Password *</label>
+        <input type="password" id="r-pw" class="form-input" required>
+      </div>
+      <button class="btn-gold" id="btn-submit" style="width:100%;justify-content:center;" onclick="submitReg()">Submit Request →</button>
+      <div id="err-msg" style="color:#ff6b6b;font-size:12px;margin-top:16px;text-align:center;display:none;"></div>
+      <div style="margin-top:24px;text-align:center;font-size:13px;color:var(--silver);">Already approved? <a href="login.html" style="color:var(--gold);text-decoration:underline;">Login here</a></div>
+    </div>
+    
+    <div id="reg-success" style="display:none;text-align:center;padding:20px 0;">
+      <div style="font-size:48px;margin-bottom:16px;">⏳</div>
+      <h2 style="font-family:'Oswald',sans-serif;font-size:28px;color:var(--gold);margin-bottom:12px;">Application Received</h2>
+      <p style="color:var(--silver);font-size:14px;line-height:1.6;">Thank you, <strong style="color:var(--white);" id="s-name"></strong>. Your request for trade access has been submitted under <strong style="color:var(--white);" id="s-email"></strong>.</p>
+      <p style="color:var(--silver);font-size:14px;line-height:1.6;margin-top:12px;">Our team will review your application and activate your account shortly.</p>
+      <a href="index.html" class="btn-ghost" style="margin-top:24px;">Return to Home</a>
+    </div>
+  </div>
+</div>
+
+<!-- JS INJECTS FOOTER HERE -->
+<div id="global-footer"></div>
+
+<script src="assets/main.js"></script>
+<script>
+const WORKER_URL = 'https://allpro-github-proxy.baruch-6d5.workers.dev';
+
+async function submitReg() {
+  const fname = document.getElementById('r-fname').value.trim();
+  const lname = document.getElementById('r-lname').value.trim();
+  const company = document.getElementById('r-company').value.trim();
+  const email = document.getElementById('r-email').value.trim();
+  const phone = document.getElementById('r-phone').value.trim();
+  const pw = document.getElementById('r-pw').value.trim();
+  
+  if(!fname||!lname||!company||!email||!phone||!pw) {
+    const err = document.getElementById('err-msg');
+    err.textContent = "Please fill out all required fields.";
+    err.style.display = 'block';
+    return;
+  }
+  
+  const btn = document.getElementById('btn-submit');
+  btn.disabled = true; btn.textContent = 'Submitting...';
+  
+  try {
+    const r = await fetch(WORKER_URL + '/github/users.json');
+    if(!r.ok) throw new Error("Could not connect to database.");
+    const d = await r.json();
+    const currentSha = d.sha;
+    let masterUsers = JSON.parse(decodeURIComponent(escape(atob(d.content)))).users || [];
+    
+    if(masterUsers.find(u => u.email.toLowerCase() === email.toLowerCase())) {
+       throw new Error("An account with this email already exists.");
+    }
+
+    const newUser = {
+      id: 'USR-' + Date.now().toString(36).toUpperCase(),
+      fname, lname, company, email, phone, password: pw,
+      status: 'pending', canOrderPieces: true,
+      registeredAt: new Date().toISOString()
+    };
+    masterUsers.push(newUser);
+    
+    const payload = { 
+      message: 'New Web Registration: ' + email, 
+      content: btoa(unescape(encodeURIComponent(JSON.stringify({users: masterUsers}, null, 2)))), 
+      branch: 'main', 
+      sha: currentSha 
+    };
+    
+    const putReq = await fetch(WORKER_URL + '/github/users.json', { method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
+    if(!putReq.ok) throw new Error("Failed to save registration.");
+    
+    document.getElementById('reg-form').style.display = 'none';
+    document.getElementById('s-name').textContent = fname;
+    document.getElementById('s-email').textContent = email;
+    document.getElementById('reg-success').style.display = 'block';
+
+  } catch(e) {
+    const err = document.getElementById('err-msg');
+    err.textContent = e.message;
+    err.style.display = 'block';
+    btn.disabled = false; btn.textContent = 'Submit Request →';
+  }
+}
+</script>
+</body>
+</html>
