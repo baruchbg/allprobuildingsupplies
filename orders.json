@@ -61,11 +61,11 @@
           "code": "PVC-1/8HS",
           "description": "1/8 BEND STREET (H x S)",
           "size": "1-1/2",
-          "qty": 500,
+          "qty": 400,
           "unit": "carton",
           "pcsPerCtn": 100,
           "unitPrice": 0.5,
-          "lineTotal": 250
+          "lineTotal": 200
         },
         {
           "code": "PVC-1/8HS",
@@ -128,7 +128,7 @@
           "lineTotal": 575
         }
       ],
-      "total": 4108.5,
+      "total": 4058.5,
       "po": "5003"
     },
     {
