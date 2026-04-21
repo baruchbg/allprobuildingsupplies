@@ -203,7 +203,7 @@ document.addEventListener('DOMContentLoaded', loadGlobalLayout);
 // Global Form Button helper
 function submitForm(btn){
   const orig=btn.innerHTML;
-  btn.innerHTML='✓ Sent! We\\'ll respond shortly.';
+  btn.innerHTML='✓ Sent! We\'ll respond shortly.';
   btn.style.background='var(--ink3)';btn.style.color='var(--gold)';
   setTimeout(()=>{btn.innerHTML=orig;btn.style.background='';btn.style.color=''},3500);
 }
