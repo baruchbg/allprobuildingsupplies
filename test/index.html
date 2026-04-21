@@ -117,36 +117,5 @@
 </section>
 <div id="global-footer"></div>
 <script src="assets/main.js"></script>
-<script>
-// Authentication sync for Header
-(function(){
-  var sess = sessionStorage.getItem('apbs_user');
-  var user = null; try{ if(sess) user = JSON.parse(sess); }catch(e){}
-  var isLoggedIn = user && user.status === 'approved';
-  
-  var acctBtn  = document.getElementById('nav-account-btn');
-  var loginBtn = document.getElementById('nav-login-btn');
-  var nameEl   = document.getElementById('nav-logged-in-name');
-
-  if(isLoggedIn){
-    if(acctBtn) acctBtn.style.display = 'inline-flex';
-    if(loginBtn) loginBtn.style.display = 'none';
-    if(nameEl) nameEl.textContent = user.name || ((user.fname||'') + ' ' + (user.lname||'')).trim();
-  } else {
-    if(acctBtn) acctBtn.style.display = 'none';
-    if(loginBtn) loginBtn.style.display = 'inline-flex';
-  }
-})();
-// Nav Cart Count
-function updateNavCount(){
-  try{
-    var cart = JSON.parse(localStorage.getItem('apbs_cart')||'[]');
-    var total = cart.reduce(function(s,i){ return s+i.qty; }, 0);
-    var el = document.getElementById('nav-cart-count');
-    if(el) el.textContent = total > 0 ? total : '';
-  }catch(e){}
-}
-updateNavCount();
-</script>
 </body>
 </html>

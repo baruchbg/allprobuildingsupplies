@@ -111,7 +111,23 @@ function loadGlobalLayout() {
   const footerContainer = document.getElementById('global-footer');
   if(footerContainer) footerContainer.innerHTML = footerHTML;
 
-  initGlobalScripts();
+  if(!window.__apbsGlobalScriptsInit){
+    initGlobalScripts();
+    window.__apbsGlobalScriptsInit = true;
+  }
+
+  // Defensive reinjection in case another script clears these containers.
+  setTimeout(ensureGlobalLayout, 50);
+  setTimeout(ensureGlobalLayout, 300);
+  setTimeout(ensureGlobalLayout, 1000);
+}
+
+function ensureGlobalLayout(){
+  const hasHeader = document.querySelector('#global-header nav');
+  const hasFooter = document.querySelector('#global-footer footer');
+  if(!hasHeader || !hasFooter){
+    loadGlobalLayout();
+  }
 }
 
 // ══════════════════════════════════════════
@@ -199,6 +215,9 @@ function initGlobalScripts() {
 
 // Auto-run when DOM is ready
 document.addEventListener('DOMContentLoaded', loadGlobalLayout);
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) ensureGlobalLayout();
+});
 
 // Global Form Button helper
 function submitForm(btn){
