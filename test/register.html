@@ -1,55 +1,188 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Register — Test Sandbox</title>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Request Pricing Access — All Pro Building Supplies LLC</title>
 <link rel="stylesheet" href="assets/style.css"/>
+
 </head>
 <body>
 <div id="cursor"></div><div id="cursor-ring"></div>
+
 <div id="global-header"></div>
-<section class="sec">
-  <div class="sec-inner auth-wrap">
-    <div class="auth-box large">
-      <div class="auth-title">Create Trade Account</div>
-      <form id="register-form" style="display:flex;flex-direction:column;gap:12px;margin-top:24px;">
-        <input class="form-input" name="firstName" placeholder="First name" required />
-        <input class="form-input" name="lastName" placeholder="Last name" required />
-        <input class="form-input" name="company" placeholder="Company" />
-        <input class="form-input" name="phone" placeholder="Phone" />
-        <input class="form-input" name="email" type="email" placeholder="Email" required />
-        <input class="form-input" name="password" type="password" placeholder="Password (min 8 chars)" required />
-        <button class="btn-gold" type="submit" style="justify-content:center;">Create Account</button>
-      </form>
-      <p id="msg" style="margin-top:12px;color:var(--silver);font-size:13px;"></p>
+
+<div class="auth-wrap">
+  <div class="auth-box">
+    <div class="auth-logo">
+      <img src="assets/logo.png" onerror="this.style.display='none'"/>
+      <div class="auth-title">Request Pricing Access</div>
+      <div class="auth-sub">Fill in your details below. Baruch will review<br/>and approve your account — usually within 1 business day.</div>
+    </div>
+    <div class="auth-card">
+      <div class="login-bar">Already have an account? <a href="login.html">Log in here →</a></div>
+      <div id="reg-form">
+        <div class="global-err" id="global-err"></div>
+        <div class="frow">
+          <div class="fg">
+            <label class="fl">First Name <span class="req">*</span></label>
+            <input class="fi" id="r-fname" type="text" placeholder="John"/>
+            <div class="ferr" id="e-fname">Required</div>
+          </div>
+          <div class="fg">
+            <label class="fl">Last Name <span class="req">*</span></label>
+            <input class="fi" id="r-lname" type="text" placeholder="Smith"/>
+            <div class="ferr" id="e-lname">Required</div>
+          </div>
+        </div>
+        <div class="fg">
+          <label class="fl">Company Name <span class="req">*</span></label>
+          <input class="fi" id="r-company" type="text" placeholder="ABC Plumbing LLC"/>
+          <div class="ferr" id="e-company">Required</div>
+        </div>
+        <div class="fg">
+          <label class="fl">Email Address <span class="req">*</span></label>
+          <input class="fi" id="r-email" type="email" placeholder="john@company.com"/>
+          <div class="ferr" id="e-email">Enter a valid email address</div>
+        </div>
+        <div class="fg">
+          <label class="fl">Phone Number <span class="req">*</span></label>
+          <input class="fi" id="r-phone" type="tel" placeholder="(555) 000-0000"/>
+          <div class="ferr" id="e-phone">Required</div>
+        </div>
+        <div class="fg">
+          <label class="fl">Password <span class="req">*</span></label>
+          <input class="fi" id="r-pw" type="password" placeholder="Choose a password (min 6 characters)"/>
+          <div class="ferr" id="e-pw">Minimum 6 characters</div>
+        </div>
+        <div class="fg">
+          <label class="fl">Confirm Password <span class="req">*</span></label>
+          <input class="fi" id="r-pw2" type="password" placeholder="Repeat password"/>
+          <div class="ferr" id="e-pw2">Passwords do not match</div>
+        </div>
+        <button class="auth-btn" id="reg-btn" onclick="submitReg()">
+          <span id="reg-txt">Submit Request →</span>
+        </button>
+        <p class="auth-note">Questions? Call <a href="tel:17328291940">732-829-1940</a> or email <a href="mailto:info@allprobuildingsupplies.com">info@allprobuildingsupplies.com</a></p>
+      </div>
+      <div class="success-screen" id="reg-success">
+        <div class="success-icon">✅</div>
+        <div class="success-title">Request Submitted!</div>
+        <div class="success-body">
+          Thanks, <strong id="s-name"></strong>!<br/><br/>
+          Your pricing access request is pending review. You'll receive an email at <strong id="s-email"></strong> once your account is approved — usually within 1 business day.
+        </div>
+        <a href="products.html" class="btn-ghost" style="display:inline-flex; border:1px solid rgba(139,160,178,.2); padding:14px 28px; text-decoration:none; color:var(--silver); font-family:'Oswald',sans-serif; letter-spacing:2px; text-transform:uppercase;">← Browse Products</a>
+      </div>
     </div>
   </div>
-</section>
+</div>
+
 <div id="global-footer"></div>
+
 <script src="assets/main.js"></script>
 <script>
-document.getElementById("register-form").addEventListener("submit", async function (e) {
-  e.preventDefault();
-  const msg = document.getElementById("msg");
-  msg.textContent = "Creating account...";
-  const body = Object.fromEntries(new FormData(this).entries());
+function updateNavCount(){
   try {
-    const res = await fetch(window.APBS_API_BASE + "/auth/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body)
-    });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || "Registration failed");
-    sessionStorage.setItem("apbs_token", data.token);
-    sessionStorage.setItem("apbs_user", JSON.stringify(data.user));
-    window.location.href = "account.html";
-  } catch (err) {
-    msg.textContent = err.message;
-    msg.style.color = "#ff6b6b";
+    var cart = JSON.parse(localStorage.getItem('apbs_cart')||'[]');
+    var total = cart.reduce(function(s,i){ return s+i.qty; }, 0);
+    var el = document.getElementById('nav-cart-count');
+    if(el) el.textContent = total > 0 ? total : '';
+  } catch(e){}
+}
+updateNavCount();
+
+const WORKER_URL = 'https://allpro-github-proxy.baruch-6d5.workers.dev';
+
+async function sha256(str){
+  const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+async function workerGet(path){
+  const r=await fetch(WORKER_URL+'/github/'+path);
+  if(!r.ok) throw new Error('Read failed: '+r.status);
+  return r.json();
+}
+async function workerPut(path,content,sha,msg){
+  const r=await fetch(WORKER_URL+'/github/'+path,{
+    method:'PUT',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({message:msg,content:btoa(unescape(encodeURIComponent(content))),...(sha?{sha}:{})})
+  });
+  if(!r.ok){const d=await r.json();throw new Error(d.message||r.status);}
+  return r.json();
+}
+function v(id,errId,test){
+  const el=document.getElementById(id),err=document.getElementById(errId);
+  const ok=test(el.value.trim());
+  el.classList.toggle('err',!ok);err.style.display=ok?'none':'block';return ok;
+}
+async function submitReg(){
+  const ok=[
+    v('r-fname','e-fname',x=>x.length>0),
+    v('r-lname','e-lname',x=>x.length>0),
+    v('r-company','e-company',x=>x.length>0),
+    v('r-email','e-email',x=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(x)),
+    v('r-phone','e-phone',x=>x.length>5),
+    v('r-pw','e-pw',x=>x.length>=6),
+    v('r-pw2','e-pw2',x=>x===document.getElementById('r-pw').value),
+  ].every(Boolean);
+  if(!ok) return;
+
+  const btn=document.getElementById('reg-btn'),txt=document.getElementById('reg-txt');
+  btn.disabled=true;
+  txt.innerHTML='<span style="display:inline-block;animation:spin .8s linear infinite">&#8987;</span> Submitting...';
+  document.getElementById('global-err').style.display='none';
+
+  try{
+    let users=[],fileSha='';
+    try{
+      const d=await workerGet('users.json');
+      fileSha=d.sha;
+      users=(JSON.parse(atob(d.content.replace(/\n/g,''))).users)||[];
+    }catch(e){console.warn('Could not load users',e);}
+
+    const email=document.getElementById('r-email').value.trim().toLowerCase();
+    if(users.find(u=>u.email===email)){
+      showErr('An account with this email already exists. <a href="login.html" style="color:var(--gold)">Log in &#8594;</a>');
+      btn.disabled=false;txt.textContent='Submit Request &#8594;';return;
+    }
+
+    const newUser={
+      id:Date.now().toString(),
+      fname:document.getElementById('r-fname').value.trim(),
+      lname:document.getElementById('r-lname').value.trim(),
+      company:document.getElementById('r-company').value.trim(),
+      email,
+      phone:document.getElementById('r-phone').value.trim(),
+      password:await sha256(document.getElementById('r-pw').value),
+      status:'pending',
+      canOrderPieces:true,
+      registeredAt:new Date().toISOString(),
+      approvedAt:null
+    };
+    users.push(newUser);
+
+    await workerPut('users.json',JSON.stringify({users},null,2),fileSha,
+      'New registration: '+newUser.fname+' '+newUser.lname+' ('+newUser.company+')');
+
+    document.getElementById('reg-form').style.display='none';
+    document.getElementById('s-name').textContent=newUser.fname;
+    document.getElementById('s-email').textContent=newUser.email;
+    document.getElementById('reg-success').style.display='block';
+
+  }catch(e){
+    showErr('Something went wrong &#8212; please try again or call 732-829-1940. ('+e.message+')');
+    btn.disabled=false;txt.textContent='Submit Request &#8594;';
   }
-});
+}
+function showErr(msg){
+  const el=document.getElementById('global-err');
+  el.innerHTML=msg;el.style.display='block';
+}
+document.querySelectorAll('.fi').forEach(i=>i.addEventListener('input',()=>{
+  i.classList.remove('err');
+  document.getElementById('global-err').style.display='none';
+}));
 </script>
 </body>
 </html>

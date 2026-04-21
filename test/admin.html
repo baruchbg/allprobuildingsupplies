@@ -2,146 +2,1358 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Admin — Test Sandbox</title>
+<title>Admin Panel — All Pro Building Supplies LLC</title>
 <link rel="stylesheet" href="assets/style.css"/>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+
 </head>
 <body>
 <div id="cursor"></div><div id="cursor-ring"></div>
-<div id="global-header"></div>
-<section class="sec"><div class="sec-inner">
-  <h2 class="sh">Admin <span>Sandbox</span></h2>
-  <p id="summary" class="sh-body">Loading dashboard...</p>
 
-  <h3 style="margin-top:24px;">Add Product</h3>
-  <form id="add-product" style="display:grid;grid-template-columns:repeat(3,minmax(120px,1fr));gap:8px;margin:12px 0;">
-    <input class="form-input" name="code" placeholder="Code" required />
-    <input class="form-input" name="description" placeholder="Description" required />
-    <input class="form-input" name="size" placeholder="Size" required />
-    <input class="form-input" name="pack" placeholder="Pack" type="number" min="0" required />
-    <input class="form-input" name="qty" placeholder="Qty" type="number" min="0" required />
-    <input class="form-input" name="price" placeholder="Price" type="number" min="0" step="0.01" required />
-    <input class="form-input" name="image" placeholder="Image path (optional)" style="grid-column:1/-1;" />
-    <button class="btn-gold" type="submit" style="grid-column:1/-1;justify-content:center;">Create Product</button>
-  </form>
+<div id="admin-auth-gate">
+  <div class="auth-box">
+    <img src="assets/logo.png" alt="All Pro" style="width:120px;margin-bottom:20px;">
+    <h2 style="font-family:'Oswald',sans-serif;color:var(--white);margin-bottom:24px;letter-spacing:1px;">Admin Portal Login</h2>
+    <input type="password" id="admin-pin" class="data-input" placeholder="Enter Admin Password" style="text-align:center;font-size:16px;padding:14px;margin-bottom:16px;">
+    <button class="btn-save" style="width:100%;" onclick="checkAdminAuth()">Access Dashboard</button>
+    <div id="admin-auth-err" style="color:#ff6b6b;font-size:12px;margin-top:12px;display:none;font-family:'DM Mono',monospace;">Incorrect password.</div>
+    <a href="index.html" style="display:block;margin-top:24px;color:var(--silver);font-size:12px;">← Back to Website</a>
+  </div>
+</div>
 
-  <h3 style="margin-top:24px;">Products</h3>
-  <div id="products"></div>
+<nav>
+  <div class="nav-logo">
+    <img src="assets/logo.png" alt="All Pro Building Supplies"/>
+    <div class="nav-brand-text">All Pro Admin <span>Control</span></div>
+  </div>
+  <div class="nav-actions">
+    <a href="index.html" class="nav-cta" style="background:transparent;border:1px solid var(--silver);color:var(--silver);">← Back to Site</a>
+  </div>
+</nav>
 
-  <h3 style="margin-top:24px;">Users</h3>
-  <div id="users"></div>
+<div class="admin-container" id="main-admin-content" style="display:none;">
+  <div id="status-msg"></div>
 
-  <h3 style="margin-top:24px;">Orders</h3>
-  <div id="orders"></div>
-</div></section>
-<div id="global-footer"></div>
-<script src="assets/main.js"></script>
-<script>
-const user = window.apbsGetUser();
-if (!user || !user.isAdmin) window.location.href = "login.html";
-
-async function api(path, opts) {
-  const res = await fetch(window.APBS_API_BASE + path, {
-    ...(opts || {}),
-    headers: { "Content-Type": "application/json", ...window.apbsAuthHeaders(), ...(opts && opts.headers ? opts.headers : {}) }
-  });
-  if (res.status === 204) return null;
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.error || "Request failed");
-  return data;
-}
-
-async function loadSummary() {
-  const s = await api("/admin/summary");
-  document.getElementById("summary").textContent = `Users: ${s.users} • Products: ${s.products} • Orders: ${s.orders}`;
-}
-
-async function loadProducts() {
-  const { products } = await api("/admin/products");
-  const el = document.getElementById("products");
-  el.innerHTML = products.map((p) => `
-    <div style="padding:8px 0;border-bottom:1px solid rgba(255,255,255,.08)">
-      <strong>${p.code}</strong> ${p.description} (${p.size}) • $${p.price.toFixed(2)} • qty ${p.qty}
-      <button data-id="${p.id}" class="del-prod" style="margin-left:8px;">Delete</button>
+  <div class="admin-header">
+    <h1 class="admin-title">Database Manager <span>v2.0</span></h1>
+    <div class="admin-tabs">
+      <button class="admin-tab active" onclick="switchTab('orders')" data-tab="orders">Orders</button>
+      <button class="admin-tab" onclick="switchTab('products')" data-tab="products">Products (CSV)</button>
+      <button class="admin-tab" onclick="switchTab('users')" data-tab="users">Users (JSON)</button>
     </div>
-  `).join("") || "<p>No products found.</p>";
-  el.querySelectorAll(".del-prod").forEach((btn) => {
-    btn.addEventListener("click", async () => {
-      await api(`/admin/products/${btn.dataset.id}`, { method: "DELETE" });
-      await refresh();
-    });
-  });
-}
+  </div>
 
-async function loadUsers() {
-  const { users } = await api("/admin/users");
-  const el = document.getElementById("users");
-  el.innerHTML = users.map((u) => `
-    <div style="padding:8px 0;border-bottom:1px solid rgba(255,255,255,.08)">
-      <strong>${u.email}</strong> — ${u.firstName} ${u.lastName} — ${u.status} ${u.isAdmin ? "(admin)" : ""}
-      <button data-id="${u.id}" class="toggle-admin" style="margin-left:8px;">Toggle Admin</button>
+  <div id="tab-orders" class="admin-panel active">
+    <p style="color:var(--silver);font-size:14px;margin-bottom:20px;">Manage and edit customer orders. Click 'View Details' to edit order contents, change status, and send invoices.</p>
+    <table class="data-table" id="orders-table">
+      <thead>
+        <tr><th>Order ID</th><th>Date</th><th>Customer</th><th>Total</th><th>Status</th><th>Action</th></tr>
+      </thead>
+      <tbody id="orders-tbody"></tbody>
+    </table>
+    <div class="action-bar">
+      <button class="btn-add" style="border-color:var(--gold);color:var(--gold);" onclick="openOrderModal(null)">+ Create New Order</button>
     </div>
-  `).join("") || "<p>No users found.</p>";
-  el.querySelectorAll(".toggle-admin").forEach((btn) => {
-    btn.addEventListener("click", async () => {
-      const target = users.find((u) => String(u.id) === btn.dataset.id);
-      await api(`/admin/users/${btn.dataset.id}`, {
-        method: "PATCH",
-        body: JSON.stringify({ isAdmin: !target.isAdmin })
-      });
-      await refresh();
-    });
-  });
-}
+  </div>
 
-async function loadOrders() {
-  const { orders } = await api("/admin/orders");
-  const el = document.getElementById("orders");
-  el.innerHTML = orders.map((o) => `
-    <div style="padding:8px 0;border-bottom:1px solid rgba(255,255,255,.08)">
-      <strong>${o.orderNumber}</strong> — ${o.user.email} — $${o.subtotal.toFixed(2)} — ${o.status}
-      <select data-id="${o.id}" class="order-status" style="margin-left:8px;">
-        <option ${o.status==="pending"?"selected":""}>pending</option>
-        <option ${o.status==="confirmed"?"selected":""}>confirmed</option>
-        <option ${o.status==="delivered"?"selected":""}>delivered</option>
-        <option ${o.status==="cancelled"?"selected":""}>cancelled</option>
+  <div id="tab-products" class="admin-panel">
+    <p style="color:var(--silver);font-size:14px;margin-bottom:20px;">Edit your master inventory. This data feeds directly into the live Products and Checkout pages.</p>
+    <table class="data-table" id="prod-table">
+      <thead>
+        <tr><th>Category Code</th><th>Description</th><th>Size</th><th>Pcs / Ctn</th><th>Inventory Qty</th><th>Unit Price ($)</th><th>Image URL</th><th></th></tr>
+      </thead>
+      <tbody id="prod-tbody"></tbody>
+    </table>
+    <div class="action-bar">
+      <button class="btn-add" onclick="addProductRow()">+ Add New Product Row</button>
+      <button class="btn-save" onclick="saveProducts()">Save Products</button>
+    </div>
+  </div>
+
+  <div id="tab-users" class="admin-panel">
+    <p style="color:var(--silver);font-size:14px;margin-bottom:20px;">Approve or reject trade accounts. Only 'approved' users can view pricing and place orders.</p>
+    <table class="data-table" id="users-table">
+      <thead>
+        <tr><th>ID</th><th>Name</th><th>Email</th><th>Company</th><th>Password</th><th>Status</th><th>Pieces Allowed</th><th></th></tr>
+      </thead>
+      <tbody id="users-tbody"></tbody>
+    </table>
+    <div class="action-bar">
+      <button class="btn-add" style="border-color:var(--gold);color:var(--gold);" onclick="openUserModal()">+ Create New User</button>
+      <button class="btn-save" onclick="saveUsers()">Save Approvals & Passwords</button>
+    </div>
+  </div>
+</div>
+
+<div id="user-modal-overlay" onclick="closeUserModal(event)">
+  <div id="user-modal" onclick="event.stopPropagation()" class="auth-box" style="margin:auto; position:relative; width:100%; max-width:500px; padding:32px; text-align:left;">
+    <button class="modal-close" onclick="closeUserModal(event)">&times;</button>
+    <div class="modal-title" style="color:var(--gold); border-bottom:1px solid rgba(200,152,31,.3); margin-bottom:20px; padding-bottom:12px; font-size:20px;">Add New User</div>
+    
+    <div class="modal-lbl" style="color:var(--white)">First Name *</div>
+    <input type="text" id="new-user-fname" class="data-input" style="margin-bottom:16px;">
+    
+    <div class="modal-lbl" style="color:var(--white)">Last Name *</div>
+    <input type="text" id="new-user-lname" class="data-input" style="margin-bottom:16px;">
+    
+    <div class="modal-lbl" style="color:var(--white)">Email Address *</div>
+    <input type="email" id="new-user-email" class="data-input" style="margin-bottom:16px;">
+
+    <div class="modal-lbl" style="color:var(--white)">Login Password *</div>
+    <input type="text" id="new-user-password" class="data-input" style="margin-bottom:16px;" value="Welcome1!">
+    
+    <div class="modal-lbl" style="color:var(--white)">Company Name</div>
+    <input type="text" id="new-user-company" class="data-input" style="margin-bottom:20px;">
+    
+    <div class="modal-grid" style="margin-bottom:24px; gap:16px;">
+      <div>
+        <div class="modal-lbl" style="color:var(--white)">Status</div>
+        <select id="new-user-status" class="data-input">
+          <option value="approved">Approved</option>
+          <option value="pending">Pending</option>
+        </select>
+      </div>
+      <div>
+        <div class="modal-lbl" style="color:var(--white)">Permissions</div>
+        <select id="new-user-pcs" class="data-input">
+          <option value="true">Pieces & Cases</option>
+          <option value="false">Cases Only</option>
+        </select>
+      </div>
+    </div>
+
+    <button class="btn-save" style="width:100%;" onclick="createNewUser(event)">Create User</button>
+  </div>
+</div>
+
+<div id="order-modal-overlay" onclick="closeOrderModal(event)">
+  <div id="order-modal" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="closeOrderModal(event)">&times;</button>
+    <div class="modal-title" id="modal-main-title">Order Details</div>
+    
+    <div id="edit-lock-banner">⚠ This order is Delivered or Cancelled. Order editing is disabled. Change status to Pending or Confirmed to unlock fields.</div>
+
+    <div style="background:rgba(200,152,31,.05); border:1px solid rgba(200,152,31,.2); padding:16px; margin-bottom:24px; border-radius:4px;">
+      <div class="modal-lbl" style="color:var(--gold);">Auto-Fill Customer Info</div>
+      <select class="data-input locked-input" id="modal-cust-dropdown" onchange="loadCustomerIntoForm()" style="border-color:var(--gold);">
+        <option value="">-- Select Existing User or Type Manually Below --</option>
       </select>
     </div>
-  `).join("") || "<p>No orders found.</p>";
-  el.querySelectorAll(".order-status").forEach((sel) => {
-    sel.addEventListener("change", async () => {
-      await api(`/admin/orders/${sel.dataset.id}`, {
-        method: "PATCH",
-        body: JSON.stringify({ status: sel.value })
-      });
-      await refresh();
-    });
-  });
-}
 
-document.getElementById("add-product").addEventListener("submit", async function(e){
-  e.preventDefault();
-  const f = new FormData(this);
-  await api("/admin/products", {
-    method: "POST",
-    body: JSON.stringify({
-      code: f.get("code"),
-      description: f.get("description"),
-      size: f.get("size"),
-      pack: Number(f.get("pack")),
-      qty: Number(f.get("qty")),
-      price: Number(f.get("price")),
-      image: f.get("image") || undefined
-    })
-  });
-  this.reset();
-  await refresh();
+    <div class="modal-grid">
+      <div class="modal-box">
+        <div class="modal-lbl">Customer Name</div>
+        <input type="text" class="data-input locked-input" id="edit-cust-name" style="margin-bottom:12px;">
+        <div class="modal-lbl">Company</div>
+        <input type="text" class="data-input locked-input" id="edit-cust-company" style="margin-bottom:12px;">
+        <div class="modal-lbl">Email</div>
+        <input type="text" class="data-input locked-input" id="edit-cust-email" style="margin-bottom:12px;">
+        <div class="modal-lbl">Phone</div>
+        <input type="text" class="data-input locked-input" id="edit-cust-phone">
+      </div>
+      <div class="modal-box">
+        <div class="modal-lbl">Delivery / Logistics Address</div>
+        <textarea class="data-input locked-input" id="edit-delivery" style="resize:vertical;min-height:60px;margin-bottom:12px;"></textarea>
+        <div class="modal-lbl">PO Number</div>
+        <input type="text" class="data-input locked-input" id="edit-po" style="margin-bottom:12px;">
+        <div class="modal-lbl">Notes</div>
+        <textarea class="data-input locked-input" id="edit-notes" style="resize:vertical;min-height:60px;"></textarea>
+      </div>
+    </div>
+
+    <div class="modal-box" style="margin-bottom:24px; padding:0; overflow:hidden;">
+      <table class="data-table" style="margin:0;">
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Cases</th>
+            <th>Pieces</th>
+            <th>Unit Price ($)</th>
+            <th style="text-align:right">Line Total</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="m-items-tbody"></tbody>
+      </table>
+      
+      <div class="add-item-bar locked-input" id="add-item-container">
+        <div class="add-item-col" style="flex:2; min-width:200px;">
+          <label class="modal-lbl">Select Product</label>
+          <select class="data-input" id="new-item-sel" onchange="updateItemPack()">
+            <option value="">-- Select Product to Add --</option>
+          </select>
+        </div>
+        
+        <div class="add-item-col" style="width:70px;">
+          <label class="modal-lbl">Cases</label>
+          <input type="number" id="new-item-cases" class="data-input" min="0" step="any" placeholder="0" oninput="calcFromCases()">
+        </div>
+        
+        <div style="color:var(--silver); font-size:18px; padding-bottom:6px;">=</div>
+        
+        <div class="add-item-col" style="width:70px;">
+          <label class="modal-lbl" style="color:var(--gold);">Pieces</label>
+          <input type="number" id="new-item-pcs" class="data-input" min="1" value="1" style="border-color:var(--gold);" oninput="calcFromPieces()">
+        </div>
+        
+        <div class="add-item-col" style="width:60px;">
+          <label class="modal-lbl">Pack</label>
+          <input type="text" id="new-item-pack" class="data-input" readonly style="background:transparent; border:none; color:var(--silver); text-align:center; padding:8px 0;" placeholder="-">
+        </div>
+        
+        <button class="btn-view" style="height:38px; padding:0 20px; font-size:13px;" onclick="addItemToOrder()">+ Add to Order</button>
+      </div>
+
+      <div style="padding:16px; text-align:right; font-family:'Oswald',sans-serif; font-size:20px; color:var(--gold); border-top:1px solid rgba(255,255,255,.05);">
+        Calculated Total: <span id="m-total" style="color:var(--white)"></span>
+      </div>
+    </div>
+
+    <div style="background:var(--ink); border:1px solid rgba(200,152,31,.2); padding:20px; border-radius:4px;">
+      <div class="modal-grid" style="margin-bottom:0; gap:20px;">
+        
+        <div>
+          <div class="modal-lbl" style="color:var(--gold)">Order Status</div>
+          <select id="m-status-sel" class="data-input" style="margin-bottom:16px;" onchange="toggleEditLock(this.value)">
+            <option value="pending">Pending</option>
+            <option value="confirmed">Confirmed</option>
+            <option value="delivered">Delivered</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+          <button class="btn-save" style="width:100%;" onclick="saveOrderChanges()">💾 Save All Changes</button>
+        </div>
+        
+        <div>
+          <div class="modal-lbl" style="color:var(--gold)">Communications</div>
+          <p style="font-size:12px; color:var(--silver); margin-bottom:12px; line-height:1.5;">Send formatted confirmation emails, delivery notifications, or invoices to customers and admins.</p>
+          <button class="btn-email-cmd" onclick="openEmailModal()">✉ Open Email Command Center</button>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div id="email-modal-overlay" onclick="closeEmailModal(event)">
+  <div id="email-modal" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="closeEmailModal(event)">&times;</button>
+    <div class="modal-title" style="color:#3498db; border-color:rgba(52,152,219,.3);">Email Command Center</div>
+    
+    <div class="modal-lbl" style="color:var(--white)">1. Select Email Format</div>
+    <select id="email-format-sel" class="data-input" style="margin-bottom:24px; border-color:#3498db;">
+      <option value="confirm">Order Confirmation / Update</option>
+      <option value="deliver">Delivery Confirmation (Thank You)</option>
+      <option value="invoice">Formal Invoice (With Payment Info)</option>
+    </select>
+
+    <div class="modal-lbl" style="color:var(--white)">2. Select Recipients</div>
+    <div style="background:var(--ink2); padding:16px; border:1px solid rgba(139,160,178,.2); margin-bottom:24px;">
+      <label class="chk-row">
+        <input type="checkbox" id="chk-cust" checked> 
+        Send to Customer <span style="color:var(--silver);font-size:12px;" id="lbl-cust-email"></span>
+      </label>
+      <label class="chk-row">
+        <input type="checkbox" id="chk-admin"> 
+        Send to Admin <span style="color:var(--silver);font-size:12px;">(orders@allprobuildingsupplies.com)</span>
+      </label>
+      <label class="chk-row" style="margin-bottom:0;">
+        <input type="checkbox" id="chk-custom" onchange="document.getElementById('custom-email-container').style.display=this.checked?'block':'none'"> 
+        Send to Custom Email...
+      </label>
+      
+      <div id="custom-email-container" style="display:none; margin-top:12px;">
+        <div class="custom-email-row">
+          <input type="email" class="data-input custom-email-input" placeholder="e.g. accounting@builder.com" style="border-color:rgba(255,255,255,.2);">
+          <button class="btn-view" style="padding:0 12px; font-size:16px;" onclick="addCustomEmailField()" title="Add another email">+</button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="modal-lbl" style="color:var(--white)">3. Add Note to Email (Optional)</div>
+    <textarea id="email-custom-note" class="data-input" style="margin-bottom:24px; resize:vertical; min-height:80px;" placeholder="Type a custom message to include in the email (e.g., Backorders, substitutes, delivery timing...)"></textarea>
+
+    <div id="email-send-msg" style="font-family:'DM Mono',monospace;font-size:12px;margin-bottom:16px;display:none;"></div>
+
+    <div style="display:flex;gap:12px;">
+      <button class="btn-add" style="flex:1;text-align:center;" onclick="closeEmailModal()">Cancel</button>
+      <button class="btn-save" id="btn-execute-send" style="flex:2;background:#3498db;color:#fff;" onclick="executeSendEmail()">🚀 Send Email(s)</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// --- BULLETPROOF CURSOR FALLBACK ---
+document.addEventListener('mousemove', (e) => {
+    const cursor = document.getElementById('cursor');
+    const ring = document.getElementById('cursor-ring');
+    if(cursor) { cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px'; }
+    if(ring) { setTimeout(() => { ring.style.left = e.clientX + 'px'; ring.style.top = e.clientY + 'px'; }, 50); }
 });
 
-async function refresh() {
-  await Promise.all([loadSummary(), loadProducts(), loadUsers(), loadOrders()]);
+const WORKER_URL = 'https://allpro-github-proxy.baruch-6d5.workers.dev';
+
+// --- ADMIN AUTH GATE ---
+function checkAdminAuth() {
+  const pin = document.getElementById('admin-pin').value;
+  if(pin === 'Admin2026!') { 
+    sessionStorage.setItem('apbs_admin_auth', 'true');
+    unlockAdmin();
+  } else {
+    document.getElementById('admin-auth-err').style.display = 'block';
+  }
 }
-refresh().catch((err) => {
-  document.getElementById("summary").textContent = err.message;
+document.getElementById('admin-pin').addEventListener('keypress', function (e) {
+    if (e.key === 'Enter') checkAdminAuth();
+});
+
+function unlockAdmin() {
+  document.getElementById('admin-auth-gate').style.display = 'none';
+  document.getElementById('main-admin-content').style.display = 'block';
+  switchTab('orders');
+}
+
+if(sessionStorage.getItem('apbs_admin_auth') === 'true') {
+  unlockAdmin();
+}
+
+// --- EMAILJS CONFIG ---
+const EMAILJS_SVC  = 'service_qefaa3x';   
+const EMAILJS_TPL  = 'template_nh3iqob';  
+const EMAILJS_KEY  = 'MNDXK3JgE890yvoA6';   
+const NOTIFY_EMAIL = 'orders@allprobuildingsupplies.com';
+if(window.emailjs) emailjs.init(EMAILJS_KEY);
+
+let currentProdSha = null, currentUserSha = null, currentOrderSha = null;
+let masterUsers = [], masterOrders = [], masterProducts = []; 
+let activeOrderObj = null; 
+
+// Advanced Error Reporter
+function showStatus(msg, isErr) {
+  const el = document.getElementById('status-msg');
+  el.textContent = msg; 
+  el.className = isErr ? 'status-err' : 'status-success';
+  el.style.display = 'block'; 
+  setTimeout(() => el.style.display = 'none', isErr ? 8000 : 4000);
+}
+
+function switchTab(tab) {
+  document.querySelectorAll('.admin-tab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.admin-panel').forEach(p => p.classList.remove('active'));
+  const targetBtn = document.querySelector(`.admin-tab[data-tab="${tab}"]`);
+  if(targetBtn) targetBtn.classList.add('active');
+  const targetPanel = document.getElementById('tab-' + tab);
+  if(targetPanel) targetPanel.classList.add('active');
+}
+
+// --- CSV PARSER UTILS ---
+function parseCSV(str) {
+  var lines = [], curLine = [], curStr = '', inQ = false;
+  for(var i=0; i<str.length; i++) {
+    var c = str[i];
+    if(c === '"') {
+      if(inQ && str[i+1] === '"') { curStr += '"'; i++; } else { inQ = !inQ; }
+    } else if(c === ',' && !inQ) {
+      curLine.push(curStr); curStr = '';
+    } else if((c === '\n' || c === '\r') && !inQ) {
+      if(c === '\r' && str[i+1] === '\n') i++;
+      curLine.push(curStr); lines.push(curLine); curLine = []; curStr = '';
+    } else { curStr += c; }
+  }
+  if(curStr !== '' || curLine.length > 0) { curLine.push(curStr); lines.push(curLine); }
+  return lines;
+}
+function stringifyCSV(lines) {
+  return lines.map(row => row.map(cell => {
+    var s = String(cell||'');
+    if(s.includes(',') || s.includes('"') || s.includes('\n')) return '"' + s.replace(/"/g, '""') + '"';
+    return s;
+  }).join(',')).join('\n');
+}
+
+// --- PRODUCTS LOGIC ---
+async function loadProducts() {
+  try {
+    const r = await fetch(WORKER_URL + '/github/products.csv'); const d = await r.json();
+    currentProdSha = d.sha; const csv = decodeURIComponent(escape(atob(d.content)));
+    const rows = parseCSV(csv); 
+    const tbody = document.getElementById('prod-tbody'); tbody.innerHTML = '';
+    
+    masterProducts = []; 
+    for(let i=1; i<rows.length; i++) { 
+      if(!rows[i][0]) continue;
+      masterProducts.push({
+        code: rows[i][0].trim(),
+        description: rows[i][1].trim(),
+        size: rows[i][2].trim(),
+        pack: rows[i][3].trim(),
+        stock: parseInt(rows[i][4]) || 0, // Captured stock limit
+        price: parseFloat(rows[i][5])||0
+      });
+      addProductRow(rows[i]); 
+    }
+    populateProductDropdown();
+  } catch(e) { console.error(e); }
+}
+
+function populateProductDropdown() {
+  const sel = document.getElementById('new-item-sel');
+  if(!sel) return;
+  sel.innerHTML = '<option value="">-- Select Product to Add --</option>';
+  masterProducts.forEach((p, idx) => {
+    sel.innerHTML += `<option value="${idx}">${p.code} - ${p.description} ${p.size} ($${p.price.toFixed(2)}) [Stock: ${p.stock}]</option>`;
+  });
+}
+
+function addProductRow(data = ['', '', '', '', '', '', '']) {
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td data-label="Category Code"><input class="data-input" value="${data[0]||''}"></td>
+    <td data-label="Description"><input class="data-input" value="${data[1]||''}"></td>
+    <td data-label="Size"><input class="data-input" value="${data[2]||''}"></td>
+    <td data-label="Pcs / Ctn"><input class="data-input" value="${data[3]||''}"></td>
+    <td data-label="Inventory Qty"><input class="data-input" value="${data[4]||''}"></td>
+    <td data-label="Unit Price ($)"><input class="data-input" value="${data[5]||''}"></td>
+    <td data-label="Image URL"><input class="data-input" value="${data[6]||''}"></td>
+    <td data-label="Action"><button class="btn-del" onclick="this.closest('tr').remove()">Delete Row</button></td>
+  `;
+  document.getElementById('prod-tbody').appendChild(tr);
+}
+
+async function saveProducts() {
+  const btn = event.target; btn.textContent = 'Saving...'; btn.disabled = true;
+  const rows = [['Code', 'Description', 'Size', 'Pack', 'Qty', 'Price', 'Image']];
+  document.querySelectorAll('#prod-tbody tr').forEach(tr => {
+    const inputs = tr.querySelectorAll('input');
+    if(inputs[0].value.trim() !== '') rows.push(Array.from(inputs).map(inp => inputs[0].value === 'Code' ? inp.value : inp.value.trim()));
+  });
+  
+  const payload = { 
+    message: 'Admin: Update products.csv', 
+    content: btoa(unescape(encodeURIComponent(stringifyCSV(rows)))), 
+    branch: 'main', 
+    sha: currentProdSha 
+  };
+  
+  try {
+    const r = await fetch(WORKER_URL + '/github/products.csv', { method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
+    if(!r.ok) {
+        let errTxt = r.statusText;
+        try { const j = await r.json(); if(j.message) errTxt = j.message; } catch(e){}
+        throw new Error(`HTTP ${r.status} - ${errTxt}`);
+    }
+    const d = await r.json(); currentProdSha = d.content.sha; 
+    showStatus('Products saved successfully!', false); 
+    loadProducts(); 
+  } catch(e) { showStatus('Save Failed: ' + e.message, true); }
+  
+  btn.textContent = 'Save Products'; btn.disabled = false;
+}
+
+// --- USERS LOGIC WITH PASSWORDS ---
+async function loadUsers() {
+  try {
+    const r = await fetch(WORKER_URL + '/github/users.json'); const d = await r.json();
+    currentUserSha = d.sha; masterUsers = JSON.parse(decodeURIComponent(escape(atob(d.content)))).users || [];
+    const tbody = document.getElementById('users-tbody'); tbody.innerHTML = '';
+    masterUsers.forEach((u, i) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td data-label="ID" style="font-family:monospace;color:var(--silver);">${u.id}</td>
+        <td data-label="Name">${u.fname} ${u.lname}</td>
+        <td data-label="Email">${u.email}</td>
+        <td data-label="Company">${u.company}</td>
+        <td data-label="Password">
+          <input type="text" class="data-input pw-sel" data-idx="${i}" value="${u.password || 'Welcome1!'}" style="width:120px;">
+        </td>
+        <td data-label="Status">
+          <select class="data-input status-sel" data-idx="${i}" style="background:${u.status==='approved'?'rgba(46,204,113,.1)':'var(--ink3)'}">
+            <option value="pending" ${u.status==='pending'?'selected':''}>Pending</option>
+            <option value="approved" ${u.status==='approved'?'selected':''}>Approved</option>
+            <option value="rejected" ${u.status==='rejected'?'selected':''}>Rejected</option>
+          </select>
+        </td>
+        <td data-label="Pieces Allowed">
+          <select class="data-input pcs-sel" data-idx="${i}">
+            <option value="true" ${u.canOrderPieces!==false?'selected':''}>Yes</option>
+            <option value="false" ${u.canOrderPieces===false?'selected':''}>Cases Only</option>
+          </select>
+        </td>
+        <td data-label="Action"><button class="btn-del" onclick="deleteUser(${i})">Delete</button></td>
+      `;
+      tbody.appendChild(tr);
+    });
+    
+    populateModalCustomerDropdown();
+    
+  } catch(e) { console.error(e); }
+}
+
+function openUserModal() {
+  document.getElementById('new-user-fname').value = '';
+  document.getElementById('new-user-lname').value = '';
+  document.getElementById('new-user-email').value = '';
+  document.getElementById('new-user-password').value = 'Welcome1!';
+  document.getElementById('new-user-company').value = '';
+  document.getElementById('new-user-status').value = 'approved';
+  document.getElementById('new-user-pcs').value = 'true';
+  document.getElementById('user-modal-overlay').style.display = 'flex';
+}
+
+function closeUserModal(e) {
+  if(!e || (e.target && e.target.id === 'user-modal-overlay') || (e.target && e.target.classList.contains('modal-close'))) {
+    document.getElementById('user-modal-overlay').style.display = 'none';
+  }
+}
+
+async function createNewUser(e) {
+  const fname = document.getElementById('new-user-fname').value.trim();
+  const lname = document.getElementById('new-user-lname').value.trim();
+  const email = document.getElementById('new-user-email').value.trim();
+  const password = document.getElementById('new-user-password').value.trim() || 'Welcome1!';
+  const company = document.getElementById('new-user-company').value.trim();
+  const status = document.getElementById('new-user-status').value;
+  const canOrderPieces = document.getElementById('new-user-pcs').value === 'true';
+
+  if(!fname || !lname || !email) return alert('First Name, Last Name, and Email are required.');
+
+  const btn = e.target; btn.textContent = 'Saving...'; btn.disabled = true;
+
+  const newUser = {
+    id: 'USR-' + Date.now().toString(36).toUpperCase(),
+    fname: fname, 
+    lname: lname, 
+    email: email, 
+    company: company, 
+    status: status, 
+    canOrderPieces: canOrderPieces, 
+    password: password
+  };
+
+  masterUsers.push(newUser);
+  
+  const payload = { 
+    message: 'Admin: Add new user', 
+    content: btoa(unescape(encodeURIComponent(JSON.stringify({users: masterUsers}, null, 2)))), 
+    branch: 'main', 
+    sha: currentUserSha 
+  };
+  
+  try {
+    const r = await fetch(WORKER_URL + '/github/users.json', { method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
+    if(!r.ok) {
+        let errTxt = r.statusText;
+        try { const j = await r.json(); if(j.message) errTxt = j.message; } catch(e){}
+        throw new Error(`HTTP ${r.status} - ${errTxt}`);
+    }
+    const d = await r.json(); currentUserSha = d.content.sha; 
+    showStatus('User created successfully!', false); 
+    closeUserModal();
+    loadUsers(); 
+  } catch(err) { showStatus('Save Failed: ' + err.message, true); masterUsers.pop(); }
+  
+  btn.textContent = 'Create User'; btn.disabled = false;
+}
+
+function deleteUser(idx) { if(confirm("Permanently delete this user?")) { masterUsers.splice(idx, 1); saveUsers(); } }
+
+async function saveUsers() {
+  const btn = event.target; btn.textContent = 'Saving...'; btn.disabled = true;
+  document.querySelectorAll('.status-sel').forEach(sel => masterUsers[sel.dataset.idx].status = sel.value);
+  document.querySelectorAll('.pcs-sel').forEach(sel => masterUsers[sel.dataset.idx].canOrderPieces = sel.value === 'true');
+  document.querySelectorAll('.pw-sel').forEach(sel => masterUsers[sel.dataset.idx].password = sel.value.trim());
+
+  const payload = { 
+    message: 'Admin: Update users.json', 
+    content: btoa(unescape(encodeURIComponent(JSON.stringify({users: masterUsers}, null, 2)))), 
+    branch: 'main', 
+    sha: currentUserSha 
+  };
+  
+  try {
+    const r = await fetch(WORKER_URL + '/github/users.json', { method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
+    if(!r.ok) {
+        let errTxt = r.statusText;
+        try { const j = await r.json(); if(j.message) errTxt = j.message; } catch(e){}
+        throw new Error(`HTTP ${r.status} - ${errTxt}`);
+    }
+    const d = await r.json(); currentUserSha = d.content.sha; 
+    showStatus('Users & Passwords saved successfully!', false); 
+    loadUsers(); 
+  } catch(e) { showStatus('Save Failed: ' + e.message, true); }
+  
+  btn.textContent = 'Save Approvals & Passwords'; btn.disabled = false;
+}
+
+// --- CUSTOMER AUTO-POPULATE LOGIC ---
+function populateModalCustomerDropdown() {
+  const sel = document.getElementById('modal-cust-dropdown');
+  if(!sel) return;
+  sel.innerHTML = '<option value="">-- Select Existing User or Type Manually Below --</option>';
+  masterUsers.forEach(u => {
+    if(u.status === 'approved') {
+       sel.innerHTML += `<option value="${u.email}">${u.fname} ${u.lname} (${u.company || 'Independent'})</option>`;
+    }
+  });
+}
+
+function loadCustomerIntoForm() {
+  const email = document.getElementById('modal-cust-dropdown').value;
+  if(!email) return;
+  
+  const u = masterUsers.find(user => user.email === email);
+  if(u) {
+    document.getElementById('edit-cust-name').value = (u.fname + ' ' + u.lname).trim();
+    document.getElementById('edit-cust-company').value = u.company || '';
+    document.getElementById('edit-cust-email').value = u.email || '';
+    const inputs = ['edit-cust-name', 'edit-cust-company', 'edit-cust-email'];
+    inputs.forEach(id => {
+      const el = document.getElementById(id);
+      el.style.backgroundColor = 'rgba(200,152,31,.2)';
+      setTimeout(() => { el.style.backgroundColor = 'var(--ink3)'; }, 500);
+    });
+  }
+}
+
+// --- CASES, PIECES & INVENTORY CALCULATOR LOGIC ---
+let currentItemPack = 1;
+let currentItemStock = 0;
+
+function updateItemPack() {
+  const sel = document.getElementById('new-item-sel');
+  if(sel.value === '') {
+     document.getElementById('new-item-pack').value = '';
+     currentItemPack = 1;
+     currentItemStock = 0;
+     return;
+  }
+  const prod = masterProducts[sel.value];
+  
+  let packNum = parseInt(String(prod.pack).replace(/[^0-9]/g, ''));
+  if(isNaN(packNum) || packNum <= 0) packNum = 1;
+  
+  currentItemPack = packNum;
+  currentItemStock = prod.stock;
+  
+  document.getElementById('new-item-pack').value = packNum + '/cs';
+  
+  calcFromPieces();
+}
+
+function calcFromCases() {
+  const cases = parseFloat(document.getElementById('new-item-cases').value) || 0;
+  let pcs = Math.ceil(cases * currentItemPack);
+  
+  if(pcs > currentItemStock) {
+    pcs = currentItemStock;
+    document.getElementById('new-item-cases').value = Number.isInteger(pcs/currentItemPack) ? (pcs/currentItemPack) : (pcs/currentItemPack).toFixed(2);
+    showStatus('Max stock reached (' + currentItemStock + ' pcs).', true);
+  }
+  
+  document.getElementById('new-item-pcs').value = pcs;
+}
+
+function calcFromPieces() {
+  let pcsInp = document.getElementById('new-item-pcs');
+  let pcs = parseInt(pcsInp.value) || 0;
+  
+  if(pcs > currentItemStock) {
+    pcs = currentItemStock;
+    pcsInp.value = pcs;
+    showStatus('Max stock reached (' + currentItemStock + ' pcs).', true);
+  }
+  
+  let cases = pcs / currentItemPack;
+  document.getElementById('new-item-cases').value = Number.isInteger(cases) ? cases : cases.toFixed(2);
+}
+
+// --- ORDERS LOGIC ---
+async function loadOrders() {
+  try {
+    const r = await fetch(WORKER_URL + '/github/orders.json'); const d = await r.json();
+    currentOrderSha = d.sha; masterOrders = JSON.parse(decodeURIComponent(escape(atob(d.content)))).orders || [];
+    masterOrders.sort((a,b) => new Date(b.placedAt) - new Date(a.placedAt));
+    const tbody = document.getElementById('orders-tbody'); tbody.innerHTML = '';
+    masterOrders.forEach(o => {
+      const dDate = new Date(o.placedAt).toLocaleDateString();
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td data-label="Order ID" style="font-family:monospace;color:var(--gold);">${o.id}</td>
+        <td data-label="Date">${dDate}</td>
+        <td data-label="Customer">${o.customer.name}<br><span style="font-size:10px;color:var(--silver)">${o.customer.company}</span></td>
+        <td data-label="Total" style="font-family:monospace">$${(o.total||0).toFixed(2)}</td>
+        <td data-label="Status"><span class="badge ${o.status}">${o.status}</span></td>
+        <td data-label="Action"><button class="btn-view" onclick="openOrderModal('${o.id}')">View & Edit</button></td>
+      `;
+      tbody.appendChild(tr);
+    });
+  } catch(e) { console.error(e); }
+}
+
+function toggleEditLock(status) {
+  const isLocked = (status === 'delivered' || status === 'cancelled');
+  
+  const fields = ['edit-cust-name', 'edit-cust-company', 'edit-cust-email', 'edit-cust-phone', 'edit-delivery', 'edit-po', 'edit-notes', 'modal-cust-dropdown'];
+  fields.forEach(id => {
+    document.getElementById(id).disabled = isLocked;
+    document.getElementById(id).style.opacity = isLocked ? '0.6' : '1';
+  });
+  
+  document.querySelectorAll('.edit-cases, .edit-pcs, .edit-price').forEach(inp => {
+    inp.disabled = isLocked;
+    inp.style.opacity = isLocked ? '0.6' : '1';
+  });
+  document.querySelectorAll('#m-items-tbody .btn-del').forEach(btn => {
+    btn.disabled = isLocked;
+    btn.style.opacity = isLocked ? '0.5' : '1';
+    btn.style.cursor = isLocked ? 'not-allowed' : 'pointer';
+  });
+  
+  document.getElementById('add-item-container').style.display = isLocked ? 'none' : 'flex';
+  document.getElementById('edit-lock-banner').style.display = isLocked ? 'block' : 'none';
+}
+
+function openOrderModal(orderId) {
+  document.getElementById('modal-cust-dropdown').value = '';
+  document.getElementById('new-item-sel').value = '';
+  document.getElementById('new-item-cases').value = '';
+  document.getElementById('new-item-pcs').value = '1';
+  document.getElementById('new-item-pack').value = '';
+
+  if (orderId) {
+    activeOrderObj = masterOrders.find(o => o.id === orderId);
+    document.getElementById('modal-main-title').textContent = 'Edit Order: ' + activeOrderObj.id;
+  } else {
+    const newId = 'APB-' + Date.now().toString(36).toUpperCase();
+    activeOrderObj = {
+      id: newId,
+      placedAt: new Date().toISOString(),
+      status: 'pending',
+      customer: { name: '', company: '', email: '', phone: '' },
+      delivery: { method: 'delivery', address: '' },
+      po: '', notes: '', total: 0, items: []
+    };
+    document.getElementById('modal-main-title').textContent = 'Create New Order';
+  }
+
+  if(!activeOrderObj) return;
+  
+  document.getElementById('edit-cust-name').value = activeOrderObj.customer.name || '';
+  document.getElementById('edit-cust-company').value = activeOrderObj.customer.company || '';
+  document.getElementById('edit-cust-email').value = activeOrderObj.customer.email || '';
+  document.getElementById('edit-cust-phone').value = activeOrderObj.customer.phone || '';
+  
+  document.getElementById('edit-delivery').value = activeOrderObj.delivery.address || '';
+  document.getElementById('edit-po').value = activeOrderObj.po || '';
+  document.getElementById('edit-notes').value = activeOrderObj.notes || '';
+  
+  document.getElementById('m-status-sel').value = activeOrderObj.status || 'pending';
+  
+  renderEditableItems();
+  
+  document.getElementById('order-modal-overlay').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+function addItemToOrder() {
+  const sel = document.getElementById('new-item-sel');
+  const pcsInput = document.getElementById('new-item-pcs');
+  let qty = parseInt(pcsInput.value) || 1;
+  
+  if (sel.value === '') return alert('Please select a product to add.');
+  
+  const prod = masterProducts[sel.value];
+  if(qty > prod.stock) qty = prod.stock; 
+  
+  activeOrderObj.items.push({
+    code: prod.code,
+    description: prod.description,
+    size: prod.size,
+    pcsPerCtn: prod.pack,
+    qty: qty,
+    unit: 'piece', 
+    unitPrice: prod.price,
+    lineTotal: prod.price * qty
+  });
+  
+  pcsInput.value = 1;
+  document.getElementById('new-item-cases').value = '';
+  sel.value = '';
+  document.getElementById('new-item-pack').value = '';
+  renderEditableItems();
+}
+
+function renderEditableItems() {
+  const tbody = document.getElementById('m-items-tbody'); tbody.innerHTML = '';
+  let calcTotal = 0;
+  
+  activeOrderObj.items.forEach((item, idx) => {
+    let lineTot = parseFloat(item.qty) * parseFloat(item.unitPrice); 
+    calcTotal += lineTot;
+    
+    let packNum = 1;
+    if (item.pcsPerCtn) { packNum = parseInt(String(item.pcsPerCtn).replace(/[^0-9]/g, '')) || 1; }
+    
+    let catalogItem = masterProducts.find(p => p.code === item.code);
+    let maxAllowed = catalogItem ? (catalogItem.stock + item.qty) : item.qty;
+    
+    let currentCases = item.qty / packNum;
+    let displayCases = Number.isInteger(currentCases) ? currentCases : currentCases.toFixed(2);
+    
+    let tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td data-label="Item">${item.description} ${item.size}<br><span style="font-size:10px;color:var(--silver)">${item.code} (Pack: ${item.pcsPerCtn || '-'})</span></td>
+      <td data-label="Cases"><input type="number" class="data-input edit-cases" data-idx="${idx}" data-pack="${packNum}" data-stock="${maxAllowed}" value="${displayCases}" min="0" step="any" style="width:70px;" oninput="rowCalcCases(${idx})"></td>
+      <td data-label="Pieces"><input type="number" class="data-input edit-pcs" data-idx="${idx}" data-pack="${packNum}" data-stock="${maxAllowed}" value="${item.qty}" min="1" style="width:70px;" oninput="rowCalcPieces(${idx})"></td>
+      <td data-label="Unit Price"><input type="number" step="0.01" class="data-input edit-price" data-idx="${idx}" value="${(item.unitPrice||0).toFixed(2)}" style="width:90px;" oninput="liveRecalc()"></td>
+      <td data-label="Line Total" class="live-line-tot" style="text-align:right;font-family:monospace;color:var(--white)">$${lineTot.toFixed(2)}</td>
+      <td data-label="Action"><button class="btn-del" onclick="removeOrderItem(${idx})">X</button></td>
+    `;
+    tbody.appendChild(tr);
+  });
+  document.getElementById('m-total').textContent = '$' + calcTotal.toFixed(2);
+  
+  toggleEditLock(document.getElementById('m-status-sel').value);
+}
+
+function rowCalcCases(idx) {
+  let casesInp = document.querySelectorAll('.edit-cases')[idx];
+  let pcsInp = document.querySelectorAll('.edit-pcs')[idx];
+  let pack = parseInt(casesInp.dataset.pack) || 1;
+  let maxStock = parseInt(casesInp.dataset.stock) || 999999;
+  
+  let cases = parseFloat(casesInp.value) || 0;
+  let pcs = Math.ceil(cases * pack);
+  
+  if(pcs > maxStock) {
+    pcs = maxStock;
+    casesInp.value = Number.isInteger(pcs/pack) ? (pcs/pack) : (pcs/pack).toFixed(2);
+    showStatus('Max available inventory reached.', true);
+  }
+  
+  pcsInp.value = pcs;
+  liveRecalc();
+}
+
+function rowCalcPieces(idx) {
+  let casesInp = document.querySelectorAll('.edit-cases')[idx];
+  let pcsInp = document.querySelectorAll('.edit-pcs')[idx];
+  let pack = parseInt(pcsInp.dataset.pack) || 1;
+  let maxStock = parseInt(pcsInp.dataset.stock) || 999999;
+  
+  let pcs = parseInt(pcsInp.value) || 0;
+  
+  if(pcs > maxStock) {
+    pcs = maxStock;
+    pcsInp.value = pcs;
+    showStatus('Max available inventory reached.', true);
+  }
+  
+  let cases = pcs / pack;
+  casesInp.value = Number.isInteger(cases) ? cases : cases.toFixed(2);
+  liveRecalc();
+}
+
+function liveRecalc() {
+  let pcs = document.querySelectorAll('.edit-pcs');
+  let prices = document.querySelectorAll('.edit-price');
+  let lines = document.querySelectorAll('.live-line-tot');
+  let calcTotal = 0;
+  
+  pcs.forEach((pInput, i) => {
+    let q = parseInt(pInput.value) || 0;
+    let p = parseFloat(prices[i].value) || 0;
+    let ltot = q * p; 
+    calcTotal += ltot; 
+    lines[i].textContent = '$' + ltot.toFixed(2);
+  });
+  document.getElementById('m-total').textContent = '$' + calcTotal.toFixed(2);
+}
+
+function removeOrderItem(idx) { 
+  if(document.getElementById('m-status-sel').value === 'delivered' || document.getElementById('m-status-sel').value === 'cancelled') return; 
+  if(confirm('Remove this item?')) { activeOrderObj.items.splice(idx, 1); renderEditableItems(); } 
+}
+
+function closeOrderModal(e) { 
+  if(e && (e.target.id === 'order-modal-overlay' || e.target.classList.contains('modal-close'))) { 
+    document.getElementById('order-modal-overlay').style.display = 'none'; 
+    document.body.style.overflow = ''; 
+    activeOrderObj = null; 
+  } 
+}
+
+async function saveOrderChanges() {
+  if(!activeOrderObj) return;
+  
+  const name = document.getElementById('edit-cust-name').value.trim();
+  if(!name) { alert("Customer Name is required."); return; }
+  
+  activeOrderObj.customer.name = name;
+  activeOrderObj.customer.company = document.getElementById('edit-cust-company').value.trim();
+  activeOrderObj.customer.email = document.getElementById('edit-cust-email').value.trim();
+  activeOrderObj.customer.phone = document.getElementById('edit-cust-phone').value.trim();
+  activeOrderObj.delivery.address = document.getElementById('edit-delivery').value.trim();
+  activeOrderObj.po = document.getElementById('edit-po').value.trim();
+  activeOrderObj.notes = document.getElementById('edit-notes').value.trim();
+  activeOrderObj.status = document.getElementById('m-status-sel').value;
+
+  let qtys = document.querySelectorAll('.edit-pcs'), prices = document.querySelectorAll('.edit-price'), newTotal = 0;
+  qtys.forEach((qInput, i) => {
+    let q = parseInt(qInput.value) || 0, p = parseFloat(prices[i].value) || 0;
+    activeOrderObj.items[i].qty = q; activeOrderObj.items[i].unitPrice = p; activeOrderObj.items[i].lineTotal = q * p; newTotal += (q * p);
+  });
+  activeOrderObj.total = newTotal;
+  
+  if(!masterOrders.find(o => o.id === activeOrderObj.id)) {
+     masterOrders.push(activeOrderObj);
+  }
+
+  const payload = { 
+    message: 'Admin: Saved order ' + activeOrderObj.id, 
+    content: btoa(unescape(encodeURIComponent(JSON.stringify({orders: masterOrders}, null, 2)))), 
+    branch: 'main', 
+    sha: currentOrderSha 
+  };
+  
+  try {
+    const r = await fetch(WORKER_URL + '/github/orders.json', { method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
+    if(!r.ok) {
+        let errTxt = r.statusText;
+        try { const j = await r.json(); if(j.message) errTxt = j.message; } catch(e){}
+        throw new Error(`HTTP ${r.status} - ${errTxt}`);
+    }
+    const d = await r.json(); currentOrderSha = d.content.sha; 
+    showStatus('Order saved successfully!', false); 
+    closeOrderModal({target: {id: 'order-modal-overlay'}}); 
+    loadOrders(); 
+  } catch(e) { showStatus('Save Failed: ' + e.message, true); }
+}
+
+// --- CONSOLIDATED EMAIL LOGIC ---
+function openEmailModal(e) {
+  if(e) e.stopPropagation();
+  if(!activeOrderObj) return;
+  
+  document.getElementById('lbl-cust-email').textContent = `(${activeOrderObj.customer.email || 'No email saved'})`;
+  document.getElementById('email-send-msg').style.display = 'none';
+  document.getElementById('chk-cust').checked = true;
+  document.getElementById('chk-admin').checked = false;
+  document.getElementById('chk-custom').checked = false;
+  document.getElementById('email-custom-note').value = ''; // Clear custom note
+  
+  document.getElementById('custom-email-container').style.display = 'none';
+  const container = document.getElementById('custom-email-container');
+  container.innerHTML = '';
+  const initialDiv = document.createElement('div');
+  initialDiv.className = 'custom-email-row';
+  initialDiv.innerHTML = `
+    <input type="email" class="data-input custom-email-input" placeholder="e.g. accounting@builder.com" style="border-color:rgba(255,255,255,.2);">
+    <button class="btn-view" style="padding:0 12px; font-size:16px;" onclick="addCustomEmailField()" title="Add another email">+</button>
+  `;
+  container.appendChild(initialDiv);
+  
+  let btn = document.getElementById('btn-execute-send');
+  btn.disabled = false; btn.innerHTML = '🚀 Send Email(s)'; btn.style.background = '#3498db';
+
+  document.getElementById('email-modal-overlay').style.display = 'flex';
+}
+
+function closeEmailModal(e) {
+  if(e && (e.target.id === 'email-modal-overlay' || e.target.classList.contains('modal-close'))) {
+    document.getElementById('email-modal-overlay').style.display = 'none';
+  } else if(!e) { document.getElementById('email-modal-overlay').style.display = 'none'; }
+}
+
+function addCustomEmailField() {
+  const container = document.getElementById('custom-email-container');
+  const div = document.createElement('div');
+  div.className = 'custom-email-row';
+  div.innerHTML = `
+    <input type="email" class="data-input custom-email-input" placeholder="e.g. additional@builder.com" style="border-color:rgba(255,255,255,.2);">
+    <button class="btn-del" style="padding:0 12px; margin-top:0;" onclick="this.parentElement.remove()" title="Remove email">X</button>
+  `;
+  container.appendChild(div);
+}
+
+// Breaking massive strings to avoid truncation
+function buildConfirmEmail(order, note){
+  const noteHtml = note ? `
+    <tr>
+      <td style="padding:20px 36px 0;">
+        <div style="background:#fffbf0; border-left:4px solid #C8981F; padding:16px; border-radius:0 4px 4px 0;">
+          <div style="font-size:11px;color:#C8981F;font-weight:bold;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Message from All Pro:</div>
+          <div style="font-size:14px;color:#333;line-height:1.6;">${note.replace(/\n/g, '<br>')}</div>
+        </div>
+      </td>
+    </tr>
+  ` : '';
+
+  const itemsHtml = order.items.map(function(i){
+    return `
+      <tr>
+        <td style="padding:10px 14px;font-size:13px;color:#333;border-bottom:1px solid #f0f0f0;">
+          ${i.description} ${i.size}<br/>
+          <span style="font-size:11px;color:#888">${i.qty} pcs @ $${(i.unitPrice||0).toFixed(2)}</span>
+        </td>
+        <td style="padding:10px 14px;font-size:13px;color:#333;text-align:right;border-bottom:1px solid #f0f0f0;">
+          $${(i.lineTotal||0).toFixed(2)}
+        </td>
+      </tr>
+    `;
+  }).join('');
+
+  const poNotesHtml = (order.po || order.notes) ? `
+    <tr>
+      <td style="padding:0 36px 24px;">
+        <table width="100%" cellpadding="0" cellspacing="0" style="background:#fffbf0;border:1px solid #f0e0a0;border-radius:4px;">
+          <tr>
+            <td style="padding:14px 18px;">
+              <div style="font-size:12px;color:#666;margin-bottom:4px;"><strong style="color:#333">PO Number:</strong> ${order.po||'N/A'}</div>
+              <div style="font-size:12px;color:#666;"><strong style="color:#333">Notes:</strong> ${order.notes||'None'}</div>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  ` : '';
+
+  return `
+    <!DOCTYPE html><html><head><meta charset="UTF-8"/></head>
+    <body style="margin:0;padding:0;background:#f4f4f4;font-family:'Helvetica Neue',Arial,sans-serif;">
+      <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;padding:32px 0;">
+        <tr><td align="center">
+          <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:4px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+            <tr><td style="background:#0C1117;padding:28px 36px;border-bottom:4px solid #C8981F;">
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td>
+                    <div style="font-family:'Arial Black',Arial,sans-serif;font-size:20px;font-weight:900;color:#FFFFFF;letter-spacing:2px;text-transform:uppercase;">ALL PRO BUILDING SUPPLIES</div>
+                    <div style="font-size:11px;color:#C8981F;letter-spacing:3px;text-transform:uppercase;margin-top:3px;">LLC</div>
+                  </td>
+                  <td align="right">
+                    <div style="background:#C8981F;color:#0C1117;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:6px 14px;border-radius:2px;">ORDER COPY</div>
+                  </td>
+                </tr>
+              </table>
+            </td></tr>
+            <tr><td style="padding:32px 36px 0;">
+              <p style="margin:0;font-size:16px;color:#222;">Hi <strong>${order.customer.name}</strong>,</p>
+              <p style="margin:12px 0 0;font-size:15px;color:#444;line-height:1.6;">Here is a copy of your order. If any changes were made by our team, they are reflected below.</p>
+            </td></tr>
+            ${noteHtml}
+            <tr><td style="padding:24px 36px 0;">
+              <table width="100%" cellpadding="0" cellspacing="0" style="background:#f8f8f8;border-radius:4px;border:1px solid #e8e8e8;">
+                <tr>
+                  <td style="padding:16px 20px;border-right:1px solid #e8e8e8;">
+                    <div style="font-size:10px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Order ID</div>
+                    <div style="font-size:14px;font-weight:700;color:#C8981F;font-family:monospace;">${order.id}</div>
+                  </td>
+                  <td style="padding:16px 20px;border-right:1px solid #e8e8e8;">
+                    <div style="font-size:10px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Date</div>
+                    <div style="font-size:14px;color:#222;">${new Date(order.placedAt).toLocaleDateString()}</div>
+                  </td>
+                  <td style="padding:16px 20px;">
+                    <div style="font-size:10px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Status / Logistics</div>
+                    <div style="font-size:13px;color:#222;"><strong>${order.status.toUpperCase()}</strong><br>${order.delivery.address}</div>
+                  </td>
+                </tr>
+              </table>
+            </td></tr>
+            <tr><td style="padding:24px 36px 0;">
+              <div style="font-size:11px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;font-weight:700;">Items Ordered</div>
+              <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #e8e8e8;border-radius:4px;overflow:hidden;">
+                <tr style="background:#0C1117;">
+                  <td style="padding:10px 14px;font-size:11px;color:#C8981F;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;">Product</td>
+                  <td style="padding:10px 14px;font-size:11px;color:#C8981F;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;text-align:right;">Total</td>
+                </tr>
+                ${itemsHtml}
+              </table>
+            </td></tr>
+            <tr><td style="padding:0 36px;">
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td></td>
+                  <td style="padding:16px 0;border-top:2px solid #C8981F;width:220px;" align="right">
+                    <span style="font-size:13px;color:#888;text-transform:uppercase;letter-spacing:1px;">Order Total&nbsp;&nbsp;</span>
+                    <span style="font-size:22px;font-weight:700;color:#0C1117;">$${(order.total||0).toFixed(2)}</span>
+                  </td>
+                </tr>
+              </table>
+            </td></tr>
+            ${poNotesHtml}
+            <tr><td style="padding:0 36px;"><hr style="border:none;border-top:1px solid #eee;margin:0;"/></td></tr>
+            <tr><td style="padding:24px 36px;">
+              <p style="margin:0;font-size:14px;color:#444;line-height:1.7;">Questions about your order?</p>
+              <p style="margin:10px 0 0;font-size:14px;color:#444;">📞 <a href="tel:17328291940" style="color:#C8981F;text-decoration:none;font-weight:600;">732-829-1940</a></p>
+              <p style="margin:4px 0 0;font-size:14px;color:#444;">✉️ <a href="mailto:info@allprobuildingsupplies.com" style="color:#C8981F;text-decoration:none;">info@allprobuildingsupplies.com</a></p>
+            </td></tr>
+            <tr><td style="background:#0C1117;padding:20px 36px;text-align:center;">
+              <div style="font-size:12px;color:#888;">© 2026 All Pro Building Supplies LLC</div>
+            </td></tr>
+          </table>
+        </td></tr>
+      </table>
+    </body></html>
+  `;
+}
+
+function buildDeliveredEmail(order, note){
+  const noteHtml = note ? `
+    <tr>
+      <td style="padding:20px 36px 0;">
+        <div style="background:#fffbf0; border-left:4px solid #C8981F; padding:16px; border-radius:0 4px 4px 0;">
+          <div style="font-size:11px;color:#C8981F;font-weight:bold;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Message from All Pro:</div>
+          <div style="font-size:14px;color:#333;line-height:1.6;">${note.replace(/\n/g, '<br>')}</div>
+        </div>
+      </td>
+    </tr>
+  ` : '';
+
+  return `
+    <!DOCTYPE html><html><head><meta charset="UTF-8"/></head>
+    <body style="margin:0;padding:0;background:#f4f4f4;font-family:'Helvetica Neue',Arial,sans-serif;">
+      <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;padding:32px 0;">
+        <tr><td align="center">
+          <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:4px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+            <tr><td style="background:#0C1117;padding:28px 36px;border-bottom:4px solid #C8981F;">
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td>
+                    <div style="font-family:'Arial Black',Arial,sans-serif;font-size:20px;font-weight:900;color:#FFFFFF;letter-spacing:2px;text-transform:uppercase;">ALL PRO BUILDING SUPPLIES</div>
+                    <div style="font-size:11px;color:#C8981F;letter-spacing:3px;text-transform:uppercase;margin-top:3px;">LLC</div>
+                  </td>
+                  <td align="right">
+                    <div style="background:#3498db;color:#FFFFFF;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:6px 14px;border-radius:2px;">ORDER DELIVERED</div>
+                  </td>
+                </tr>
+              </table>
+            </td></tr>
+            <tr><td style="padding:32px 36px 0;">
+              <p style="margin:0;font-size:16px;color:#222;">Hi <strong>${order.customer.name}</strong>,</p>
+              <p style="margin:12px 0 0;font-size:15px;color:#444;line-height:1.6;">Great news! Your order <strong>${order.id}</strong> has been successfully delivered/picked up.</p>
+              <p style="margin:16px 0 0;font-size:15px;color:#444;line-height:1.6;">Thank you for your business. We truly appreciate you choosing All Pro Building Supplies, and we look forward to outfitting your next job.</p>
+            </td></tr>
+            ${noteHtml}
+            <tr><td style="padding:24px 36px 0;">
+              <table width="100%" cellpadding="0" cellspacing="0" style="background:#f8f8f8;border-radius:4px;border:1px solid #e8e8e8;">
+                <tr>
+                  <td style="padding:16px 20px;border-right:1px solid #e8e8e8;">
+                    <div style="font-size:10px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Order ID</div>
+                    <div style="font-size:14px;font-weight:700;color:#C8981F;font-family:monospace;">${order.id}</div>
+                  </td>
+                  <td style="padding:16px 20px;">
+                    <div style="font-size:10px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Order Total</div>
+                    <div style="font-size:14px;font-weight:700;color:#0C1117;">$${(order.total||0).toFixed(2)}</div>
+                  </td>
+                </tr>
+              </table>
+            </td></tr>
+            <tr><td style="padding:24px 36px 24px;"><hr style="border:none;border-top:1px solid #eee;margin:0;"/></td></tr>
+            <tr><td style="padding:0 36px 36px;">
+              <p style="margin:0;font-size:14px;color:#444;line-height:1.7;">Questions? We're always here:</p>
+              <p style="margin:10px 0 0;font-size:14px;color:#444;">📞 <a href="tel:17328291940" style="color:#C8981F;text-decoration:none;font-weight:600;">732-829-1940</a></p>
+              <p style="margin:4px 0 0;font-size:14px;color:#444;">✉️ <a href="mailto:info@allprobuildingsupplies.com" style="color:#C8981F;text-decoration:none;">info@allprobuildingsupplies.com</a></p>
+            </td></tr>
+            <tr><td style="background:#0C1117;padding:20px 36px;text-align:center;">
+              <div style="font-size:12px;color:#888;">© 2026 All Pro Building Supplies LLC</div>
+            </td></tr>
+          </table>
+        </td></tr>
+      </table>
+    </body></html>
+  `;
+}
+
+function buildInvoiceEmail(order, note){
+  const noteHtml = note ? `
+    <tr>
+      <td style="padding:20px 36px 0;">
+        <div style="background:#fffbf0; border-left:4px solid #C8981F; padding:16px; border-radius:0 4px 4px 0;">
+          <div style="font-size:11px;color:#C8981F;font-weight:bold;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Message from All Pro:</div>
+          <div style="font-size:14px;color:#333;line-height:1.6;">${note.replace(/\n/g, '<br>')}</div>
+        </div>
+      </td>
+    </tr>
+  ` : '';
+
+  const itemsHtml = order.items.map(function(i){
+    return `
+      <tr>
+        <td style="padding:10px 14px;font-size:13px;color:#333;border-bottom:1px solid #f0f0f0;">
+          ${i.description} ${i.size}<br/>
+          <span style="font-size:11px;color:#888">${i.qty} pcs @ $${(i.unitPrice||0).toFixed(2)}</span>
+        </td>
+        <td style="padding:10px 14px;font-size:13px;color:#333;text-align:right;border-bottom:1px solid #f0f0f0;">
+          $${(i.lineTotal||0).toFixed(2)}
+        </td>
+      </tr>
+    `;
+  }).join('');
+
+  return `
+    <!DOCTYPE html><html><head><meta charset="UTF-8"/></head>
+    <body style="margin:0;padding:0;background:#f4f4f4;font-family:'Helvetica Neue',Arial,sans-serif;">
+      <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;padding:32px 0;">
+        <tr><td align="center">
+          <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:4px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+            <tr><td style="background:#0C1117;padding:28px 36px;border-bottom:4px solid #C8981F;">
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td>
+                    <div style="font-family:'Arial Black',Arial,sans-serif;font-size:20px;font-weight:900;color:#FFFFFF;letter-spacing:2px;text-transform:uppercase;">ALL PRO BUILDING SUPPLIES</div>
+                    <div style="font-size:11px;color:#C8981F;letter-spacing:3px;text-transform:uppercase;margin-top:3px;">LLC</div>
+                  </td>
+                  <td align="right">
+                    <div style="background:#C8981F;color:#0C1117;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:6px 14px;border-radius:2px;">INVOICE</div>
+                  </td>
+                </tr>
+              </table>
+            </td></tr>
+            <tr><td style="padding:32px 36px 0;">
+              <p style="margin:0;font-size:16px;color:#222;">Hi <strong>${order.customer.name}</strong>,</p>
+              <p style="margin:12px 0 0;font-size:15px;color:#444;line-height:1.6;">Please find your invoice for the order below. Thank you for your business!</p>
+            </td></tr>
+            ${noteHtml}
+            <tr><td style="padding:24px 36px 0;">
+              <table width="100%" cellpadding="0" cellspacing="0" style="background:#f8f8f8;border-radius:4px;border:1px solid #e8e8e8;">
+                <tr>
+                  <td style="padding:16px 20px;border-right:1px solid #e8e8e8;">
+                    <div style="font-size:10px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Invoice / Order ID</div>
+                    <div style="font-size:14px;font-weight:700;color:#C8981F;font-family:monospace;">${order.id}</div>
+                  </td>
+                  <td style="padding:16px 20px;border-right:1px solid #e8e8e8;">
+                    <div style="font-size:10px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Date</div>
+                    <div style="font-size:14px;color:#222;">${new Date(order.placedAt).toLocaleDateString()}</div>
+                  </td>
+                  <td style="padding:16px 20px;">
+                    <div style="font-size:10px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Logistics</div>
+                    <div style="font-size:13px;color:#222;">${order.delivery.address}</div>
+                  </td>
+                </tr>
+              </table>
+            </td></tr>
+            <tr><td style="padding:24px 36px 0;">
+              <div style="font-size:11px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;font-weight:700;">Items Billed</div>
+              <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #e8e8e8;border-radius:4px;overflow:hidden;">
+                <tr style="background:#0C1117;">
+                  <td style="padding:10px 14px;font-size:11px;color:#C8981F;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;">Product</td>
+                  <td style="padding:10px 14px;font-size:11px;color:#C8981F;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;text-align:right;">Total</td>
+                </tr>
+                ${itemsHtml}
+              </table>
+            </td></tr>
+            <tr><td style="padding:0 36px;">
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td></td>
+                  <td style="padding:16px 0;border-top:2px solid #C8981F;width:220px;" align="right">
+                    <span style="font-size:13px;color:#888;text-transform:uppercase;letter-spacing:1px;">Amount Due&nbsp;&nbsp;</span>
+                    <span style="font-size:22px;font-weight:700;color:#0C1117;">$${(order.total||0).toFixed(2)}</span>
+                  </td>
+                </tr>
+              </table>
+            </td></tr>
+            <tr><td style="padding:0 36px 24px;">
+              <table width="100%" cellpadding="0" cellspacing="0" style="background:#f0f8ff;border:1px solid #a3d5ff;border-radius:4px;">
+                <tr><td style="padding:16px 20px;">
+                  <div style="font-size:13px;font-weight:700;color:#2c3e50;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px;">Payment Instructions</div>
+                  <div style="font-size:13px;color:#34495e;line-height:1.6;">
+                    <strong>Zelle:</strong> Please send payment to <strong>payments@allprobuildingsupplies.com</strong> or <strong>allprobuildingsupplies</strong>.<br>
+                    <div style="margin-top:8px;">
+                      <img src="https://allprobuildingsupplies.com/assets/zelle-qr.png" alt="Zelle QR Code" style="width:140px; height:auto; border-radius:8px; border:1px solid #ccc;">
+                    </div>
+                    <span style="font-size:11px;color:#7f8c8d;">*Please include your Order ID (${order.id}) in the memo field.</span>
+                  </div>
+                </td></tr>
+              </table>
+            </td></tr>
+            <tr><td style="padding:0 36px;"><hr style="border:none;border-top:1px solid #eee;margin:0;"/></td></tr>
+            <tr><td style="padding:24px 36px;">
+              <p style="margin:0;font-size:14px;color:#444;line-height:1.7;">Questions about this invoice?</p>
+              <p style="margin:10px 0 0;font-size:14px;color:#444;">📞 <a href="tel:17328291940" style="color:#C8981F;text-decoration:none;font-weight:600;">732-829-1940</a></p>
+              <p style="margin:4px 0 0;font-size:14px;color:#444;">✉️ <a href="mailto:info@allprobuildingsupplies.com" style="color:#C8981F;text-decoration:none;">info@allprobuildingsupplies.com</a></p>
+            </td></tr>
+            <tr><td style="background:#0C1117;padding:20px 36px;text-align:center;">
+              <div style="font-size:12px;color:#888;">© 2026 All Pro Building Supplies LLC</div>
+            </td></tr>
+          </table>
+        </td></tr>
+      </table>
+    </body></html>
+  `;
+}
+
+// Master Send Function
+async function executeSendEmail() {
+  if(!activeOrderObj) return;
+
+  const type = document.getElementById('email-format-sel').value;
+  const sendCust = document.getElementById('chk-cust').checked;
+  const sendAdmin = document.getElementById('chk-admin').checked;
+  const sendCustom = document.getElementById('chk-custom').checked;
+  const customNote = document.getElementById('email-custom-note').value.trim();
+  
+  let recipients = [];
+  if(sendCust && activeOrderObj.customer.email) recipients.push(activeOrderObj.customer.email);
+  if(sendAdmin) recipients.push(NOTIFY_EMAIL);
+  
+  if(sendCustom) {
+    document.querySelectorAll('.custom-email-input').forEach(inp => {
+      const val = inp.value.trim();
+      if(val) recipients.push(val);
+    });
+  }
+
+  const msgEl = document.getElementById('email-send-msg');
+  if(recipients.length === 0) {
+    msgEl.style.display = 'block'; msgEl.style.color = '#ff6b6b'; msgEl.textContent = 'Please select at least one valid recipient.'; return;
+  }
+
+  let htmlBody = '', subject = '';
+  if(type === 'confirm') { htmlBody = buildConfirmEmail(activeOrderObj, customNote); subject = 'Order Update / Confirmation — ' + activeOrderObj.id; } 
+  else if(type === 'deliver') { htmlBody = buildDeliveredEmail(activeOrderObj, customNote); subject = 'Order Delivered — Thank You! | All Pro Building Supplies'; } 
+  else if(type === 'invoice') { htmlBody = buildInvoiceEmail(activeOrderObj, customNote); subject = 'Invoice — Order ' + activeOrderObj.id + ' | All Pro Building Supplies'; }
+
+  let baseParams = {
+    email_body:  htmlBody,
+    order_id:    activeOrderObj.id,
+    customer:    activeOrderObj.customer.name + ' (' + activeOrderObj.customer.company + ')',
+    phone:       activeOrderObj.customer.phone,
+    delivery:    activeOrderObj.delivery.address,
+    po:          activeOrderObj.po || 'N/A',
+    notes:       activeOrderObj.notes || 'None',
+    total:       '$' + (activeOrderObj.total||0).toFixed(2),
+    placed_at:   new Date(activeOrderObj.placedAt).toLocaleString(),
+    admin_link:  'https://allprobuildingsupplies.com/admin.html',
+    cust_name:   activeOrderObj.customer.name
+  };
+
+  const btn = document.getElementById('btn-execute-send');
+  btn.disabled = true; btn.innerHTML = 'Sending...';
+  msgEl.style.display = 'block'; msgEl.style.color = '#3498db'; msgEl.textContent = 'Processing request...';
+
+  let successCount = 0;
+  for(let email of recipients) {
+     try {
+       await emailjs.send(EMAILJS_SVC, EMAILJS_TPL, Object.assign({}, baseParams, { to_email: email, cust_email: email, email_subject: subject }));
+       successCount++;
+     } catch(e) { console.error("Failed to send to", email, e); }
+  }
+
+  if(successCount > 0) {
+    msgEl.style.color = '#2ecc71'; msgEl.textContent = 'Sent successfully to ' + successCount + ' recipient(s).';
+    btn.style.background = '#2ecc71'; btn.innerHTML = '✔ Done'; setTimeout(closeEmailModal, 1500);
+  } else {
+    msgEl.style.color = '#ff6b6b'; msgEl.textContent = 'Failed to send emails. Check EmailJS configuration.';
+    btn.disabled = false; btn.style.background = '#e74c3c'; btn.innerHTML = 'Retry Send';
+  }
+}
+
+// Init
+document.addEventListener('DOMContentLoaded', () => { 
+  switchTab('orders'); loadOrders(); loadProducts(); loadUsers(); 
 });
 </script>
 </body>
