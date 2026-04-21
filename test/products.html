@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Products — Test Sandbox</title>
+<link rel="stylesheet" href="assets/style.css"/>
+</head>
+<body>
+<div id="cursor"></div><div id="cursor-ring"></div>
+<div id="global-header"></div>
+<section class="sec">
+  <div class="sec-inner">
+    <div class="lbl">Database Inventory</div>
+    <h2 class="sh">Products <span>(API-Backed)</span></h2>
+    <div id="products-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;"></div>
+  </div>
+</section>
+<div id="global-footer"></div>
+<script src="assets/main.js"></script>
+<script>
+function getCart(){ try{return JSON.parse(localStorage.getItem("apbs_cart")||"[]")}catch{return[]}}
+function saveCart(v){ localStorage.setItem("apbs_cart", JSON.stringify(v)); }
+
+async function loadProducts() {
+  const grid = document.getElementById("products-grid");
+  grid.innerHTML = "<p>Loading products...</p>";
+  const res = await fetch(window.APBS_API_BASE + "/products");
+  const data = await res.json();
+  const products = data.products || [];
+  grid.innerHTML = "";
+  products.forEach((p) => {
+    const card = document.createElement("div");
+    card.className = "prod-card";
+    card.innerHTML = `
+      <div class="prod-code">${p.code}</div>
+      <div class="prod-name">${p.description}</div>
+      <div class="prod-size">${p.size} • ${p.pack}/CTN</div>
+      <div class="prod-details">
+        <div class="prod-price">$${p.price.toFixed(2)} <span>ea</span></div>
+        <div class="prod-size">${p.qty > 0 ? "In stock: " + p.qty : "Out of stock"}</div>
+      </div>
+      <button class="prod-action">Add to Cart</button>
+    `;
+    card.querySelector("button").addEventListener("click", () => {
+      const cart = getCart();
+      const key = `${p.code}-${p.size}`;
+      const ex = cart.find((i) => i.key === key);
+      if (ex) ex.qty += 1;
+      else cart.push({ key, code: p.code, description: p.description, size: p.size, qty: 1, unitPrice: p.price });
+      saveCart(cart);
+      alert("Added to cart");
+    });
+    grid.appendChild(card);
+  });
+}
+loadProducts();
+</script>
+</body>
+</html>

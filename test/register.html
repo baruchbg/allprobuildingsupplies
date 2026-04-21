@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Register — Test Sandbox</title>
+<link rel="stylesheet" href="assets/style.css"/>
+</head>
+<body>
+<div id="cursor"></div><div id="cursor-ring"></div>
+<div id="global-header"></div>
+<section class="sec">
+  <div class="sec-inner auth-wrap">
+    <div class="auth-box large">
+      <div class="auth-title">Create Trade Account</div>
+      <form id="register-form" style="display:flex;flex-direction:column;gap:12px;margin-top:24px;">
+        <input class="form-input" name="firstName" placeholder="First name" required />
+        <input class="form-input" name="lastName" placeholder="Last name" required />
+        <input class="form-input" name="company" placeholder="Company" />
+        <input class="form-input" name="phone" placeholder="Phone" />
+        <input class="form-input" name="email" type="email" placeholder="Email" required />
+        <input class="form-input" name="password" type="password" placeholder="Password (min 8 chars)" required />
+        <button class="btn-gold" type="submit" style="justify-content:center;">Create Account</button>
+      </form>
+      <p id="msg" style="margin-top:12px;color:var(--silver);font-size:13px;"></p>
+    </div>
+  </div>
+</section>
+<div id="global-footer"></div>
+<script src="assets/main.js"></script>
+<script>
+document.getElementById("register-form").addEventListener("submit", async function (e) {
+  e.preventDefault();
+  const msg = document.getElementById("msg");
+  msg.textContent = "Creating account...";
+  const body = Object.fromEntries(new FormData(this).entries());
+  try {
+    const res = await fetch(window.APBS_API_BASE + "/auth/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Registration failed");
+    sessionStorage.setItem("apbs_token", data.token);
+    sessionStorage.setItem("apbs_user", JSON.stringify(data.user));
+    window.location.href = "account.html";
+  } catch (err) {
+    msg.textContent = err.message;
+    msg.style.color = "#ff6b6b";
+  }
+});
+</script>
+</body>
+</html>

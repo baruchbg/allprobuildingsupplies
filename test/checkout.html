@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Checkout — Test Sandbox</title>
+<link rel="stylesheet" href="assets/style.css"/>
+</head>
+<body>
+<div id="cursor"></div><div id="cursor-ring"></div>
+<div id="global-header"></div>
+<section class="sec"><div class="sec-inner">
+  <h2 class="sh">Checkout</h2>
+  <form id="checkout-form" style="display:flex;flex-direction:column;gap:12px;max-width:480px;">
+    <input class="form-input" name="deliveryZip" placeholder="Delivery ZIP"/>
+    <textarea class="form-input" name="notes" placeholder="Notes"></textarea>
+    <button class="btn-gold" type="submit">Place Order</button>
+  </form>
+  <p id="msg" style="margin-top:12px;"></p>
+</div></section>
+<div id="global-footer"></div>
+<script src="assets/main.js"></script>
+<script>
+function getCart(){try{return JSON.parse(localStorage.getItem("apbs_cart")||"[]")}catch{return[]}}
+document.getElementById("checkout-form").addEventListener("submit", async function(e){
+  e.preventDefault();
+  const msg=document.getElementById("msg");
+  const cart=getCart();
+  if(!cart.length){msg.textContent="Cart is empty.";return;}
+  const items=cart.map(i=>({code:i.code,description:i.description,size:i.size,quantity:i.qty,unitPrice:i.unitPrice}));
+  try{
+    const res=await fetch(window.APBS_API_BASE+"/orders",{
+      method:"POST",
+      headers:{ "Content-Type":"application/json", ...window.apbsAuthHeaders() },
+      body:JSON.stringify({deliveryZip:this.deliveryZip.value,notes:this.notes.value,items})
+    });
+    const data=await res.json();
+    if(!res.ok) throw new Error(data.error||"Checkout failed");
+    localStorage.removeItem("apbs_cart");
+    msg.textContent="Order placed: "+data.order.orderNumber;
+  }catch(err){msg.textContent=err.message;}
+});
+</script>
+</body>
+</html>

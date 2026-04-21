@@ -2,6 +2,27 @@
 // GLOBAL LAYOUT INJECTION
 // ══════════════════════════════════════════
 
+window.APBS_API_BASE = window.APBS_API_BASE || "http://localhost:8787/api";
+
+window.apbsGetUser = function apbsGetUser() {
+  try {
+    return JSON.parse(sessionStorage.getItem("apbs_user") || "null");
+  } catch {
+    return null;
+  }
+};
+
+window.apbsGetToken = function apbsGetToken() {
+  return sessionStorage.getItem("apbs_token") || "";
+};
+
+window.apbsAuthHeaders = function apbsAuthHeaders(extra) {
+  const token = window.apbsGetToken();
+  const headers = { ...(extra || {}) };
+  if (token) headers.Authorization = `Bearer ${token}`;
+  return headers;
+};
+
 function loadGlobalLayout() {
   const headerHTML = `
     <div class="topbar">

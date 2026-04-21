@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Cart — Test Sandbox</title>
+<link rel="stylesheet" href="assets/style.css"/>
+</head>
+<body>
+<div id="cursor"></div><div id="cursor-ring"></div>
+<div id="global-header"></div>
+<section class="sec"><div class="sec-inner">
+  <h2 class="sh">Your <span>Cart</span></h2>
+  <div id="cart"></div>
+  <a class="btn-gold" href="checkout.html">Proceed to Checkout</a>
+</div></section>
+<div id="global-footer"></div>
+<script src="assets/main.js"></script>
+<script>
+function getCart(){try{return JSON.parse(localStorage.getItem("apbs_cart")||"[]")}catch{return[]}}
+function saveCart(v){localStorage.setItem("apbs_cart",JSON.stringify(v));render();}
+function render(){
+  const el=document.getElementById("cart"),c=getCart();
+  if(!c.length){el.innerHTML="<p>Cart is empty.</p>";return;}
+  el.innerHTML=c.map((i,idx)=>`<div style="padding:10px 0;border-bottom:1px solid rgba(255,255,255,.1)">
+    <strong>${i.code}</strong> ${i.description} (${i.size}) — Qty: ${i.qty} — $${(i.unitPrice*i.qty).toFixed(2)}
+    <button onclick="rm(${idx})" style="margin-left:10px">Remove</button>
+  </div>`).join("");
+}
+function rm(i){const c=getCart();c.splice(i,1);saveCart(c);}
+render();
+</script>
+</body>
+</html>

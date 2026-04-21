@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Account — Test Sandbox</title>
+<link rel="stylesheet" href="assets/style.css"/>
+</head>
+<body>
+<div id="cursor"></div><div id="cursor-ring"></div>
+<div id="global-header"></div>
+<section class="sec"><div class="sec-inner">
+  <h2 class="sh">My <span>Account</span></h2>
+  <p id="who"></p>
+  <button class="btn-ghost" id="logout">Logout</button>
+  <h3 style="margin-top:24px;">Order History</h3>
+  <div id="orders"></div>
+</div></section>
+<div id="global-footer"></div>
+<script src="assets/main.js"></script>
+<script>
+const user=window.apbsGetUser();
+if(!user){window.location.href="login.html";}
+document.getElementById("who").textContent = user ? `${user.name} (${user.email||""})` : "";
+document.getElementById("logout").onclick=function(){
+  sessionStorage.removeItem("apbs_user");sessionStorage.removeItem("apbs_token");window.location.href="index.html";
+};
+async function loadOrders(){
+  const el=document.getElementById("orders");
+  const res=await fetch(window.APBS_API_BASE+"/orders/me",{headers:window.apbsAuthHeaders()});
+  const data=await res.json();
+  if(!res.ok){el.textContent=data.error||"Unable to load orders.";return;}
+  if(!data.orders.length){el.textContent="No orders yet.";return;}
+  el.innerHTML=data.orders.map(o=>`<div style="padding:10px 0;border-bottom:1px solid rgba(255,255,255,.1)">
+    <strong>${o.orderNumber}</strong> — ${o.status} — $${o.subtotal.toFixed(2)}
+  </div>`).join("");
+}
+loadOrders();
+</script>
+</body>
+</html>

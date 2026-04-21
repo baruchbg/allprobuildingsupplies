@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Login — Test Sandbox</title>
+<link rel="stylesheet" href="assets/style.css"/>
+</head>
+<body>
+<div id="cursor"></div><div id="cursor-ring"></div>
+<div id="global-header"></div>
+
+<section class="sec">
+  <div class="sec-inner auth-wrap">
+    <div class="auth-box">
+      <div class="auth-title">Trade Account Login</div>
+      <p class="auth-sub">Sandbox login uses backend database records.</p>
+      <form id="login-form" style="display:flex;flex-direction:column;gap:12px;margin-top:24px;">
+        <input class="form-input" name="email" type="email" placeholder="Email" required />
+        <input class="form-input" name="password" type="password" placeholder="Password" required />
+        <button class="btn-gold" type="submit" style="justify-content:center;">Log In</button>
+      </form>
+      <p id="msg" style="margin-top:12px;color:var(--silver);font-size:13px;"></p>
+      <p style="margin-top:18px;font-size:13px;">No account? <a href="register.html" style="color:var(--gold);">Register</a></p>
+    </div>
+  </div>
+</section>
+
+<div id="global-footer"></div>
+<script src="assets/main.js"></script>
+<script>
+document.getElementById("login-form").addEventListener("submit", async function (e) {
+  e.preventDefault();
+  const msg = document.getElementById("msg");
+  msg.textContent = "Logging in...";
+  const body = {
+    email: this.email.value.trim(),
+    password: this.password.value
+  };
+  try {
+    const res = await fetch(window.APBS_API_BASE + "/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Login failed");
+    sessionStorage.setItem("apbs_token", data.token);
+    sessionStorage.setItem("apbs_user", JSON.stringify(data.user));
+    window.location.href = "account.html";
+  } catch (err) {
+    msg.textContent = err.message;
+    msg.style.color = "#ff6b6b";
+  }
+});
+</script>
+</body>
+</html>
