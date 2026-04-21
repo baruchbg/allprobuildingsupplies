@@ -209,7 +209,7 @@ h1.htitle strong{color:var(--gold);}
 .filter-btn{font-family:"Oswald",sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;padding:9px 20px;border:1px solid rgba(139,160,178,.2);color:var(--silver);background:transparent;transition:all .2s;}
 .filter-btn:hover,.filter-btn.on{border-color:var(--gold);color:var(--gold);background:rgba(200,152,31,.07);}
 .mobile-filter-wrap{display:none;margin-bottom:24px;}
-.mobile-filter-sel{width:100%;background:var(--ink2);border:1px solid rgba(200,152,31,.3);color:var(--gold);padding:10px;font-family:'Oswald',sans-serif;}
+.mobile-filter-sel{width:100%;background:var(--ink2);border:1px solid rgba(200,152,31,.3);color:var(--gold);padding:10px;font-family:'Oswald',sans-serif; outline:none;}
 #products-container{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:24px;margin-bottom:60px;}
 .prod-card{background:var(--ink2);border:1px solid rgba(255,255,255,0.05);padding:24px;transition:transform 0.2s,border-color 0.2s;display:flex;flex-direction:column;}
 .prod-card:hover{transform:translateY(-4px);border-color:rgba(200,152,31,0.3);}

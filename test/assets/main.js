@@ -14,7 +14,7 @@ function loadGlobalLayout() {
 
     <nav>
       <div class="nav-logo">
-        <img src="../assets/logo.png" alt="All Pro Building Supplies" onerror="this.src='assets/logo.png'"/>
+        <img src="assets/logo.png" alt="All Pro Building Supplies" onerror="this.style.display='none'"/>
         <div class="nav-brand-text">All Pro Building Supplies <span>LLC</span></div>
       </div>
       <ul class="nav-links">
@@ -52,7 +52,7 @@ function loadGlobalLayout() {
     <footer>
       <div class="ft-top">
         <div>
-          <img src="../assets/logo.png" alt="All Pro Building Supplies" class="ft-logo" onerror="this.src='assets/logo.png'"/>
+          <img src="assets/logo.png" alt="All Pro Building Supplies" class="ft-logo" onerror="this.style.display='none'"/>
           <p class="ft-txt">Contractor-grade building materials, plumbing, hardware, and contractor supplies. Fast response, real people, reliable service.</p>
           <div class="ft-socials">
             <a href="mailto:info@allprobuildingsupplies.com" class="soc">✉</a>
