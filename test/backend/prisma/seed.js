@@ -31,6 +31,7 @@ async function main() {
       company: "All Pro Test",
       phone: "732-829-1940",
       status: "approved",
+      isAdmin: true,
       canOrderPieces: true,
     },
   });

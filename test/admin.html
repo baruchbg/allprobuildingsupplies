@@ -10,10 +10,139 @@
 <div id="global-header"></div>
 <section class="sec"><div class="sec-inner">
   <h2 class="sh">Admin <span>Sandbox</span></h2>
-  <p class="sh-body">CSV/JSON admin writes were removed. This sandbox now uses a database-backed API in <code>test/backend</code>.</p>
-  <p class="sh-body" style="margin-top:10px;">Next backend step: add authenticated admin endpoints for product and order management.</p>
+  <p id="summary" class="sh-body">Loading dashboard...</p>
+
+  <h3 style="margin-top:24px;">Add Product</h3>
+  <form id="add-product" style="display:grid;grid-template-columns:repeat(3,minmax(120px,1fr));gap:8px;margin:12px 0;">
+    <input class="form-input" name="code" placeholder="Code" required />
+    <input class="form-input" name="description" placeholder="Description" required />
+    <input class="form-input" name="size" placeholder="Size" required />
+    <input class="form-input" name="pack" placeholder="Pack" type="number" min="0" required />
+    <input class="form-input" name="qty" placeholder="Qty" type="number" min="0" required />
+    <input class="form-input" name="price" placeholder="Price" type="number" min="0" step="0.01" required />
+    <input class="form-input" name="image" placeholder="Image path (optional)" style="grid-column:1/-1;" />
+    <button class="btn-gold" type="submit" style="grid-column:1/-1;justify-content:center;">Create Product</button>
+  </form>
+
+  <h3 style="margin-top:24px;">Products</h3>
+  <div id="products"></div>
+
+  <h3 style="margin-top:24px;">Users</h3>
+  <div id="users"></div>
+
+  <h3 style="margin-top:24px;">Orders</h3>
+  <div id="orders"></div>
 </div></section>
 <div id="global-footer"></div>
 <script src="assets/main.js"></script>
+<script>
+const user = window.apbsGetUser();
+if (!user || !user.isAdmin) window.location.href = "login.html";
+
+async function api(path, opts) {
+  const res = await fetch(window.APBS_API_BASE + path, {
+    ...(opts || {}),
+    headers: { "Content-Type": "application/json", ...window.apbsAuthHeaders(), ...(opts && opts.headers ? opts.headers : {}) }
+  });
+  if (res.status === 204) return null;
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Request failed");
+  return data;
+}
+
+async function loadSummary() {
+  const s = await api("/admin/summary");
+  document.getElementById("summary").textContent = `Users: ${s.users} • Products: ${s.products} • Orders: ${s.orders}`;
+}
+
+async function loadProducts() {
+  const { products } = await api("/admin/products");
+  const el = document.getElementById("products");
+  el.innerHTML = products.map((p) => `
+    <div style="padding:8px 0;border-bottom:1px solid rgba(255,255,255,.08)">
+      <strong>${p.code}</strong> ${p.description} (${p.size}) • $${p.price.toFixed(2)} • qty ${p.qty}
+      <button data-id="${p.id}" class="del-prod" style="margin-left:8px;">Delete</button>
+    </div>
+  `).join("") || "<p>No products found.</p>";
+  el.querySelectorAll(".del-prod").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      await api(`/admin/products/${btn.dataset.id}`, { method: "DELETE" });
+      await refresh();
+    });
+  });
+}
+
+async function loadUsers() {
+  const { users } = await api("/admin/users");
+  const el = document.getElementById("users");
+  el.innerHTML = users.map((u) => `
+    <div style="padding:8px 0;border-bottom:1px solid rgba(255,255,255,.08)">
+      <strong>${u.email}</strong> — ${u.firstName} ${u.lastName} — ${u.status} ${u.isAdmin ? "(admin)" : ""}
+      <button data-id="${u.id}" class="toggle-admin" style="margin-left:8px;">Toggle Admin</button>
+    </div>
+  `).join("") || "<p>No users found.</p>";
+  el.querySelectorAll(".toggle-admin").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const target = users.find((u) => String(u.id) === btn.dataset.id);
+      await api(`/admin/users/${btn.dataset.id}`, {
+        method: "PATCH",
+        body: JSON.stringify({ isAdmin: !target.isAdmin })
+      });
+      await refresh();
+    });
+  });
+}
+
+async function loadOrders() {
+  const { orders } = await api("/admin/orders");
+  const el = document.getElementById("orders");
+  el.innerHTML = orders.map((o) => `
+    <div style="padding:8px 0;border-bottom:1px solid rgba(255,255,255,.08)">
+      <strong>${o.orderNumber}</strong> — ${o.user.email} — $${o.subtotal.toFixed(2)} — ${o.status}
+      <select data-id="${o.id}" class="order-status" style="margin-left:8px;">
+        <option ${o.status==="pending"?"selected":""}>pending</option>
+        <option ${o.status==="confirmed"?"selected":""}>confirmed</option>
+        <option ${o.status==="delivered"?"selected":""}>delivered</option>
+        <option ${o.status==="cancelled"?"selected":""}>cancelled</option>
+      </select>
+    </div>
+  `).join("") || "<p>No orders found.</p>";
+  el.querySelectorAll(".order-status").forEach((sel) => {
+    sel.addEventListener("change", async () => {
+      await api(`/admin/orders/${sel.dataset.id}`, {
+        method: "PATCH",
+        body: JSON.stringify({ status: sel.value })
+      });
+      await refresh();
+    });
+  });
+}
+
+document.getElementById("add-product").addEventListener("submit", async function(e){
+  e.preventDefault();
+  const f = new FormData(this);
+  await api("/admin/products", {
+    method: "POST",
+    body: JSON.stringify({
+      code: f.get("code"),
+      description: f.get("description"),
+      size: f.get("size"),
+      pack: Number(f.get("pack")),
+      qty: Number(f.get("qty")),
+      price: Number(f.get("price")),
+      image: f.get("image") || undefined
+    })
+  });
+  this.reset();
+  await refresh();
+});
+
+async function refresh() {
+  await Promise.all([loadSummary(), loadProducts(), loadUsers(), loadOrders()]);
+}
+refresh().catch((err) => {
+  document.getElementById("summary").textContent = err.message;
+});
+</script>
 </body>
 </html>

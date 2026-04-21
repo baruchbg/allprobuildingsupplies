@@ -16,6 +16,7 @@ model User {
   company       String?
   phone         String?
   status        String   @default("approved")
+  isAdmin       Boolean  @default(false)
   canOrderPieces Boolean @default(true)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt

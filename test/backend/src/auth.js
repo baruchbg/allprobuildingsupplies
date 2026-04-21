@@ -9,6 +9,7 @@ export function signUserToken(user) {
       email: user.email,
       name: `${user.firstName} ${user.lastName}`.trim(),
       status: user.status,
+      isAdmin: Boolean(user.isAdmin),
       canOrderPieces: user.canOrderPieces,
     },
     JWT_SECRET,
@@ -29,4 +30,11 @@ export function requireAuth(req, res, next) {
   } catch {
     return res.status(401).json({ error: "Invalid token." });
   }
+}
+
+export function requireAdmin(req, res, next) {
+  if (!req.user || !req.user.isAdmin) {
+    return res.status(403).json({ error: "Admin access required." });
+  }
+  return next();
 }
