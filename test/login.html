@@ -29,35 +29,36 @@
         <label class="form-lbl">Password</label>
         <input type="password" id="log-pass" class="form-inp" placeholder="••••••••">
       </div>
-      <button class="btn-auth" onclick="doLogin(event)" id="btn-login">Sign In</button>
-      <div style="text-align:center;margin-top:20px;font-size:13px;color:var(--silver);">
-        Don't have a trade account? <a href="register.html" style="color:var(--gold);">Request Access</a>
+      <button class="btn-auth" id="btn-login" onclick="processLogin()">Login →</button>
+      
+      <div style="text-align:center;margin-top:16px;">
+        <a href="register.html" style="font-size:12px;color:var(--silver);text-decoration:none;">Don't have an account? <span style="color:var(--gold);">Request Pricing Access</span></a>
       </div>
     </div>
 
     <div id="form-change" class="auth-form">
       <div id="change-msg" class="auth-msg"></div>
-      <p style="font-size:13px;color:var(--silver);margin-bottom:20px;line-height:1.5;">Enter your current login credentials and choose a new password.</p>
-      
       <div class="form-group">
         <label class="form-lbl">Email Address</label>
-        <input type="email" id="chg-email" class="form-inp">
+        <input type="email" id="chg-email" class="form-inp" placeholder="contractor@email.com">
       </div>
       <div class="form-group">
         <label class="form-lbl">Current Password</label>
-        <input type="password" id="chg-old-pass" class="form-inp">
+        <input type="password" id="chg-old-pass" class="form-inp" placeholder="••••••••">
       </div>
       <div class="form-group">
         <label class="form-lbl">New Password</label>
-        <input type="password" id="chg-new-pass" class="form-inp">
+        <input type="password" id="chg-new-pass" class="form-inp" placeholder="••••••••">
       </div>
-      <button class="btn-auth" onclick="doChangePassword(event)" id="btn-change">Update Password</button>
+      <button class="btn-auth" onclick="processChange(this)">Update Password</button>
     </div>
 
   </div>
 </div>
 
 <div id="global-footer"></div>
+
+<script src="assets/main.js"></script>
 <script>
 // Function to switch between Login and Change Password tabs
 function switchAuth(type) {
@@ -136,139 +137,11 @@ async function processLogin() {
 document.getElementById('log-pass').addEventListener('keypress', function(e) {
   if (e.key === 'Enter') processLogin();
 });
-<!-- This is the old script before the new cloudflare databases
-// --- BULLETPROOF CURSOR FALLBACK ---
-document.addEventListener('mousemove', (e) => {
-    const cursor = document.getElementById('cursor');
-    const ring = document.getElementById('cursor-ring');
-    if(cursor) { cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px'; }
-    if(ring) { setTimeout(() => { ring.style.left = e.clientX + 'px'; ring.style.top = e.clientY + 'px'; }, 50); }
-});
 
-const WORKER_URL = 'https://allpro-github-proxy.baruch-6d5.workers.dev';
-
-function switchAuth(target) {
-  document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
-  document.getElementById('tab-'+target).classList.add('active');
-  document.getElementById('form-'+target).classList.add('active');
-  document.querySelectorAll('.auth-msg').forEach(m => m.style.display = 'none');
+// Change password placeholder (Will be implemented later)
+function processChange(btn) {
+    showMsg('change', 'Password change via API is under construction.', true);
 }
-
-function showMsg(type, msg, isError) {
-  const el = document.getElementById(type + '-msg');
-  el.textContent = msg;
-  el.className = 'auth-msg ' + (isError ? 'msg-err' : 'msg-ok');
-  el.style.display = 'block';
-}
-
-// ── LOGIN LOGIC ──
-async function doLogin(e) {
-  const email = document.getElementById('log-email').value.trim();
-  const pass = document.getElementById('log-pass').value.trim();
-  const btn = document.getElementById('btn-login');
-
-  if(!email || !pass) return showMsg('login', 'Please enter your email and password.', true);
-
-  btn.disabled = true; btn.textContent = 'Verifying...';
-  
-  try {
-    const r = await fetch(WORKER_URL + '/github/users.json');
-    const d = await r.json();
-    const jsonStr = decodeURIComponent(escape(atob(d.content)));
-    const masterUsers = JSON.parse(jsonStr).users || [];
-    
-    // Find matching user
-    const user = masterUsers.find(u => u.email.toLowerCase() === email.toLowerCase());
-
-    if(!user) {
-      showMsg('login', 'Account not found. Please request access.', true);
-    } else if (user.password !== pass) {
-      showMsg('login', 'Incorrect password.', true);
-    } else if (user.status === 'pending') {
-      showMsg('login', 'Your account is pending admin approval.', true);
-    } else if (user.status === 'rejected') {
-      showMsg('login', 'Your account access has been revoked.', true);
-    } else if (user.status === 'approved') {
-      // SUCCESS!
-      sessionStorage.setItem('apbs_user', JSON.stringify(user));
-      showMsg('login', 'Login successful! Redirecting...', false);
-      setTimeout(() => { window.location.href = 'products.html'; }, 1000);
-    }
-
-  } catch(err) {
-    showMsg('login', 'Server error. Please try again.', true);
-  }
-  btn.disabled = false; btn.textContent = 'Sign In';
-}
-
-// Allow Enter key to submit login
-document.getElementById('log-pass').addEventListener('keypress', function (e) {
-    if (e.key === 'Enter') doLogin(e);
-});
-
-// ── CHANGE PASSWORD LOGIC ──
-async function doChangePassword(e) {
-  const email = document.getElementById('chg-email').value.trim();
-  const oldPass = document.getElementById('chg-old-pass').value.trim();
-  const newPass = document.getElementById('chg-new-pass').value.trim();
-  const btn = document.getElementById('btn-change');
-
-  if(!email || !oldPass || !newPass) return showMsg('change', 'All fields are required.', true);
-  if(newPass.length < 6) return showMsg('change', 'New password must be at least 6 characters.', true);
-
-  btn.disabled = true; btn.textContent = 'Updating...';
-
-  try {
-    const r = await fetch(WORKER_URL + '/github/users.json');
-    const d = await r.json();
-    const currentSha = d.sha;
-    const jsonStr = decodeURIComponent(escape(atob(d.content)));
-    const masterUsers = JSON.parse(jsonStr).users || [];
-    
-    const userIdx = masterUsers.findIndex(u => u.email.toLowerCase() === email.toLowerCase());
-
-    if(userIdx === -1) {
-      showMsg('change', 'Account not found.', true);
-    } else if (masterUsers[userIdx].password !== oldPass) {
-      showMsg('change', 'Current password is incorrect.', true);
-    } else {
-      // Passwords match, update to new password
-      masterUsers[userIdx].password = newPass;
-      
-      const payload = { 
-        message: 'User self-service password update', 
-        content: btoa(unescape(encodeURIComponent(JSON.stringify({users: masterUsers}, null, 2)))), 
-        branch: 'main', 
-        sha: currentSha 
-      };
-      
-      const putReq = await fetch(WORKER_URL + '/github/users.json', { 
-        method:'PUT', 
-        headers:{'Content-Type':'application/json'}, 
-        body:JSON.stringify(payload) 
-      });
-
-      if(putReq.ok) {
-        showMsg('change', 'Password updated successfully! Please login.', false);
-        // Clear fields
-        document.getElementById('chg-old-pass').value = '';
-        document.getElementById('chg-new-pass').value = '';
-        setTimeout(() => { switchAuth('login'); document.getElementById('log-email').value = email; }, 2000);
-      } else {
-        throw new Error();
-      }
-    }
-
-  } catch(err) {
-    showMsg('change', 'Failed to update password. Please try again.', true);
-  }
-  
-  btn.disabled = false; btn.textContent = 'Update Password';
-}
-end of commented code
--->
 </script>
-<script src="assets/main.js"></script>
 </body>
 </html>
