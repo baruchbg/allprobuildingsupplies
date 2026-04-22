@@ -83,8 +83,6 @@
 <script src="assets/main.js"></script>
 
 <script>
-const WORKER_URL = 'https://allpro-github-proxy.baruch-6d5.workers.dev';
-
 // --- AUTH LOGIC ---
 let isLoggedIn = false;
 (function(){
@@ -112,43 +110,31 @@ let isLoggedIn = false;
   }
 })();
 
-// --- CSV PARSER ---
-function parseCSV(str) {
-  var lines = [], curLine = [], curStr = '', inQ = false;
-  for(var i=0; i<str.length; i++) {
-    var c = str[i];
-    if(c === '"') {
-      if(inQ && str[i+1] === '"') { curStr += '"'; i++; } else { inQ = !inQ; }
-    } else if(c === ',' && !inQ) {
-      curLine.push(curStr); curStr = '';
-    } else if((c === '\n' || c === '\r') && !inQ) {
-      if(c === '\r' && str[i+1] === '\n') i++;
-      curLine.push(curStr); lines.push(curLine); curLine = []; curStr = '';
-    } else { curStr += c; }
-  }
-  if(curStr !== '' || curLine.length > 0) { curLine.push(curStr); lines.push(curLine); }
-  return lines;
-}
-
-// --- DYNAMIC PRODUCT RENDERER ---
+// --- DYNAMIC PRODUCT RENDERER (CLOUDFLARE D1) ---
 async function fetchAndRenderProducts() {
   try {
-    const r = await fetch(WORKER_URL + '/github/products.csv');
-    const d = await r.json();
-    const csv = decodeURIComponent(escape(atob(d.content)));
-    const rows = parseCSV(csv);
+    const apiURL = window.APBS_API_BASE ? window.APBS_API_BASE + '/products' : 'https://allpro-api.baruch-6d5.workers.dev/api/products';
+    const r = await fetch(apiURL);
+    const rows = await r.json();
     
     let groups = {};
     
-    // Rows: Code [0], Desc [1], Size [2], Pack [3], Qty [4], Price [5], Image [6]
-    for(let i=1; i<rows.length; i++) {
-      let cols = rows[i];
-      if(!cols[0]) continue;
-      let code = cols[0].trim();
+    // Group the JSON rows by Code
+    for(let i=0; i<rows.length; i++) {
+      let row = rows[i];
+      if(!row.code) continue;
+      
+      let code = row.code.trim();
       if(!groups[code]) {
-        groups[code] = { desc: cols[1], image: cols[6] || 'images/logo.png', rows: [] };
+        groups[code] = { desc: row.description, image: row.image || 'images/logo.png', rows: [] };
       }
-      groups[code].rows.push({ size: cols[2], pack: cols[3], qty: parseInt(cols[4])||0, price: parseFloat(cols[5])||0 });
+      
+      groups[code].rows.push({ 
+        size: row.size, 
+        pack: row.pack, 
+        qty: parseInt(row.qty)||0, 
+        price: parseFloat(row.price)||0 
+      });
     }
 
     const container = document.getElementById('prod-sections');
@@ -222,29 +208,27 @@ async function fetchAndRenderProducts() {
       container.innerHTML += html;
     }
   } catch(e) {
-    document.getElementById('prod-sections').innerHTML = `<div style="text-align:center;padding:40px;color:#ff6b6b;">Error loading product database. Please contact support.</div>`;
+    document.getElementById('prod-sections').innerHTML = '<div style="color:#ff6b6b;padding:40px;text-align:center;">Failed to load catalog. Please refresh.</div>';
+    console.error(e);
   }
 }
-fetchAndRenderProducts();
+
+// Ensure global layout exists before fetching
+setTimeout(fetchAndRenderProducts, 200);
 
 // --- UI INTERACTIONS ---
 function toggleSection(hdr){
   var sec = hdr.parentElement;
   sec.classList.toggle('open');
-  var chev = hdr.querySelector('.prod-section-chevron');
-  if(chev) chev.style.transform = sec.classList.contains('open') ? 'rotate(180deg)' : '';
 }
 
 function setFilter(code, btn){
-  // Handle Desktop Buttons
-  document.querySelectorAll('.filter-btn').forEach(function(b){ b.classList.remove('on'); });
-  if(btn) btn.classList.add('on');
-  
-  // Sync the Mobile Dropdown if triggered from desktop
-  let sel = document.getElementById('mobile-filter-select');
-  if(sel) sel.value = code;
-  
-  // Filter sections
+  if(btn){
+    document.querySelectorAll('.filter-btn').forEach(function(b){ b.classList.remove('on'); });
+    btn.classList.add('on');
+    var sel = document.getElementById('mobile-filter-select');
+    if(sel) sel.value = code;
+  }
   document.querySelectorAll('.prod-section').forEach(function(s){
     s.style.display = (code==='all' || s.dataset.code===code) ? '' : 'none';
   });
