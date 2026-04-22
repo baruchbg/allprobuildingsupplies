@@ -44,6 +44,8 @@
   </div>
 
   <style>
+    .admin-container { max-width: 96% !important; }
+    
     .data-table th {
       background: transparent !important;
       color: var(--gold) !important;
@@ -365,7 +367,7 @@ function switchTab(tab) {
   if(targetPanel) targetPanel.classList.add('active');
 }
 
-// --- PRODUCTS LOGIC (D1 SQL) ---
+// --- OPTIMIZED TABLE BUILDERS ---
 async function loadProducts() {
   try {
     const r = await fetch(API_BASE + '/products'); 
@@ -377,36 +379,47 @@ async function loadProducts() {
         image: p.image || ''
     }));
 
-    const tbody = document.getElementById('prod-tbody'); tbody.innerHTML = '';
-    data.forEach(p => {
-       addProductRow([p.code, p.description, p.size, p.pack, p.qty, p.price, p.image]); 
+    let html = '';
+    masterProducts.forEach(p => {
+      html += `<tr>
+        <td data-label="Category Code"><input class="data-input" value="${p.code||''}"></td>
+        <td data-label="Description"><input class="data-input" value="${p.description||''}"></td>
+        <td data-label="Size"><input class="data-input" value="${p.size||''}"></td>
+        <td data-label="Pcs / Ctn"><input type="number" class="data-input" value="${p.pack||''}"></td>
+        <td data-label="Inventory Qty"><input type="number" class="data-input" value="${p.stock||''}"></td>
+        <td data-label="Unit Price ($)"><input type="number" step="0.01" class="data-input" value="${p.price||''}"></td>
+        <td data-label="Image URL"><input class="data-input" value="${p.image||''}"></td>
+        <td data-label="Action"><button class="btn-del" onclick="this.closest('tr').remove()">Delete Row</button></td>
+      </tr>`;
     });
+    document.getElementById('prod-tbody').innerHTML = html;
     populateProductDropdown();
   } catch(e) { console.error(e); }
+}
+
+function addProductRow() {
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td data-label="Category Code"><input class="data-input" value=""></td>
+    <td data-label="Description"><input class="data-input" value=""></td>
+    <td data-label="Size"><input class="data-input" value=""></td>
+    <td data-label="Pcs / Ctn"><input type="number" class="data-input" value=""></td>
+    <td data-label="Inventory Qty"><input type="number" class="data-input" value=""></td>
+    <td data-label="Unit Price ($)"><input type="number" step="0.01" class="data-input" value=""></td>
+    <td data-label="Image URL"><input class="data-input" value=""></td>
+    <td data-label="Action"><button class="btn-del" onclick="this.closest('tr').remove()">Delete Row</button></td>
+  `;
+  document.getElementById('prod-tbody').insertBefore(tr, document.getElementById('prod-tbody').firstChild);
 }
 
 function populateProductDropdown() {
   const sel = document.getElementById('new-item-sel');
   if(!sel) return;
-  sel.innerHTML = '<option value="">-- Select Product to Add --</option>';
+  let html = '<option value="">-- Select Product to Add --</option>';
   masterProducts.forEach((p, idx) => {
-    sel.innerHTML += `<option value="${idx}">${p.code} - ${p.description} ${p.size} ($${p.price.toFixed(2)}) [Stock: ${p.stock}]</option>`;
+    html += `<option value="${idx}">${p.code} - ${p.description} ${p.size} ($${p.price.toFixed(2)}) [Stock: ${p.stock}]</option>`;
   });
-}
-
-function addProductRow(data = ['', '', '', '', '', '', '']) {
-  const tr = document.createElement('tr');
-  tr.innerHTML = `
-    <td data-label="Category Code"><input class="data-input" value="${data[0]||''}"></td>
-    <td data-label="Description"><input class="data-input" value="${data[1]||''}"></td>
-    <td data-label="Size"><input class="data-input" value="${data[2]||''}"></td>
-    <td data-label="Pcs / Ctn"><input type="number" class="data-input" value="${data[3]||''}"></td>
-    <td data-label="Inventory Qty"><input type="number" class="data-input" value="${data[4]||''}"></td>
-    <td data-label="Unit Price ($)"><input type="number" step="0.01" class="data-input" value="${data[5]||''}"></td>
-    <td data-label="Image URL"><input class="data-input" value="${data[6]||''}"></td>
-    <td data-label="Action"><button class="btn-del" onclick="this.closest('tr').remove()">Delete Row</button></td>
-  `;
-  document.getElementById('prod-tbody').appendChild(tr);
+  sel.innerHTML = html;
 }
 
 async function saveProducts() {
@@ -450,17 +463,15 @@ function processCSVUpload(event) {
     const rows = parseCSV(text);
     const payload = [];
 
-    // Helper to fix Microsoft Excel's weird math symbols and smart quotes
     function cleanText(str) {
       if (!str) return '';
       return str.trim()
-        .replace(/×/g, 'x')      // Replace math multiplication sign with letter x
-        .replace(/[“”]/g, '"')   // Replace curly double quotes with straight inches
-        .replace(/[‘’]/g, "'")   // Replace curly single quotes with straight apostrophe
-        .replace(/\uFFFD/g, 'x'); // Safe Unicode replacement for the black diamond
+        .replace(/×/g, 'x')      
+        .replace(/[“”]/g, '"')   
+        .replace(/[‘’]/g, "'")   
+        .replace(/\uFFFD/g, 'x'); 
     }
 
-    // Skip the header row if the first cell says "Code"
     let startIdx = (rows.length > 0 && rows[0][0].toLowerCase().includes('code')) ? 1 : 0;
 
     for (let i = startIdx; i < rows.length; i++) {
@@ -490,14 +501,12 @@ function processCSVUpload(event) {
         showStatus('Upload Failed: ' + err.message, true);
       }
     }
-    document.getElementById('csv-file').value = ''; // Reset input
+    document.getElementById('csv-file').value = ''; 
   };
   
-  // Read using Windows-1252 encoding to prevent Excel special characters from corrupting
   reader.readAsText(file, 'windows-1252'); 
 }
 
-// CSV Helper
 function parseCSV(str) {
   var lines = [], curLine = [], curStr = '', inQ = false;
   for(var i=0; i<str.length; i++) {
@@ -520,12 +529,11 @@ async function loadUsers() {
   try {
     const r = await fetch(API_BASE + '/admin/users', { headers: ADMIN_HEADERS }); 
     masterUsers = await r.json();
-    masterUsers.forEach(u => u.canOrderPieces = u.canOrderPieces === 1);
-
-    const tbody = document.getElementById('users-tbody'); tbody.innerHTML = '';
+    
+    let html = '';
     masterUsers.forEach(u => {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
+      u.canOrderPieces = u.canOrderPieces === 1;
+      html += `<tr>
         <td data-label="ID" style="font-family:monospace;color:var(--silver);">${u.id}</td>
         <td data-label="Name">${u.fname} ${u.lname}</td>
         <td data-label="Email">${u.email}</td>
@@ -545,10 +553,9 @@ async function loadUsers() {
           </select>
         </td>
         <td data-label="Action"><button class="btn-del" onclick="deleteUser('${u.id}')">Delete</button></td>
-      `;
-      tbody.appendChild(tr);
+      </tr>`;
     });
-    
+    document.getElementById('users-tbody').innerHTML = html;
     populateModalCustomerDropdown();
   } catch(e) { console.error(e); }
 }
@@ -630,14 +637,14 @@ async function saveUsers() {
   btn.textContent = 'Save Approvals & Passwords'; btn.disabled = false;
 }
 
-// --- CUSTOMER AUTO-POPULATE LOGIC ---
 function populateModalCustomerDropdown() {
   const sel = document.getElementById('modal-cust-dropdown');
   if(!sel) return;
-  sel.innerHTML = '<option value="">-- Select Existing User or Type Manually Below --</option>';
+  let html = '<option value="">-- Select Existing User or Type Manually Below --</option>';
   masterUsers.forEach(u => {
-    if(u.status === 'approved') sel.innerHTML += `<option value="${u.email}">${u.fname} ${u.lname} (${u.company || 'Independent'})</option>`;
+    if(u.status === 'approved') html += `<option value="${u.email}">${u.fname} ${u.lname} (${u.company || 'Independent'})</option>`;
   });
+  sel.innerHTML = html;
 }
 
 function loadCustomerIntoForm() {
@@ -702,21 +709,20 @@ async function loadOrders() {
   try {
     const r = await fetch(API_BASE + '/admin/orders', { headers: ADMIN_HEADERS }); 
     masterOrders = await r.json();
-    const tbody = document.getElementById('orders-tbody'); tbody.innerHTML = '';
     
+    let html = '';
     masterOrders.forEach(o => {
       const dDate = new Date(o.placedAt).toLocaleDateString();
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
+      html += `<tr>
         <td data-label="Order ID" style="font-family:monospace;color:var(--gold);">${o.id}</td>
         <td data-label="Date">${dDate}</td>
         <td data-label="Customer">${o.customer.name}<br><span style="font-size:10px;color:var(--silver)">${o.customer.company || ''}</span></td>
         <td data-label="Total" style="font-family:monospace">$${(o.total||0).toFixed(2)}</td>
         <td data-label="Status"><span class="badge ${o.status}">${o.status}</span></td>
         <td data-label="Action"><button class="btn-view" onclick="openOrderModal('${o.id}')">View & Edit</button></td>
-      `;
-      tbody.appendChild(tr);
+      </tr>`;
     });
+    document.getElementById('orders-tbody').innerHTML = html;
   } catch(e) { console.error(e); }
 }
 
@@ -805,7 +811,7 @@ function addItemToOrder() {
 }
 
 function renderEditableItems() {
-  const tbody = document.getElementById('m-items-tbody'); tbody.innerHTML = '';
+  let html = '';
   let calcTotal = 0;
   
   activeOrderObj.items.forEach((item, idx) => {
@@ -819,17 +825,17 @@ function renderEditableItems() {
     let currentCases = item.qty / packNum;
     let displayCases = Number.isInteger(currentCases) ? currentCases : currentCases.toFixed(2);
     
-    let tr = document.createElement('tr');
-    tr.innerHTML = `
+    html += `<tr>
       <td data-label="Item">${item.description} ${item.size}<br><span style="font-size:10px;color:var(--silver)">${item.code} (Pack: ${item.pcsPerCtn || '-'})</span></td>
       <td data-label="Cases"><input type="number" class="data-input edit-cases" data-idx="${idx}" data-pack="${packNum}" data-stock="${maxAllowed}" value="${displayCases}" min="0" step="any" style="width:70px;" oninput="rowCalcCases(${idx})"></td>
       <td data-label="Pieces"><input type="number" class="data-input edit-pcs" data-idx="${idx}" data-pack="${packNum}" data-stock="${maxAllowed}" value="${item.qty}" min="1" style="width:70px;" oninput="rowCalcPieces(${idx})"></td>
       <td data-label="Unit Price"><input type="number" step="0.01" class="data-input edit-price" data-idx="${idx}" value="${(item.unitPrice||0).toFixed(2)}" style="width:90px;" oninput="liveRecalc()"></td>
       <td data-label="Line Total" class="live-line-tot" style="text-align:right;font-family:monospace;color:var(--white)">$${lineTot.toFixed(2)}</td>
       <td data-label="Action"><button class="btn-del" onclick="removeOrderItem(${idx})">X</button></td>
-    `;
-    tbody.appendChild(tr);
+    </tr>`;
   });
+  
+  document.getElementById('m-items-tbody').innerHTML = html;
   document.getElementById('m-total').textContent = '$' + calcTotal.toFixed(2);
   toggleEditLock(document.getElementById('m-status-sel').value);
 }
@@ -854,7 +860,7 @@ function rowCalcCases(idx) {
 function rowCalcPieces(idx) {
   let casesInp = document.querySelectorAll('.edit-cases')[idx];
   let pcsInp = document.querySelectorAll('.edit-pcs')[idx];
-  let pack = parseInt(casesInp.dataset.pack) || 1;
+  let pack = parseInt(pcsInp.dataset.pack) || 1;
   let maxStock = parseInt(casesInp.dataset.stock) || 999999;
   
   let pcs = parseInt(pcsInp.value) || 0;
