@@ -43,6 +43,18 @@
     </div>
   </div>
 
+  <style>
+    .data-table th {
+      background: transparent !important;
+      color: var(--gold) !important;
+      border-bottom: 1px solid rgba(200,152,31,.3) !important;
+      padding-bottom: 12px !important;
+      text-transform: uppercase;
+      font-size: 11px;
+      letter-spacing: 1px;
+    }
+  </style>
+
   <div id="tab-orders" class="admin-panel active">
     <p style="color:var(--silver);font-size:14px;margin-bottom:20px;">Manage and edit customer orders. Click 'View Details' to edit order contents, change status, and send invoices.</p>
     <table class="data-table" id="orders-table">
@@ -56,19 +68,19 @@
     </div>
   </div>
 
-<div id="tab-products" class="admin-panel">
+  <div id="tab-products" class="admin-panel">
     <p style="color:var(--silver);font-size:14px;margin-bottom:20px;">Edit your master inventory. This data feeds directly into the live Products and Checkout pages.</p>
     <table class="data-table" id="prod-table">
-      <thead style="background: transparent;">
-        <tr style="color: var(--gold); text-transform: uppercase; font-size: 11px; letter-spacing: 1px;">
-          <th style="border-bottom: 1px solid rgba(200,152,31,.3); padding-bottom: 12px;">Category Code</th>
-          <th style="border-bottom: 1px solid rgba(200,152,31,.3); padding-bottom: 12px;">Description</th>
-          <th style="border-bottom: 1px solid rgba(200,152,31,.3); padding-bottom: 12px;">Size</th>
-          <th style="border-bottom: 1px solid rgba(200,152,31,.3); padding-bottom: 12px;">Pcs / Ctn</th>
-          <th style="border-bottom: 1px solid rgba(200,152,31,.3); padding-bottom: 12px;">Inventory Qty</th>
-          <th style="border-bottom: 1px solid rgba(200,152,31,.3); padding-bottom: 12px;">Unit Price ($)</th>
-          <th style="border-bottom: 1px solid rgba(200,152,31,.3); padding-bottom: 12px;">Image URL</th>
-          <th style="border-bottom: 1px solid rgba(200,152,31,.3); padding-bottom: 12px;"></th>
+      <thead>
+        <tr>
+          <th>Category Code</th>
+          <th>Description</th>
+          <th>Size</th>
+          <th>Pcs / Ctn</th>
+          <th>Inventory Qty</th>
+          <th>Unit Price ($)</th>
+          <th>Image URL</th>
+          <th></th>
         </tr>
       </thead>
       <tbody id="prod-tbody"></tbody>
@@ -78,6 +90,21 @@
       <button class="btn-save" onclick="saveProducts()">Save Products</button>
     </div>
   </div>
+
+  <div id="tab-users" class="admin-panel">
+    <p style="color:var(--silver);font-size:14px;margin-bottom:20px;">Approve or reject trade accounts. Only 'approved' users can view pricing and place orders.</p>
+    <table class="data-table" id="users-table">
+      <thead>
+        <tr><th>ID</th><th>Name</th><th>Email</th><th>Company</th><th>Password</th><th>Status</th><th>Pieces Allowed</th><th></th></tr>
+      </thead>
+      <tbody id="users-tbody"></tbody>
+    </table>
+    <div class="action-bar">
+      <button class="btn-add" style="border-color:var(--gold);color:var(--gold);" onclick="openUserModal()">+ Create New User</button>
+      <button class="btn-save" onclick="saveUsers()">Save Approvals & Passwords</button>
+    </div>
+  </div>
+</div>
 
 <div id="user-modal-overlay" onclick="closeUserModal(event)">
   <div id="user-modal" onclick="event.stopPropagation()" class="auth-box" style="margin:auto; position:relative; width:100%; max-width:500px; padding:32px; text-align:left;">
@@ -753,7 +780,7 @@ function rowCalcPieces(idx) {
   let casesInp = document.querySelectorAll('.edit-cases')[idx];
   let pcsInp = document.querySelectorAll('.edit-pcs')[idx];
   let pack = parseInt(pcsInp.dataset.pack) || 1;
-  let maxStock = parseInt(pcsInp.dataset.stock) || 999999;
+  let maxStock = parseInt(casesInp.dataset.stock) || 999999;
   
   let pcs = parseInt(pcsInp.value) || 0;
   if(pcs > maxStock) {
