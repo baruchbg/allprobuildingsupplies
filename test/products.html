@@ -141,7 +141,14 @@ async function fetchAndRenderProducts() {
     const filterBar = document.getElementById('dynamic-filters');
     const mobileSelect = document.getElementById('mobile-filter-select');
     container.innerHTML = '';
-    
+    if (filterBar) {
+      while (filterBar.children.length > 1) filterBar.removeChild(filterBar.lastChild);
+    }
+    if (mobileSelect) {
+      while (mobileSelect.options.length > 1) mobileSelect.remove(1);
+    }
+    const sectionChunks = [];
+
     for (const [code, data] of Object.entries(groups)) {
       // Build Desktop Filters
       let fBtn = document.createElement('button');
@@ -156,9 +163,14 @@ async function fetchAndRenderProducts() {
       fOpt.textContent = code;
       mobileSelect.appendChild(fOpt);
       
+      const searchAttr = (code + ' ' + data.desc + ' ' + data.rows.map(function (r) { return r.size; }).join(' '))
+        .toLowerCase()
+        .replace(/&/g, '&amp;')
+        .replace(/"/g, '&quot;');
+
       // Build Section
       let html = `
-        <div class="prod-section" id="${code}" data-code="${code}">
+        <div class="prod-section" id="${code}" data-code="${code}" data-search="${searchAttr}">
           <div class="prod-section-hdr" onclick="toggleSection(this)">
             <div class="prod-section-thumb" onclick="event.stopPropagation();openLightbox('${data.image}','${data.desc.replace(/'/g,"\\'").replace(/"/g,"&quot;")}')">
               <img src="${data.image}" alt="${data.desc.replace(/"/g,"&quot;")}" class="cat-img" loading="lazy">
@@ -205,8 +217,10 @@ async function fetchAndRenderProducts() {
       });
       
       html += `</tbody></table></div></div>`;
-      container.innerHTML += html;
+      sectionChunks.push(html);
     }
+
+    container.innerHTML = sectionChunks.join('');
   } catch(e) {
     document.getElementById('prod-sections').innerHTML = '<div style="color:#ff6b6b;padding:40px;text-align:center;">Failed to load catalog. Please refresh.</div>';
     console.error(e);
@@ -235,15 +249,24 @@ function setFilter(code, btn){
 }
 
 var searchInput = document.getElementById('prod-search');
+var searchDebounce = null;
 if(searchInput){
   searchInput.addEventListener('input', function(){
-    var q = this.value.trim().toLowerCase();
-    document.querySelectorAll('.prod-section').forEach(function(sec){
-      if(!q){ sec.style.display=''; return; }
-      var text = sec.textContent.toLowerCase();
-      sec.style.display = text.includes(q) ? '' : 'none';
-      if(q && text.includes(q)) sec.classList.add('open');
-    });
+    var self = this;
+    clearTimeout(searchDebounce);
+    searchDebounce = setTimeout(function(){
+      var q = self.value.trim().toLowerCase();
+      document.querySelectorAll('.prod-section').forEach(function(sec){
+        if(!q){
+          sec.style.display = '';
+          sec.classList.remove('open');
+          return;
+        }
+        var hay = sec.getAttribute('data-search') || '';
+        sec.style.display = hay.indexOf(q) !== -1 ? '' : 'none';
+        if(hay.indexOf(q) !== -1) sec.classList.add('open');
+      });
+    }, 160);
   });
 }
 

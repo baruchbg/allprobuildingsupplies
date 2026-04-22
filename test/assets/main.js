@@ -115,11 +115,6 @@ function loadGlobalLayout() {
     initGlobalScripts();
     window.__apbsGlobalScriptsInit = true;
   }
-
-  // Defensive reinjection in case another script clears these containers.
-  setTimeout(ensureGlobalLayout, 50);
-  setTimeout(ensureGlobalLayout, 300);
-  setTimeout(ensureGlobalLayout, 1000);
 }
 
 function ensureGlobalLayout(){
@@ -135,12 +130,26 @@ function ensureGlobalLayout(){
 // ══════════════════════════════════════════
 
 function initGlobalScripts() {
-  // CURSOR
-  const cur=document.getElementById('cursor'),ring=document.getElementById('cursor-ring');
-  if(cur&&ring){
-    let mx=0,my=0,rx=0,ry=0;
-    document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px'});
-    (function loop(){rx+=(mx-rx)*.11;ry+=(my-ry)*.11;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(loop)})();
+  // CURSOR — one rAF-coalesced paint per frame max; no perpetual ring loop (ring is display:none)
+  const cur = document.getElementById('cursor');
+  if (cur) {
+    let mx = 0, my = 0, raf = null;
+    function paint() {
+      raf = null;
+      cur.style.left = mx + 'px';
+      cur.style.top = my + 'px';
+    }
+    document.addEventListener(
+      'mousemove',
+      (e) => {
+        mx = e.clientX;
+        my = e.clientY;
+        const on = !!(e.target && e.target.closest && e.target.closest('a,button'));
+        document.documentElement.classList.toggle('apbs-cursor-on-link', on);
+        if (raf == null) raf = requestAnimationFrame(paint);
+      },
+      { passive: true }
+    );
   }
 
   // SCROLL REVEAL
