@@ -1033,3 +1033,7 @@ tbody td.price{font-weight:500;color:var(--white)}
   .add-item-bar { flex-direction:column; align-items:stretch;}
   .add-item-col { width:100% !important; }
 }
+
+
+/* --- TEST ENVIRONMENT FIXES --- */
+#global-header { display: contents; }
