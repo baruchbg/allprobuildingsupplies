@@ -309,15 +309,9 @@
   </div>
 </div>
 
-<script>
-// --- BULLETPROOF CURSOR FALLBACK ---
-document.addEventListener('mousemove', (e) => {
-    const cursor = document.getElementById('cursor');
-    const ring = document.getElementById('cursor-ring');
-    if(cursor) { cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px'; }
-    if(ring) { setTimeout(() => { ring.style.left = e.clientX + 'px'; ring.style.top = e.clientY + 'px'; }, 50); }
-});
+<script src="assets/main.js"></script>
 
+<script>
 const API_BASE = window.APBS_API_BASE || 'https://allpro-api.baruch-6d5.workers.dev/api';
 const ADMIN_HEADERS = { 'Content-Type': 'application/json', 'Authorization': 'Bearer Admin2026!' };
 
@@ -463,7 +457,7 @@ function processCSVUpload(event) {
         .replace(/×/g, 'x')      // Replace math multiplication sign with letter x
         .replace(/[“”]/g, '"')   // Replace curly double quotes with straight inches
         .replace(/[‘’]/g, "'")   // Replace curly single quotes with straight apostrophe
-        .replace(//g, 'x');     // Fallback just in case it's already corrupted
+        .replace(/\uFFFD/g, 'x'); // Safe Unicode replacement for the black diamond
     }
 
     // Skip the header row if the first cell says "Code"
@@ -860,7 +854,7 @@ function rowCalcCases(idx) {
 function rowCalcPieces(idx) {
   let casesInp = document.querySelectorAll('.edit-cases')[idx];
   let pcsInp = document.querySelectorAll('.edit-pcs')[idx];
-  let pack = parseInt(pcsInp.dataset.pack) || 1;
+  let pack = parseInt(casesInp.dataset.pack) || 1;
   let maxStock = parseInt(casesInp.dataset.stock) || 999999;
   
   let pcs = parseInt(pcsInp.value) || 0;
