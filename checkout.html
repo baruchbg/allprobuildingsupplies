@@ -6,103 +6,12 @@
 <title>Checkout — All Pro Building Supplies LLC</title>
 <link rel="stylesheet" href="assets/style.css"/>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-<style>
-.checkout-grid{display:grid;grid-template-columns:1fr 380px;gap:32px;align-items:start;}
-.checkout-form-wrap{background:var(--ink2);border:1px solid rgba(200,152,31,.15);padding:32px;}
-.checkout-section-title{font-family:'Oswald',sans-serif;font-size:16px;color:var(--gold);letter-spacing:2px;text-transform:uppercase;margin:0 0 20px;padding-bottom:10px;border-bottom:1px solid rgba(200,152,31,.2);}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
-.form-row.full{grid-template-columns:1fr;}
-.form-group{display:flex;flex-direction:column;gap:6px;}
-.form-label{font-size:11px;color:var(--silver);font-family:'DM Mono',monospace;letter-spacing:1.5px;text-transform:uppercase;}
-.form-input,.form-select,.form-textarea{background:var(--ink3);border:1px solid rgba(139,160,178,.2);color:var(--white);font-family:'DM Sans',sans-serif;font-size:14px;padding:11px 14px;outline:none;transition:border-color .2s;width:100%;box-sizing:border-box;}
-.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--gold);}
-.form-textarea{resize:vertical;min-height:90px;}
-.form-select option{background:var(--ink3);}
-.form-input.err,.form-select.err{border-color:#ff6b6b;}
-.err-msg{font-size:11px;color:#ff6b6b;display:none;font-family:'DM Mono',monospace;}
-/* delivery toggle */
-.delivery-toggle{display:flex;gap:0;margin-bottom:20px;}
-.del-opt{flex:1;padding:12px;text-align:center;border:1px solid rgba(139,160,178,.2);cursor:pointer;font-family:'Oswald',sans-serif;font-size:13px;letter-spacing:1.5px;color:var(--silver);transition:all .2s;user-select:none;}
-.del-opt:first-child{border-right:none;}
-.del-opt.active{background:rgba(200,152,31,.12);border-color:var(--gold);color:var(--gold);}
-/* order summary sidebar */
-.order-summary{background:var(--ink2);border:1px solid rgba(200,152,31,.2);padding:28px;position:sticky;top:100px;}
-.order-summary-title{font-family:'Oswald',sans-serif;font-size:15px;color:var(--white);margin-bottom:18px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,.06);}
-.order-line{display:flex;justify-content:space-between;align-items:flex-start;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:13px;}
-.order-line:last-of-type{border-bottom:none;}
-.order-line-name{color:var(--smoke);max-width:200px;}
-.order-line-sub{font-size:11px;color:var(--silver);font-family:'DM Mono',monospace;margin-top:2px;}
-.order-line-price{font-family:'DM Mono',monospace;color:var(--gold);white-space:nowrap;padding-left:12px;}
-.order-total-row{display:flex;justify-content:space-between;align-items:center;padding-top:16px;margin-top:8px;border-top:1px solid rgba(200,152,31,.2);}
-.order-total-label{font-family:'Oswald',sans-serif;font-size:16px;color:var(--white);}
-.order-total-val{font-family:'Oswald',sans-serif;font-size:24px;color:var(--gold);}
-/* place order btn */
-.place-order-btn{width:100%;background:var(--gold);color:var(--ink);font-family:'Oswald',sans-serif;font-size:15px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;padding:18px;border:none;cursor:pointer;margin-top:20px;transition:background .2s,transform .2s;display:flex;align-items:center;justify-content:center;gap:10px;}
-.place-order-btn:hover:not(:disabled){background:var(--gold2);transform:translateY(-1px);}
-.place-order-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;}
-/* success screen */
-#success-screen{display:none;text-align:center;padding:60px 20px;}
-.success-icon{font-size:64px;margin-bottom:20px;}
-.success-title{font-family:'Oswald',sans-serif;font-size:36px;color:var(--white);margin-bottom:12px;}
-.success-sub{color:var(--silver);font-size:15px;line-height:1.7;max-width:480px;margin:0 auto 32px;}
-.success-order-num{font-family:'DM Mono',monospace;font-size:18px;color:var(--gold);background:rgba(200,152,31,.08);border:1px solid rgba(200,152,31,.2);padding:12px 24px;display:inline-block;margin-bottom:24px;}
-/* global error */
-#global-err{display:none;background:rgba(255,80,80,.08);border:1px solid rgba(255,80,80,.3);border-left:3px solid #ff6b6b;padding:14px 18px;margin-bottom:20px;color:#ff9999;font-size:13px;}
-@media(max-width:900px){
-  .checkout-grid{grid-template-columns:1fr;}
-  .order-summary{position:static;}
-  .form-row{grid-template-columns:1fr;}
-}
-@media(max-width:600px){
-  .checkout-form-wrap{padding:20px;}
-  .order-summary{padding:20px;}
-}
-</style>
+
 </head>
 <body>
 <div id="cursor"></div><div id="cursor-ring"></div>
 
-<div class="topbar">
-  <div class="topbar-links">
-    <a href="tel:17328291940"><svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.27-.27.67-.36 1.02-.22 1.12.45 2.32.68 3.58.68.55 0 1 .45 1 1V20c0 .55-.45 1-1 1C10.29 21 3 13.71 3 4.5c0-.55.45-1 1-1H8c.55 0 1 .45 1 1 0 1.27.2 2.48.57 3.62.1.32.03.68-.22.96L6.6 10.8z"/></svg>732-829-1940</a>
-    <a href="mailto:info@allprobuildingsupplies.com"><svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>info@allprobuildingsupplies.com</a>
-  </div>
-  <div class="topbar-badge">Contractor-Grade · Fast Response · NJ &amp; Surrounding Areas</div>
-</div>
-
-<nav>
-  <div class="nav-logo">
-    <img src="assets/logo.png" alt="All Pro Building Supplies"/>
-    <div class="nav-brand-text">All Pro Building Supplies <span>LLC</span></div>
-  </div>
-  <ul class="nav-links">
-    <li><a href="index.html" class="">Home</a></li>
-    <li><a href="products.html" class="">Products</a></li>
-    <li><a href="about.html" class="">About</a></li>
-    <li><a href="contact.html" class="">Contact</a></li>
-  </ul>
-  <div class="nav-actions" id="nav-auth-container">
-    <a href="tel:17328291940" class="nav-tel"><svg viewBox="0 0 24 24" width="16" height="16" fill="var(--gold)"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.27-.27.67-.36 1.02-.22 1.12.45 2.32.68 3.58.68.55 0 1 .45 1 1V20c0 .55-.45 1-1 1C10.29 21 3 13.71 3 4.5c0-.55.45-1 1-1H8c.55 0 1 .45 1 1 0 1.27.2 2.48.57 3.62.1.32.03.68-.22.96L6.6 10.8z"/></svg>732-829-1940</a>
-    <span id="auth-buttons" style="display:inline-flex; align-items:center; gap:8px;">
-      <a href="login.html" class="nav-cta" id="nav-login-btn" style="background:transparent;border:1px solid var(--gold);color:var(--gold);">Login</a>
-      <a href="account.html" class="nav-cta" id="nav-account-btn" style="display:none;background:var(--ink3);border:1px solid rgba(200,152,31,.3);flex-direction:column;align-items:flex-start;padding:6px 12px;line-height:1.3;gap:2px;"><span style="font-size:9px;color:var(--silver);letter-spacing:1px;font-family:'DM Mono',monospace;">LOGGED IN AS</span><span id="nav-logged-in-name" style="font-size:12px;color:var(--white);">My Account</span></a>
-      <a href="cart.html" class="nav-cta" id="nav-cart-btn" style="background:var(--gold);color:var(--ink);border:none;">🛒 Cart <span id="nav-cart-count" class="cart-nav-badge"></span></a>
-    </span>
-  </div>
-  <button class="hamburger" id="hamburger" aria-label="Menu">
-    <span></span><span></span><span></span>
-  </button>
-</nav>
-
-<div class="mobile-menu" id="mobile-menu"><button class="mobile-menu-close" id="mob-close" aria-label="Close">&#10005;</button>
-  <a href="index.html">Home</a>
-  <a href="products.html">Products</a>
-  <a href="about.html">About</a>
-  <a href="contact.html">Contact</a>
-  <a href="tel:17328291940" class="mob-tel">📞 732-829-1940</a>
-  <a href="cart.html" class="mob-cta">🛒 Cart →</a>
-  <a href="login.html" class="mob-cta" style="margin-top:10px;background:transparent;border:1px solid var(--gold);color:var(--gold);">Login / Register</a>
-</div>
+<div id="global-header"></div>
 
 <div class="page-hero">
   <div class="page-hero-inner">
@@ -231,42 +140,10 @@
   </div>
 </div>
 
-<footer>
-  <div class="ft-top">
-    <div>
-      <img src="assets/logo.png" alt="All Pro Building Supplies" class="ft-logo"/>
-      <p class="ft-txt">Contractor-grade building materials, plumbing, hardware, and contractor supplies. Fast response, real people, reliable service.</p>
-      <div class="ft-socials">
-        <a href="mailto:info@allprobuildingsupplies.com" class="soc">✉</a>
-        <a href="tel:17328291940" class="soc">📞</a>
-      </div>
-    </div>
-    <div class="ft-col">
-      <h4>Products</h4>
-      <ul>
-        <li><a href="products.html">Building Materials</a></li>
-        <li><a href="products.html">Plumbing</a></li>
-        <li><a href="products.html">Hardware</a></li>
-        <li><a href="products.html">Contractor Supplies</a></li>
-      </ul>
-    </div>
-    <div class="ft-col">
-      <h4>Company</h4>
-      <ul>
-        <li><a href="about.html">About Us</a></li>
-        <li><a href="contact.html">Contact</a></li>
-        <li><a href="login.html">Dealer Login</a></li>
-      </ul>
-    </div>
-  </div>
-  <div class="ft-bot">
-    <p>&copy; 2026 All Pro Building Supplies LLC. All rights reserved.</p>
-  </div>
-</footer>
+<div id="global-footer"></div>
 
 <script>
 // ── CONFIG ────────────────────────────────────────────────────────
-const WORKER_URL   = 'https://allpro-github-proxy.baruch-6d5.workers.dev';
 const EMAILJS_SVC  = 'service_qefaa3x';   // ← fill in after EmailJS setup
 const EMAILJS_TPL  = 'template_nh3iqob';  // ← fill in after EmailJS setup
 const EMAILJS_KEY  = 'MNDXK3JgE890yvoA6';   // ← fill in after EmailJS setup
@@ -413,13 +290,13 @@ async function placeOrder(){
   };
 
   try{
-    // 1. Save order to orders.json
-    await saveOrder(order);
-    // 2. Deduct inventory from products.csv
-    await deductInventory(cart);
-    // 3. Send email notification
+    var api=(window.APBS_API_BASE||'https://allpro-api.baruch-6d5.workers.dev/api');
+    var saveRes=await fetch(api+'/orders',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(order)});
+    if(!saveRes.ok){
+      var errBody=await saveRes.json().catch(function(){return{};});
+      throw new Error(errBody.error||'Order could not be saved');
+    }
     await sendNotification(order);
-    // 4. Clear cart & show success
     saveCart([]);
     document.getElementById('checkout-wrap').style.display = 'none';
     document.getElementById('success-screen').style.display = 'block';
@@ -433,76 +310,6 @@ async function placeOrder(){
     btn.textContent = 'Place Order →';
   }
 }
-
-// ── SAVE ORDER ────────────────────────────────────────────────────
-async function saveOrder(order){
-  var r = await fetch(WORKER_URL+'/github/orders.json');
-  var d = await r.json();
-  var sha = d.sha;
-  var data = JSON.parse(atob(d.content.replace(/\n/g,'')));
-  data.orders.push(order);
-  var payload = JSON.stringify({
-    message:'New order: '+order.id,
-    content: btoa(unescape(encodeURIComponent(JSON.stringify(data,null,2)))),
-    branch:'main', sha:sha
-  });
-  var pr = await fetch(WORKER_URL+'/github/orders.json',{method:'PUT',headers:{'Content-Type':'application/json'},body:payload});
-  if(!pr.ok){ var e=await pr.json(); throw new Error(e.message||'Failed to save order'); }
-}
-
-// ── DEDUCT INVENTORY ──────────────────────────────────────────────
-async function deductInventory(cart){
-  var r = await fetch(WORKER_URL+'/github/products.csv');
-  var d = await r.json();
-  var sha = d.sha;
-  var csv = atob(d.content.replace(/\n/g,''));
-  var lines = csv.trim().split('\n');
-  var headers = lines[0];
-
-  // Build deduction map: "code|size" -> qty to deduct (normalize quotes)
-  var deductions = {};
-  cart.forEach(function(item){
-    var key = item.code+'|'+item.size.replace(/"/g,'');
-    deductions[key] = (deductions[key]||0) + item.qty;
-  });
-
-  // Update CSV lines
-  var newLines = [headers];
-  for(var i=1;i<lines.length;i++){
-    var cols = parseCSVLine(lines[i]);
-    if(!cols[0]) continue;
-    var key = cols[0]+'|'+stripQuotes(cols[2]).replace(/"/g,'');
-    if(deductions[key]){
-      var current = parseInt(cols[4])||0;
-      cols[4] = Math.max(0, current - deductions[key]).toString();
-    }
-    newLines.push(cols.map(function(c){
-      return c.indexOf(',')>=0||c.indexOf('"')>=0 ? '"'+c.replace(/"/g,'""')+'"' : c;
-    }).join(','));
-  }
-
-  var newCSV = newLines.join('\n')+'\n';
-  var payload = JSON.stringify({
-    message:'Inventory update after order',
-    content: btoa(unescape(encodeURIComponent(newCSV))),
-    branch:'main', sha:sha
-  });
-  var pr = await fetch(WORKER_URL+'/github/products.csv',{method:'PUT',headers:{'Content-Type':'application/json'},body:payload});
-  if(!pr.ok) throw new Error('Failed to update inventory');
-}
-
-function parseCSVLine(line){
-  var result=[],cur='',inQ=false;
-  for(var i=0;i<line.length;i++){
-    var c=line[i];
-    if(c==='"'){inQ=!inQ;}
-    else if(c===','&&!inQ){result.push(cur);cur='';}
-    else{cur+=c;}
-  }
-  result.push(cur);
-  return result;
-}
-function stripQuotes(s){ return (s||'').replace(/^"+|"+$/g,'').trim(); }
 
 // ── EMAIL NOTIFICATION ────────────────────────────────────────────
 function buildConfirmEmail(order){
@@ -521,7 +328,7 @@ function buildStatusEmail(order, status){
     : 'Your order has been cancelled. If you have any questions or believe this was an error, please contact us right away.';
   var badgeColor = isConfirmed ? '#2ecc71' : '#e74c3c';
 
-  return `<!DOCTYPE html><html><head><meta charset="UTF-8"/></head><body style="margin:0;padding:0;background:#f4f4f4;font-family:'Helvetica Neue',Arial,sans-serif;"><table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;padding:32px 0;"><tr><td align="center"><table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:4px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);"><tr><td style="background:#0C1117;padding:28px 36px;border-bottom:4px solid #C8981F;"><table width="100%" cellpadding="0" cellspacing="0"><tr><td><div style="font-family:'Arial Black',Arial,sans-serif;font-size:20px;font-weight:900;color:#FFFFFF;letter-spacing:2px;text-transform:uppercase;">ALL PRO BUILDING SUPPLIES</div><div style="font-size:11px;color:#C8981F;letter-spacing:3px;text-transform:uppercase;margin-top:3px;">LLC</div></td><td align="right"><div style="background:${badgeColor};color:#fff;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:6px 14px;border-radius:2px;">ORDER ${statusWord.toUpperCase()}</div></td></tr></table></td></tr><tr><td style="padding:0;"><div style="background:#f8f8f8;border-left:4px solid ${badgeColor};padding:20px 36px;font-size:15px;color:#444;">Hi <strong>${order.customer.name}</strong> — your order <strong style="color:#C8981F;font-family:monospace;">${order.id}</strong> has been <strong>${statusWord}</strong>.</div></td></tr><tr><td style="padding:28px 36px 0;"><p style="margin:0;font-size:15px;color:#444;line-height:1.7;">${statusMsg}</p></td></tr><tr><td style="padding:24px 36px 0;"><table width="100%" cellpadding="0" cellspacing="0" style="background:#f8f8f8;border-radius:4px;border:1px solid #e8e8e8;"><tr><td style="padding:16px 20px;border-right:1px solid #e8e8e8;"><div style="font-size:10px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Order ID</div><div style="font-size:14px;font-weight:700;color:#C8981F;font-family:monospace;">${order.id}</di2)}</div></td><td style="padding:16px 20px;"><div style="font-size:10px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Delivery</div><div style="font-size:13px;color:#222;">${order.delivery.address}</div></td></tr></table></td></tr><tr><td style="padding:24px 36px 8px;"><hr style="border:none;border-top:1px solid #eee;margin:0;"/></td></tr><tr><td style="padding:8px 36px 28px;"><p style="margin:0;font-size:14px;color:#444;line-height:1.7;">Questions? We're here to help:</p><p style="margin:10px 0 0;font-size:14px;color:#444;">📞 <a href="tel:17328291940" style="color:#C8981F;text-decoration:none;font-weight:600;">732-829-1940</a></p><p style="margin:4px 0 0;font-size:14px;color:#444;">✉️ <a href="mailto:info@allprobuildingsupplies.com" style="color:#C8981F;text-decoration:none;">info@allprobuildingsupplies.com</a></p></td></tr><tr><td style="background:#0C1117;padding:20px 36px;text-align:center;"><div style="font-size:12px;color:#888;">© 2026 All Pro Building Supplies LLC &nbsp;·&nbsp; <a href="https://allprobuildingsupplies.com" style="color:#C8981F;text-decoration:none;">allprobuildingsupplies.com</a></div></td></tr></table></td></tr></table></body></html>`;
+  return `<!DOCTYPE html><html><head><meta charset="UTF-8"/></head><body style="margin:0;padding:0;background:#f4f4f4;font-family:'Helvetica Neue',Arial,sans-serif;"><table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;padding:32px 0;"><tr><td align="center"><table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:4px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);"><tr><td style="background:#0C1117;padding:28px 36px;border-bottom:4px solid #C8981F;"><table width="100%" cellpadding="0" cellspacing="0"><tr><td><div style="font-family:'Arial Black',Arial,sans-serif;font-size:20px;font-weight:900;color:#FFFFFF;letter-spacing:2px;text-transform:uppercase;">ALL PRO BUILDING SUPPLIES</div><div style="font-size:11px;color:#C8981F;letter-spacing:3px;text-transform:uppercase;margin-top:3px;">LLC</div></td><td align="right"><div style="background:${badgeColor};color:#fff;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:6px 14px;border-radius:2px;">ORDER ${statusWord.toUpperCase()}</div></td></tr></table></td></tr><tr><td style="padding:0;"><div style="background:#f8f8f8;border-left:4px solid ${badgeColor};padding:20px 36px;font-size:15px;color:#444;">Hi <strong>${order.customer.name}</strong> — your order <strong style="color:#C8981F;font-family:monospace;">${order.id}</strong> has been <strong>${statusWord}</strong>.</div></td></tr><tr><td style="padding:28px 36px 0;"><p style="margin:0;font-size:15px;color:#444;line-height:1.7;">${statusMsg}</p></td></tr><tr><td style="padding:24px 36px 0;"><table width="100%" cellpadding="0" cellspacing="0" style="background:#f8f8f8;border-radius:4px;border:1px solid #e8e8e8;"><tr><td style="padding:16px 20px;border-right:1px solid #e8e8e8;"><div style="font-size:10px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Order ID</div><div style="font-size:14px;font-weight:700;color:#C8981F;font-family:monospace;">${order.id}</div></td><td style="padding:16px 20px;"><div style="font-size:10px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Delivery</div><div style="font-size:13px;color:#222;">${order.delivery.address}</div></td></tr></table></td></tr><tr><td style="padding:24px 36px 8px;"><hr style="border:none;border-top:1px solid #eee;margin:0;"/></td></tr><tr><td style="padding:8px 36px 28px;"><p style="margin:0;font-size:14px;color:#444;line-height:1.7;">Questions? We're here to help:</p><p style="margin:10px 0 0;font-size:14px;color:#444;">📞 <a href="tel:17328291940" style="color:#C8981F;text-decoration:none;font-weight:600;">732-829-1940</a></p><p style="margin:4px 0 0;font-size:14px;color:#444;">✉️ <a href="mailto:info@allprobuildingsupplies.com" style="color:#C8981F;text-decoration:none;">info@allprobuildingsupplies.com</a></p></td></tr><tr><td style="background:#0C1117;padding:20px 36px;text-align:center;"><div style="font-size:12px;color:#888;">© 2026 All Pro Building Supplies LLC &nbsp;·&nbsp; <a href="https://allprobuildingsupplies.com" style="color:#C8981F;text-decoration:none;">allprobuildingsupplies.com</a></div></td></tr></table></td></tr></table></body></html>`;
 }
 
 async function sendNotification(order){

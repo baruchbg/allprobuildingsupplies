@@ -5,150 +5,13 @@
 <title>Products — All Pro Building Supplies LLC</title>
 <meta name="description" content="Browse All Pro Building Supplies product catalog — PVC pipe, DWV fittings, bends, tees, wyes, and more. Call 732-829-1940 for pricing."/>
 <link rel="stylesheet" href="assets/style.css"/>
-<style>
-.filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:40px}
-.filter-btn{font-family:"Oswald",sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;padding:9px 20px;border:1px solid rgba(139,160,178,.2);color:var(--silver);background:transparent;cursor:none;transition:all .2s}
-.filter-btn:hover,.filter-btn.on{border-color:var(--gold);color:var(--gold);background:rgba(200,152,31,.07)}
 
-/* Mobile Filter Dropdown */
-.mobile-filter-wrap{display:none;margin-bottom:24px;}
-.mobile-filter-sel{width:100%;background:var(--ink2);border:1px solid rgba(200,152,31,.3);color:var(--gold);font-family:'Oswald',sans-serif;font-size:14px;padding:12px 16px;outline:none;letter-spacing:1px;text-transform:uppercase;cursor:none;}
-.mobile-filter-sel option{background:var(--ink3);color:var(--white);}
-
-.prod-table-wrap{overflow-x:auto;border:1px solid rgba(139,160,178,.1)}
-table{width:100%;border-collapse:collapse;font-size:14px}
-thead tr{background:var(--gold)}
-thead th{font-family:"Oswald",sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--ink);padding:14px 18px;text-align:left;white-space:nowrap}
-tbody tr{border-bottom:1px solid rgba(139,160,178,.08);transition:background .2s}
-tbody tr:hover{background:rgba(200,152,31,.04)}
-tbody td{padding:12px 18px;color:var(--smoke);vertical-align:middle}
-tbody td.code{font-family:"DM Mono",monospace;font-size:12px;color:var(--gold);letter-spacing:.5px}
-tbody td.price{font-weight:500;color:var(--white)}
-.qty-badge{display:inline-block;background:rgba(200,152,31,.1);border:1px solid rgba(200,152,31,.2);color:var(--gold);font-family:"DM Mono",monospace;font-size:11px;padding:2px 8px}
-.note-box{background:var(--ink3);border:1px solid rgba(200,152,31,.2);border-left:3px solid var(--gold);padding:20px 24px;margin-bottom:32px;font-size:14px;color:var(--silver);line-height:1.7}
-.note-box strong{color:var(--smoke)}
-.search-wrap{position:relative;margin-bottom:16px}
-.search-input{width:100%;background:var(--ink2);border:1px solid rgba(139,160,178,.2);color:var(--smoke);font-family:"DM Sans",sans-serif;font-size:15px;padding:14px 18px 14px 48px;outline:none;transition:border-color .2s;cursor:none;}
-.search-input:focus{border-color:var(--gold)}
-.search-icon{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--silver);font-size:16px}
-
-/* ACCORDION PRODUCT SECTIONS */
-.prod-section{border:1px solid rgba(139,160,178,.1);margin-bottom:8px;background:var(--ink2);overflow:hidden;transition:border-color .2s}
-.prod-section:hover{border-color:rgba(200,152,31,.2)}
-.prod-section-hdr{display:flex;align-items:center;gap:16px;padding:14px 18px;cursor:none;user-select:none;transition:background .2s}
-.prod-section-hdr:hover{background:rgba(200,152,31,.04)}
-.prod-section-thumb{width:64px;height:64px;flex-shrink:0;background:rgba(255,255,255,.04);border:1px solid rgba(139,160,178,.1);display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:none;}
-.cat-img{width:100%;height:100%;object-fit:contain;display:block}
-.prod-section-meta{flex:1;min-width:0}
-.prod-section-code{font-family:'DM Mono',monospace;font-size:10px;color:var(--gold);letter-spacing:2px;text-transform:uppercase;margin-bottom:3px}
-.prod-section-title{font-family:'Oswald',sans-serif;font-size:15px;color:var(--white);letter-spacing:.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.prod-section-chevron{font-size:11px;color:var(--silver);flex-shrink:0;transition:transform .25s}
-.prod-section.open .prod-section-chevron{transform:rotate(180deg)}
-.prod-section-body{display:none;border-top:1px solid rgba(139,160,178,.08)}
-.prod-section.open .prod-section-body{display:block}
-.prod-inner-table{width:100%;border-collapse:collapse;font-size:14px}
-.prod-inner-table thead tr{background:var(--gold)}
-.prod-inner-table thead th{font-family:'Oswald',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--ink);padding:10px 18px;text-align:left;white-space:nowrap}
-.prod-inner-table tbody tr{border-bottom:1px solid rgba(139,160,178,.06);transition:background .15s}
-.prod-inner-table tbody tr:hover{background:rgba(200,152,31,.03)}
-.prod-inner-table tbody td{padding:10px 18px;color:var(--smoke);vertical-align:middle;font-size:13px}
-.prod-inner-table tbody td:first-child{font-family:'DM Mono',monospace;color:var(--gold);font-size:12px}
-.price-col-hdr{text-align:right!important}
-.prod-inner-table td.price{text-align:right}
-.price-locked{display:inline-flex;align-items:center;gap:6px;background:rgba(200,152,31,.07);border:1px solid rgba(200,152,31,.2);color:var(--silver);font-size:12px;font-family:'DM Mono',monospace;padding:3px 10px;letter-spacing:.5px}
-.add-to-cart-btn{font-family:'Oswald',sans-serif;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;padding:7px 14px;border:1px solid rgba(200,152,31,.4);color:var(--gold);background:transparent;cursor:none;transition:all .2s;white-space:nowrap}
-.add-to-cart-btn:hover:not([disabled]){background:rgba(200,152,31,.1);border-color:var(--gold)}
-.add-to-cart-btn[disabled]{cursor:not-allowed;opacity:.5}
-
-.mobile-pack{display:none;font-size:10px;color:var(--silver);margin-top:4px;font-family:'DM Mono',monospace;letter-spacing:0.5px;}
-
-/* IMAGE LIGHTBOX */
-#img-lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9999;align-items:center;justify-content:center;cursor:none;}
-#img-lb-inner{background:var(--ink2);border:1px solid rgba(200,152,31,.2);padding:28px;text-align:center;max-width:480px;width:90%}
-#img-lb-img{width:240px;height:240px;object-fit:contain;display:block;margin:0 auto 12px}
-#img-lb-title{font-family:'Oswald',sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--silver)}
-
-/* AUTH BANNERS */
-#login-banner{background:var(--ink3);border:1px solid rgba(200,152,31,.2);border-left:3px solid var(--gold);padding:16px 20px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
-
-/* --- THE MOBILE FIX --- */
-@media(max-width:768px){
-  .filter-bar{display:none !important;}
-  .mobile-filter-wrap{display:block;}
-  .prod-section-thumb{width:50px;height:50px}
-  .prod-section-title{font-size:13px;white-space:normal;line-height:1.4}
-  .note-box{font-size:13px;padding:14px 16px}
-  .search-input{font-size:14px;padding:12px 14px 12px 40px}
-
-  /* Convert Data Table to Mobile Cards */
-  .prod-inner-table thead{display:none}
-  .prod-inner-table tbody tr{display:flex;flex-wrap:wrap;padding:16px;border-bottom:1px solid rgba(139,160,178,.1);align-items:center}
-  .prod-inner-table tbody td{display:block;padding:0;border:none;text-align:left}
-
-  /* Row 1: Size */
-  .prod-inner-table tbody td:nth-child(1){width:100%;font-size:16px;font-weight:600;margin-bottom:4px}
-  /* Row 2: Pack (Hide original table column) */
-  .prod-inner-table tbody td:nth-child(2){display:none}
-  /* Row 3: Availability */
-  .prod-inner-table tbody td:nth-child(3){width:100%;margin-bottom:16px;font-size:13px}
-  /* Row 4: Price (Left 50%) */
-  .prod-inner-table tbody td:nth-child(4){width:50%;display:flex;align-items:center;text-align:left}
-  /* Row 4: Cart (Right 50%) */
-  .prod-inner-table tbody td:nth-child(5){width:50%;display:flex;justify-content:flex-end}
-
-  /* Append pack to size */
-  .mobile-pack{display:inline-block;margin-left:10px;font-size:11px;color:var(--silver);font-weight:normal;padding:2px 6px;background:rgba(255,255,255,.05);border-radius:4px}
-
-  /* Fat-Finger Touch Target Fix */
-  .add-to-cart-btn{font-size:13px;padding:12px 16px;width:100%;display:flex;justify-content:center}
-}
-</style>
 </head>
 <body>
 
 <div id="cursor"></div><div id="cursor-ring"></div>
 
-<div class="topbar">
-  <div class="topbar-links">
-    <a href="tel:17328291940"><svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.27-.27.67-.36 1.02-.22 1.12.45 2.32.68 3.58.68.55 0 1 .45 1 1V20c0 .55-.45 1-1 1C10.29 21 3 13.71 3 4.5c0-.55.45-1 1-1H8c.55 0 1 .45 1 1 0 1.27.2 2.48.57 3.62.1.32.03.68-.22.96L6.6 10.8z"/></svg>732-829-1940</a>
-    <a href="mailto:info@allprobuildingsupplies.com"><svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>info@allprobuildingsupplies.com</a>
-  </div>
-  <div class="topbar-badge">Contractor-Grade · Fast Response · NJ &amp; Surrounding Areas</div>
-</div>
-
-<nav>
-  <div class="nav-logo">
-    <img src="assets/logo.png" alt="All Pro Building Supplies"/>
-    <div class="nav-brand-text">All Pro Building Supplies <span>LLC</span></div>
-  </div>
-  <ul class="nav-links">
-    <li><a href="index.html">Home</a></li>
-    <li><a href="products.html" class="active">Products</a></li>
-    <li><a href="about.html">About</a></li>
-    <li><a href="contact.html">Contact</a></li>
-  </ul>
-  <div class="nav-actions" id="nav-auth-container">
-    <a href="tel:17328291940" class="nav-tel"><svg viewBox="0 0 24 24" width="16" height="16" fill="var(--gold)"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.27-.27.67-.36 1.02-.22 1.12.45 2.32.68 3.58.68.55 0 1 .45 1 1V20c0 .55-.45 1-1 1C10.29 21 3 13.71 3 4.5c0-.55.45-1 1-1H8c.55 0 1 .45 1 1 0 1.27.2 2.48.57 3.62.1.32.03.68-.22.96L6.6 10.8z"/></svg>732-829-1940</a>
-    <span id="auth-buttons" style="display:inline-flex; align-items:center; gap:8px;">
-      <a href="login.html" class="nav-cta" id="nav-login-btn" style="background:transparent;border:1px solid var(--gold);color:var(--gold);">Login</a>
-      <a href="account.html" class="nav-cta" id="nav-account-btn" style="display:none;background:var(--ink3);border:1px solid rgba(200,152,31,.3);flex-direction:column;align-items:flex-start;padding:6px 12px;line-height:1.3;gap:2px;"><span style="font-size:9px;color:var(--silver);letter-spacing:1px;font-family:'DM Mono',monospace;">LOGGED IN AS</span><span id="nav-logged-in-name" style="font-size:12px;color:var(--white);">My Account</span></a>
-      <a href="cart.html" class="nav-cta" id="nav-cart-btn" style="background:var(--gold);color:var(--ink);border:none;">🛒 Cart <span id="nav-cart-count" class="cart-nav-badge"></span></a>
-    </span>
-  </div>
-  <button class="hamburger" id="hamburger" aria-label="Menu">
-    <span></span><span></span><span></span>
-  </button>
-</nav>
-
-<div class="mobile-menu" id="mobile-menu"><button class="mobile-menu-close" id="mob-close" aria-label="Close">&#10005;</button>
-  <a href="index.html">Home</a>
-  <a href="products.html">Products</a>
-  <a href="about.html">About</a>
-  <a href="contact.html">Contact</a>
-  <a href="tel:17328291940" class="mob-tel">📞 732-829-1940</a>
-  <a href="cart.html" class="mob-cta">🛒 Cart →</a>
-  <a href="login.html" class="mob-cta" style="margin-top:10px;background:transparent;border:1px solid var(--gold);color:var(--gold);">Login / Register</a>
-</div>
+<div id="global-header"></div>
 
 <div class="page-hero">
   <div class="page-hero-inner">
@@ -215,44 +78,11 @@ tbody td.price{font-weight:500;color:var(--white)}
   </div>
 </section>
 
-<footer>
-  <div class="ft-top">
-    <div>
-      <img src="assets/logo.png" alt="All Pro Building Supplies" class="ft-logo"/>
-      <p class="ft-txt">Contractor-grade building materials, plumbing, hardware, and contractor supplies. Fast response, real people, reliable service.</p>
-      <div class="ft-socials">
-        <a href="mailto:info@allprobuildingsupplies.com" class="soc">✉</a>
-        <a href="tel:17328291940" class="soc">📞</a>
-      </div>
-    </div>
-    <div class="ft-col">
-      <h4>Products</h4>
-      <ul>
-        <li><a href="products.html">Building Materials</a></li>
-        <li><a href="products.html">Plumbing</a></li>
-        <li><a href="products.html">Hardware</a></li>
-        <li><a href="products.html">Contractor Supplies</a></li>
-      </ul>
-    </div>
-    <div class="ft-col">
-      <h4>Company</h4>
-      <ul>
-        <li><a href="about.html">About Us</a></li>
-        <li><a href="contact.html">Contact</a></li>
-        <li><a href="login.html">Dealer Login</a></li>
-      </ul>
-    </div>
-  </div>
-  <div class="ft-bot">
-    <p>&copy; 2026 All Pro Building Supplies LLC. All rights reserved.</p>
-  </div>
-</footer>
+<div id="global-footer"></div>
 
 <script src="assets/main.js"></script>
 
 <script>
-const WORKER_URL = 'https://allpro-github-proxy.baruch-6d5.workers.dev';
-
 // --- AUTH LOGIC ---
 let isLoggedIn = false;
 (function(){
@@ -280,50 +110,45 @@ let isLoggedIn = false;
   }
 })();
 
-// --- CSV PARSER ---
-function parseCSV(str) {
-  var lines = [], curLine = [], curStr = '', inQ = false;
-  for(var i=0; i<str.length; i++) {
-    var c = str[i];
-    if(c === '"') {
-      if(inQ && str[i+1] === '"') { curStr += '"'; i++; } else { inQ = !inQ; }
-    } else if(c === ',' && !inQ) {
-      curLine.push(curStr); curStr = '';
-    } else if((c === '\n' || c === '\r') && !inQ) {
-      if(c === '\r' && str[i+1] === '\n') i++;
-      curLine.push(curStr); lines.push(curLine); curLine = []; curStr = '';
-    } else { curStr += c; }
-  }
-  if(curStr !== '' || curLine.length > 0) { curLine.push(curStr); lines.push(curLine); }
-  return lines;
-}
-
-// --- DYNAMIC PRODUCT RENDERER ---
+// --- DYNAMIC PRODUCT RENDERER (CLOUDFLARE D1) ---
 async function fetchAndRenderProducts() {
   try {
-    const r = await fetch(WORKER_URL + '/github/products.csv');
-    const d = await r.json();
-    const csv = decodeURIComponent(escape(atob(d.content)));
-    const rows = parseCSV(csv);
+    const apiURL = window.APBS_API_BASE ? window.APBS_API_BASE + '/products' : 'https://allpro-api.baruch-6d5.workers.dev/api/products';
+    const r = await fetch(apiURL);
+    const rows = await r.json();
     
     let groups = {};
     
-    // Rows: Code [0], Desc [1], Size [2], Pack [3], Qty [4], Price [5], Image [6]
-    for(let i=1; i<rows.length; i++) {
-      let cols = rows[i];
-      if(!cols[0]) continue;
-      let code = cols[0].trim();
+    // Group the JSON rows by Code
+    for(let i=0; i<rows.length; i++) {
+      let row = rows[i];
+      if(!row.code) continue;
+      
+      let code = row.code.trim();
       if(!groups[code]) {
-        groups[code] = { desc: cols[1], image: cols[6] || 'images/logo.png', rows: [] };
+        groups[code] = { desc: row.description, image: row.image || 'images/logo.png', rows: [] };
       }
-      groups[code].rows.push({ size: cols[2], pack: cols[3], qty: parseInt(cols[4])||0, price: parseFloat(cols[5])||0 });
+      
+      groups[code].rows.push({ 
+        size: row.size, 
+        pack: row.pack, 
+        qty: parseInt(row.qty)||0, 
+        price: parseFloat(row.price)||0 
+      });
     }
 
     const container = document.getElementById('prod-sections');
     const filterBar = document.getElementById('dynamic-filters');
     const mobileSelect = document.getElementById('mobile-filter-select');
     container.innerHTML = '';
-    
+    if (filterBar) {
+      while (filterBar.children.length > 1) filterBar.removeChild(filterBar.lastChild);
+    }
+    if (mobileSelect) {
+      while (mobileSelect.options.length > 1) mobileSelect.remove(1);
+    }
+    const sectionChunks = [];
+
     for (const [code, data] of Object.entries(groups)) {
       // Build Desktop Filters
       let fBtn = document.createElement('button');
@@ -338,9 +163,14 @@ async function fetchAndRenderProducts() {
       fOpt.textContent = code;
       mobileSelect.appendChild(fOpt);
       
+      const searchAttr = (code + ' ' + data.desc + ' ' + data.rows.map(function (r) { return r.size; }).join(' '))
+        .toLowerCase()
+        .replace(/&/g, '&amp;')
+        .replace(/"/g, '&quot;');
+
       // Build Section
       let html = `
-        <div class="prod-section" id="${code}" data-code="${code}">
+        <div class="prod-section" id="${code}" data-code="${code}" data-search="${searchAttr}">
           <div class="prod-section-hdr" onclick="toggleSection(this)">
             <div class="prod-section-thumb" onclick="event.stopPropagation();openLightbox('${data.image}','${data.desc.replace(/'/g,"\\'").replace(/"/g,"&quot;")}')">
               <img src="${data.image}" alt="${data.desc.replace(/"/g,"&quot;")}" class="cat-img" loading="lazy">
@@ -387,47 +217,56 @@ async function fetchAndRenderProducts() {
       });
       
       html += `</tbody></table></div></div>`;
-      container.innerHTML += html;
+      sectionChunks.push(html);
     }
+
+    container.innerHTML = sectionChunks.join('');
   } catch(e) {
-    document.getElementById('prod-sections').innerHTML = `<div style="text-align:center;padding:40px;color:#ff6b6b;">Error loading product database. Please contact support.</div>`;
+    document.getElementById('prod-sections').innerHTML = '<div style="color:#ff6b6b;padding:40px;text-align:center;">Failed to load catalog. Please refresh.</div>';
+    console.error(e);
   }
 }
-fetchAndRenderProducts();
+
+// Ensure global layout exists before fetching
+setTimeout(fetchAndRenderProducts, 200);
 
 // --- UI INTERACTIONS ---
 function toggleSection(hdr){
   var sec = hdr.parentElement;
   sec.classList.toggle('open');
-  var chev = hdr.querySelector('.prod-section-chevron');
-  if(chev) chev.style.transform = sec.classList.contains('open') ? 'rotate(180deg)' : '';
 }
 
 function setFilter(code, btn){
-  // Handle Desktop Buttons
-  document.querySelectorAll('.filter-btn').forEach(function(b){ b.classList.remove('on'); });
-  if(btn) btn.classList.add('on');
-  
-  // Sync the Mobile Dropdown if triggered from desktop
-  let sel = document.getElementById('mobile-filter-select');
-  if(sel) sel.value = code;
-  
-  // Filter sections
+  if(btn){
+    document.querySelectorAll('.filter-btn').forEach(function(b){ b.classList.remove('on'); });
+    btn.classList.add('on');
+    var sel = document.getElementById('mobile-filter-select');
+    if(sel) sel.value = code;
+  }
   document.querySelectorAll('.prod-section').forEach(function(s){
     s.style.display = (code==='all' || s.dataset.code===code) ? '' : 'none';
   });
 }
 
 var searchInput = document.getElementById('prod-search');
+var searchDebounce = null;
 if(searchInput){
   searchInput.addEventListener('input', function(){
-    var q = this.value.trim().toLowerCase();
-    document.querySelectorAll('.prod-section').forEach(function(sec){
-      if(!q){ sec.style.display=''; return; }
-      var text = sec.textContent.toLowerCase();
-      sec.style.display = text.includes(q) ? '' : 'none';
-      if(q && text.includes(q)) sec.classList.add('open');
-    });
+    var self = this;
+    clearTimeout(searchDebounce);
+    searchDebounce = setTimeout(function(){
+      var q = self.value.trim().toLowerCase();
+      document.querySelectorAll('.prod-section').forEach(function(sec){
+        if(!q){
+          sec.style.display = '';
+          sec.classList.remove('open');
+          return;
+        }
+        var hay = sec.getAttribute('data-search') || '';
+        sec.style.display = hay.indexOf(q) !== -1 ? '' : 'none';
+        if(hay.indexOf(q) !== -1) sec.classList.add('open');
+      });
+    }, 160);
   });
 }
 
