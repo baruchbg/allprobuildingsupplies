@@ -144,7 +144,6 @@
 
 <script>
 // ── CONFIG ────────────────────────────────────────────────────────
-const WORKER_URL   = 'https://allpro-github-proxy.baruch-6d5.workers.dev';
 const EMAILJS_SVC  = 'service_qefaa3x';   // ← fill in after EmailJS setup
 const EMAILJS_TPL  = 'template_nh3iqob';  // ← fill in after EmailJS setup
 const EMAILJS_KEY  = 'MNDXK3JgE890yvoA6';   // ← fill in after EmailJS setup
@@ -291,13 +290,13 @@ async function placeOrder(){
   };
 
   try{
-    // 1. Save order to orders.json
-    await saveOrder(order);
-    // 2. Deduct inventory from products.csv
-    await deductInventory(cart);
-    // 3. Send email notification
+    var api=(window.APBS_API_BASE||'https://allpro-api.baruch-6d5.workers.dev/api');
+    var saveRes=await fetch(api+'/orders',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(order)});
+    if(!saveRes.ok){
+      var errBody=await saveRes.json().catch(function(){return{};});
+      throw new Error(errBody.error||'Order could not be saved');
+    }
     await sendNotification(order);
-    // 4. Clear cart & show success
     saveCart([]);
     document.getElementById('checkout-wrap').style.display = 'none';
     document.getElementById('success-screen').style.display = 'block';
@@ -311,76 +310,6 @@ async function placeOrder(){
     btn.textContent = 'Place Order →';
   }
 }
-
-// ── SAVE ORDER ────────────────────────────────────────────────────
-async function saveOrder(order){
-  var r = await fetch(WORKER_URL+'/github/orders.json');
-  var d = await r.json();
-  var sha = d.sha;
-  var data = JSON.parse(atob(d.content.replace(/\n/g,'')));
-  data.orders.push(order);
-  var payload = JSON.stringify({
-    message:'New order: '+order.id,
-    content: btoa(unescape(encodeURIComponent(JSON.stringify(data,null,2)))),
-    branch:'main', sha:sha
-  });
-  var pr = await fetch(WORKER_URL+'/github/orders.json',{method:'PUT',headers:{'Content-Type':'application/json'},body:payload});
-  if(!pr.ok){ var e=await pr.json(); throw new Error(e.message||'Failed to save order'); }
-}
-
-// ── DEDUCT INVENTORY ──────────────────────────────────────────────
-async function deductInventory(cart){
-  var r = await fetch(WORKER_URL+'/github/products.csv');
-  var d = await r.json();
-  var sha = d.sha;
-  var csv = atob(d.content.replace(/\n/g,''));
-  var lines = csv.trim().split('\n');
-  var headers = lines[0];
-
-  // Build deduction map: "code|size" -> qty to deduct (normalize quotes)
-  var deductions = {};
-  cart.forEach(function(item){
-    var key = item.code+'|'+item.size.replace(/"/g,'');
-    deductions[key] = (deductions[key]||0) + item.qty;
-  });
-
-  // Update CSV lines
-  var newLines = [headers];
-  for(var i=1;i<lines.length;i++){
-    var cols = parseCSVLine(lines[i]);
-    if(!cols[0]) continue;
-    var key = cols[0]+'|'+stripQuotes(cols[2]).replace(/"/g,'');
-    if(deductions[key]){
-      var current = parseInt(cols[4])||0;
-      cols[4] = Math.max(0, current - deductions[key]).toString();
-    }
-    newLines.push(cols.map(function(c){
-      return c.indexOf(',')>=0||c.indexOf('"')>=0 ? '"'+c.replace(/"/g,'""')+'"' : c;
-    }).join(','));
-  }
-
-  var newCSV = newLines.join('\n')+'\n';
-  var payload = JSON.stringify({
-    message:'Inventory update after order',
-    content: btoa(unescape(encodeURIComponent(newCSV))),
-    branch:'main', sha:sha
-  });
-  var pr = await fetch(WORKER_URL+'/github/products.csv',{method:'PUT',headers:{'Content-Type':'application/json'},body:payload});
-  if(!pr.ok) throw new Error('Failed to update inventory');
-}
-
-function parseCSVLine(line){
-  var result=[],cur='',inQ=false;
-  for(var i=0;i<line.length;i++){
-    var c=line[i];
-    if(c==='"'){inQ=!inQ;}
-    else if(c===','&&!inQ){result.push(cur);cur='';}
-    else{cur+=c;}
-  }
-  result.push(cur);
-  return result;
-}
-function stripQuotes(s){ return (s||'').replace(/^"+|"+$/g,'').trim(); }
 
 // ── EMAIL NOTIFICATION ────────────────────────────────────────────
 function buildConfirmEmail(order){
@@ -399,7 +328,7 @@ function buildStatusEmail(order, status){
     : 'Your order has been cancelled. If you have any questions or believe this was an error, please contact us right away.';
   var badgeColor = isConfirmed ? '#2ecc71' : '#e74c3c';
 
-  return `<!DOCTYPE html><html><head><meta charset="UTF-8"/></head><body style="margin:0;padding:0;background:#f4f4f4;font-family:'Helvetica Neue',Arial,sans-serif;"><table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;padding:32px 0;"><tr><td align="center"><table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:4px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);"><tr><td style="background:#0C1117;padding:28px 36px;border-bottom:4px solid #C8981F;"><table width="100%" cellpadding="0" cellspacing="0"><tr><td><div style="font-family:'Arial Black',Arial,sans-serif;font-size:20px;font-weight:900;color:#FFFFFF;letter-spacing:2px;text-transform:uppercase;">ALL PRO BUILDING SUPPLIES</div><div style="font-size:11px;color:#C8981F;letter-spacing:3px;text-transform:uppercase;margin-top:3px;">LLC</div></td><td align="right"><div style="background:${badgeColor};color:#fff;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:6px 14px;border-radius:2px;">ORDER ${statusWord.toUpperCase()}</div></td></tr></table></td></tr><tr><td style="padding:0;"><div style="background:#f8f8f8;border-left:4px solid ${badgeColor};padding:20px 36px;font-size:15px;color:#444;">Hi <strong>${order.customer.name}</strong> — your order <strong style="color:#C8981F;font-family:monospace;">${order.id}</strong> has been <strong>${statusWord}</strong>.</div></td></tr><tr><td style="padding:28px 36px 0;"><p style="margin:0;font-size:15px;color:#444;line-height:1.7;">${statusMsg}</p></td></tr><tr><td style="padding:24px 36px 0;"><table width="100%" cellpadding="0" cellspacing="0" style="background:#f8f8f8;border-radius:4px;border:1px solid #e8e8e8;"><tr><td style="padding:16px 20px;border-right:1px solid #e8e8e8;"><div style="font-size:10px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Order ID</div><div style="font-size:14px;font-weight:700;color:#C8981F;font-family:monospace;">${order.id}</di2)}</div></td><td style="padding:16px 20px;"><div style="font-size:10px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Delivery</div><div style="font-size:13px;color:#222;">${order.delivery.address}</div></td></tr></table></td></tr><tr><td style="padding:24px 36px 8px;"><hr style="border:none;border-top:1px solid #eee;margin:0;"/></td></tr><tr><td style="padding:8px 36px 28px;"><p style="margin:0;font-size:14px;color:#444;line-height:1.7;">Questions? We're here to help:</p><p style="margin:10px 0 0;font-size:14px;color:#444;">📞 <a href="tel:17328291940" style="color:#C8981F;text-decoration:none;font-weight:600;">732-829-1940</a></p><p style="margin:4px 0 0;font-size:14px;color:#444;">✉️ <a href="mailto:info@allprobuildingsupplies.com" style="color:#C8981F;text-decoration:none;">info@allprobuildingsupplies.com</a></p></td></tr><tr><td style="background:#0C1117;padding:20px 36px;text-align:center;"><div style="font-size:12px;color:#888;">© 2026 All Pro Building Supplies LLC &nbsp;·&nbsp; <a href="https://allprobuildingsupplies.com" style="color:#C8981F;text-decoration:none;">allprobuildingsupplies.com</a></div></td></tr></table></td></tr></table></body></html>`;
+  return `<!DOCTYPE html><html><head><meta charset="UTF-8"/></head><body style="margin:0;padding:0;background:#f4f4f4;font-family:'Helvetica Neue',Arial,sans-serif;"><table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;padding:32px 0;"><tr><td align="center"><table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:4px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);"><tr><td style="background:#0C1117;padding:28px 36px;border-bottom:4px solid #C8981F;"><table width="100%" cellpadding="0" cellspacing="0"><tr><td><div style="font-family:'Arial Black',Arial,sans-serif;font-size:20px;font-weight:900;color:#FFFFFF;letter-spacing:2px;text-transform:uppercase;">ALL PRO BUILDING SUPPLIES</div><div style="font-size:11px;color:#C8981F;letter-spacing:3px;text-transform:uppercase;margin-top:3px;">LLC</div></td><td align="right"><div style="background:${badgeColor};color:#fff;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:6px 14px;border-radius:2px;">ORDER ${statusWord.toUpperCase()}</div></td></tr></table></td></tr><tr><td style="padding:0;"><div style="background:#f8f8f8;border-left:4px solid ${badgeColor};padding:20px 36px;font-size:15px;color:#444;">Hi <strong>${order.customer.name}</strong> — your order <strong style="color:#C8981F;font-family:monospace;">${order.id}</strong> has been <strong>${statusWord}</strong>.</div></td></tr><tr><td style="padding:28px 36px 0;"><p style="margin:0;font-size:15px;color:#444;line-height:1.7;">${statusMsg}</p></td></tr><tr><td style="padding:24px 36px 0;"><table width="100%" cellpadding="0" cellspacing="0" style="background:#f8f8f8;border-radius:4px;border:1px solid #e8e8e8;"><tr><td style="padding:16px 20px;border-right:1px solid #e8e8e8;"><div style="font-size:10px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Order ID</div><div style="font-size:14px;font-weight:700;color:#C8981F;font-family:monospace;">${order.id}</div></td><td style="padding:16px 20px;"><div style="font-size:10px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Delivery</div><div style="font-size:13px;color:#222;">${order.delivery.address}</div></td></tr></table></td></tr><tr><td style="padding:24px 36px 8px;"><hr style="border:none;border-top:1px solid #eee;margin:0;"/></td></tr><tr><td style="padding:8px 36px 28px;"><p style="margin:0;font-size:14px;color:#444;line-height:1.7;">Questions? We're here to help:</p><p style="margin:10px 0 0;font-size:14px;color:#444;">📞 <a href="tel:17328291940" style="color:#C8981F;text-decoration:none;font-weight:600;">732-829-1940</a></p><p style="margin:4px 0 0;font-size:14px;color:#444;">✉️ <a href="mailto:info@allprobuildingsupplies.com" style="color:#C8981F;text-decoration:none;">info@allprobuildingsupplies.com</a></p></td></tr><tr><td style="background:#0C1117;padding:20px 36px;text-align:center;"><div style="font-size:12px;color:#888;">© 2026 All Pro Building Supplies LLC &nbsp;·&nbsp; <a href="https://allprobuildingsupplies.com" style="color:#C8981F;text-decoration:none;">allprobuildingsupplies.com</a></div></td></tr></table></td></tr></table></body></html>`;
 }
 
 async function sendNotification(order){

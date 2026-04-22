@@ -14,7 +14,7 @@
 <div class="auth-wrap">
   <div class="auth-box">
     <div class="auth-logo">
-      <img src="assets/logo.png" onerror="this.style.display='none'"/>
+      <img src="images/logo.png" onerror="this.style.display='none'"/>
       <div class="auth-title">Request Pricing Access</div>
       <div class="auth-sub">Fill in your details below. Baruch will review<br/>and approve your account — usually within 1 business day.</div>
     </div>
@@ -91,25 +91,9 @@ function updateNavCount(){
 }
 updateNavCount();
 
-const WORKER_URL = 'https://allpro-github-proxy.baruch-6d5.workers.dev';
-
 async function sha256(str){
   const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str));
   return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
-}
-async function workerGet(path){
-  const r=await fetch(WORKER_URL+'/github/'+path);
-  if(!r.ok) throw new Error('Read failed: '+r.status);
-  return r.json();
-}
-async function workerPut(path,content,sha,msg){
-  const r=await fetch(WORKER_URL+'/github/'+path,{
-    method:'PUT',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({message:msg,content:btoa(unescape(encodeURIComponent(content))),...(sha?{sha}:{})})
-  });
-  if(!r.ok){const d=await r.json();throw new Error(d.message||r.status);}
-  return r.json();
 }
 function v(id,errId,test){
   const el=document.getElementById(id),err=document.getElementById(errId);
@@ -134,40 +118,36 @@ async function submitReg(){
   document.getElementById('global-err').style.display='none';
 
   try{
-    let users=[],fileSha='';
-    try{
-      const d=await workerGet('users.json');
-      fileSha=d.sha;
-      users=(JSON.parse(atob(d.content.replace(/\n/g,''))).users)||[];
-    }catch(e){console.warn('Could not load users',e);}
-
     const email=document.getElementById('r-email').value.trim().toLowerCase();
-    if(users.find(u=>u.email===email)){
-      showErr('An account with this email already exists. <a href="login.html" style="color:var(--gold)">Log in &#8594;</a>');
-      btn.disabled=false;txt.textContent='Submit Request &#8594;';return;
-    }
-
-    const newUser={
+    const body={
       id:Date.now().toString(),
       fname:document.getElementById('r-fname').value.trim(),
       lname:document.getElementById('r-lname').value.trim(),
       company:document.getElementById('r-company').value.trim(),
       email,
       phone:document.getElementById('r-phone').value.trim(),
-      password:await sha256(document.getElementById('r-pw').value),
-      status:'pending',
-      canOrderPieces:true,
-      registeredAt:new Date().toISOString(),
-      approvedAt:null
+      password:await sha256(document.getElementById('r-pw').value)
     };
-    users.push(newUser);
-
-    await workerPut('users.json',JSON.stringify({users},null,2),fileSha,
-      'New registration: '+newUser.fname+' '+newUser.lname+' ('+newUser.company+')');
+    const api=(window.APBS_API_BASE||'https://allpro-api.baruch-6d5.workers.dev/api');
+    const r=await fetch(api+'/register',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(body)
+    });
+    let data={};
+    try{ data=await r.json(); }catch(_){}
+    if(!r.ok){
+      if(r.status===409){
+        showErr('An account with this email already exists. <a href="login.html" style="color:var(--gold)">Log in &#8594;</a>');
+      }else{
+        showErr(data.error||'Registration failed. Please try again or call 732-829-1940.');
+      }
+      btn.disabled=false;txt.textContent='Submit Request &#8594;';return;
+    }
 
     document.getElementById('reg-form').style.display='none';
-    document.getElementById('s-name').textContent=newUser.fname;
-    document.getElementById('s-email').textContent=newUser.email;
+    document.getElementById('s-name').textContent=body.fname;
+    document.getElementById('s-email').textContent=body.email;
     document.getElementById('reg-success').style.display='block';
 
   }catch(e){

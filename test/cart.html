@@ -96,7 +96,6 @@
 <script src="assets/main.js"></script>
 <script>
 // ── CART ENGINE ───────────────────────────────────────────────────
-const WORKER_URL = 'https://allpro-github-proxy.baruch-6d5.workers.dev';
 
 function getCart(){ try{ return JSON.parse(localStorage.getItem('apbs_cart')||'[]'); }catch(e){return [];} }
 function saveCart(c){ localStorage.setItem('apbs_cart', JSON.stringify(c)); updateNavCount();
@@ -127,13 +126,9 @@ var currentUser = null;
 var liveInventory = {}; // key: "code|size" -> qty_on_hand
 
 async function fetchInventory(){
-  try{
-    var r = await fetch(WORKER_URL+'/github/products.csv');
-    var d = await r.json();
-    var csv = atob(d.content.replace(/\n/g,''));
-    var lines = csv.trim().split('\n');
-    var headers = lines[0].split(',');
-    var codeIdx=0, sizeIdx=2, qtyIdx=4;
+  liveInventory = {};
+  var codeIdx=0, sizeIdx=2, qtyIdx=4;
+  function applyCsvRows(lines){
     for(var i=1;i<lines.length;i++){
       var cols = parseCSVLine(lines[i]);
       var code = cols[codeIdx]||'';
@@ -141,9 +136,33 @@ async function fetchInventory(){
       var qty  = parseInt(cols[qtyIdx])||0;
       var sizeClean = size.replace(/\"/g,'').trim();
       liveInventory[code+'|'+sizeClean] = qty;
-      liveInventory[code+'|'+sizeClean+'"'] = qty;  // also store with inch mark
+      liveInventory[code+'|'+sizeClean+'"'] = qty;
     }
-  }catch(e){ console.warn('Could not fetch live inventory', e); }
+  }
+  try{
+    var api = (window.APBS_API_BASE||'https://allpro-api.baruch-6d5.workers.dev/api');
+    var pr = await fetch(api+'/products');
+    if(pr.ok){
+      var rows = await pr.json();
+      for(var j=0;j<rows.length;j++){
+        var row = rows[j];
+        var code = (row.code||'').trim();
+        var size = (row.size||'').replace(/\"/g,'').trim();
+        var qty = parseInt(row.qty)||0;
+        liveInventory[code+'|'+size] = qty;
+        liveInventory[code+'|'+size+'"'] = qty;
+      }
+      return;
+    }
+  }catch(e){ console.warn('API inventory unavailable, trying local CSV', e); }
+  try{
+    var r2 = await fetch('assets/products.csv');
+    if(!r2.ok) return;
+    var csv = await r2.text();
+    var lines = csv.trim().split('\n');
+    if(lines.length < 2) return;
+    applyCsvRows(lines);
+  }catch(e2){ console.warn('Could not load inventory', e2); }
 }
 
 function parseCSVLine(line){

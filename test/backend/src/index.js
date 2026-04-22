@@ -45,7 +45,15 @@ export default {
 
       if (path === '/api/register' && request.method === 'POST') {
         const body = await request.json();
-        await env.DB.prepare(`INSERT INTO users (id, fname, lname, company, email, phone, password, status, canOrderPieces, registeredAt) VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', 1, ?)`).bind(body.id, body.fname, body.lname, body.company, body.email.toLowerCase(), body.phone, body.password, new Date().toISOString()).run();
+        try {
+          await env.DB.prepare(`INSERT INTO users (id, fname, lname, company, email, phone, password, status, canOrderPieces, registeredAt) VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', 1, ?)`).bind(body.id, body.fname, body.lname, body.company, body.email.toLowerCase(), body.phone, body.password, new Date().toISOString()).run();
+        } catch (e) {
+          const msg = e && e.message ? String(e.message) : '';
+          if (msg.includes('UNIQUE') || msg.includes('constraint')) {
+            return new Response(JSON.stringify({ error: 'An account with this email already exists.' }), { status: 409, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+          }
+          throw e;
+        }
         return new Response(JSON.stringify({ message: 'Registration received!' }), { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' }});
       }
 
@@ -72,11 +80,51 @@ export default {
         if (o.items && o.items.length > 0) {
           for (const i of o.items) {
             stmts.push(env.DB.prepare("INSERT INTO order_items (order_id, product_sku, size, quantity, price_at_purchase) VALUES (?, ?, ?, ?, ?)").bind(o.id, i.code, i.size, i.qty, i.unitPrice));
+            stmts.push(env.DB.prepare("UPDATE products SET qty = MAX(0, qty - ?) WHERE code = ? AND size = ?").bind(i.qty, i.code, i.size));
           }
         }
 
         await env.DB.batch(stmts);
         return new Response(JSON.stringify({ success: true, orderId: o.id }), { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      }
+
+      if (path === '/api/customer-orders' && request.method === 'POST') {
+        const { email } = await request.json();
+        if (!email || typeof email !== 'string') {
+          return new Response(JSON.stringify({ error: 'Email required' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+        }
+        const em = email.trim().toLowerCase();
+        const orders = await env.DB.prepare(`
+          SELECT * FROM orders
+          WHERE LOWER(TRIM(user_id)) = ?
+             OR user_id = (SELECT id FROM users WHERE LOWER(email) = ? LIMIT 1)
+          ORDER BY datetime(created_at) DESC
+        `).bind(em, em).all();
+        const items = await env.DB.prepare("SELECT * FROM order_items").all();
+        const prods = await env.DB.prepare("SELECT * FROM products").all();
+        const formattedOrders = orders.results.map(o => {
+          const orderItems = items.results.filter(it => it.order_id === o.id).map(it => {
+            const match = prods.results.find(p => p.code === it.product_sku && p.size === it.size);
+            return {
+              code: it.product_sku, size: it.size, qty: it.quantity,
+              unitPrice: it.price_at_purchase, lineTotal: it.quantity * it.price_at_purchase,
+              description: match ? match.description : 'Unknown Product',
+              pcsPerCtn: match ? match.pack : 1
+            };
+          });
+          let customer = { name: 'Unknown', email: em };
+          try {
+            if (o.customer_snapshot) customer = JSON.parse(o.customer_snapshot);
+          } catch (_) {}
+          return {
+            id: o.id, placedAt: o.created_at, status: o.status, total: o.total_amount,
+            delivery: { method: o.delivery_method, address: o.delivery_address || '' },
+            po: o.po || '', notes: o.notes || '',
+            customer,
+            items: orderItems
+          };
+        });
+        return new Response(JSON.stringify(formattedOrders), { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
       }
 
       // ---------------------------------------------------------
