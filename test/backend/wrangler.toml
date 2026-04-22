@@ -1,0 +1,10 @@
+name = "allpro-api"
+main = "src/index.js"
+compatibility_date = "2024-04-21"
+
+# Bindings to your D1 Databases
+[[d1_databases]]
+binding = "DB"
+database_name = "allpro-db"
+database_id = "d2f447d2-7c39-4458-ba6b-c4c0bb62b08a"
+preview_database_id = "9e1c4ea2-8088-4c1d-872e-d0dfc249a5b6"
