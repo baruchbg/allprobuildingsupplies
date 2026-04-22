@@ -2,7 +2,7 @@
 // GLOBAL LAYOUT INJECTION
 // ══════════════════════════════════════════
 
-window.APBS_API_BASE = window.APBS_API_BASE || "http://localhost:8787/api";
+window.APBS_API_BASE = "https://allpro-api.baruch-6d5.workers.dev/api";
 
 window.apbsGetUser = function apbsGetUser() {
   try {

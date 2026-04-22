@@ -58,8 +58,85 @@
 </div>
 
 <div id="global-footer"></div>
-
 <script>
+// Function to switch between Login and Change Password tabs
+function switchAuth(type) {
+  document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+  document.getElementById('tab-' + type).classList.add('active');
+  document.getElementById('form-' + type).classList.add('active');
+  document.getElementById(type === 'login' ? 'login-msg' : 'change-msg').style.display = 'none';
+}
+
+// Helper to show messages
+function showMsg(type, text, isErr) {
+  const el = document.getElementById(type === 'login' ? 'login-msg' : 'change-msg');
+  el.textContent = text;
+  el.className = 'auth-msg ' + (isErr ? 'msg-err' : 'msg-ok');
+  el.style.display = 'block';
+}
+
+// ---------------------------------------------------------
+// NEW SECURE API LOGIN
+// ---------------------------------------------------------
+async function processLogin() {
+  const btn = document.getElementById('btn-login');
+  const email = document.getElementById('log-email').value.trim();
+  const password = document.getElementById('log-pass').value;
+
+  if (!email || !password) {
+    showMsg('login', 'Please enter both email and password.', true);
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Authenticating...';
+
+  try {
+    // 1. Hash the password before sending it (matches old logic)
+    const encoder = new TextEncoder();
+    const data = encoder.encode(password);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashedPassword = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+    // 2. Send to Cloudflare D1 API
+    const response = await fetch(window.APBS_API_BASE + '/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email, password: hashedPassword })
+    });
+
+    const result = await response.json();
+
+    // 3. Handle the response
+    if (!response.ok) {
+      showMsg('login', result.error || 'Login failed.', true);
+      btn.disabled = false;
+      btn.textContent = 'Login →';
+      return;
+    }
+
+    // 4. Success! Save user session and redirect
+    sessionStorage.setItem('apbs_user', JSON.stringify(result.user));
+    if (result.token) sessionStorage.setItem('apbs_token', result.token);
+    
+    showMsg('login', 'Success! Redirecting...', false);
+    setTimeout(() => { window.location.href = 'index.html'; }, 800);
+
+  } catch (err) {
+    console.error(err);
+    showMsg('login', 'Network error. Please try again.', true);
+    btn.disabled = false;
+    btn.textContent = 'Login →';
+  }
+}
+
+// Allow pressing "Enter" to submit
+document.getElementById('log-pass').addEventListener('keypress', function(e) {
+  if (e.key === 'Enter') processLogin();
+});
+<!-- This is the old script before the new cloudflare databases
 // --- BULLETPROOF CURSOR FALLBACK ---
 document.addEventListener('mousemove', (e) => {
     const cursor = document.getElementById('cursor');
@@ -189,6 +266,8 @@ async function doChangePassword(e) {
   
   btn.disabled = false; btn.textContent = 'Update Password';
 }
+end of commented code
+-->
 </script>
 <script src="assets/main.js"></script>
 </body>
