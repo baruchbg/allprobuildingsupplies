@@ -6,5 +6,5 @@ compatibility_date = "2024-04-21"
 [[d1_databases]]
 binding = "DB"
 database_name = "allpro-db"
-database_id = "d2f447d2-7c39-4458-ba6b-c4c0bb62b08a"
-preview_database_id = "9e1c4ea2-8088-4c1d-872e-d0dfc249a5b6"
+database_id = "31689783-6a85-460f-b9ac-7ba9d7be8dc0"
+preview_database_id = "cb7c6d87-4ca6-4897-a953-4d81650034b8"

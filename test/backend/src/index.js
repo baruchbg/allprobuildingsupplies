@@ -1,17 +1,15 @@
 // =====================================================================
-// ALL PRO BUILDING SUPPLIES - MAIN API WORKER
+// ALL PRO BUILDING SUPPLIES - SECURE API WORKER
 // =====================================================================
 
-// 1. Define CORS Headers (Security requirement for frontend to access API)
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*', // We will lock this down to your domain later
+  'Access-Control-Allow-Origin': '*', 
   'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type, Authorization',
 };
 
 export default {
   async fetch(request, env, ctx) {
-    // 2. Handle CORS Preflight Requests (Browser security check)
     if (request.method === 'OPTIONS') {
       return new Response(null, { headers: corsHeaders });
     }
@@ -20,52 +18,78 @@ export default {
     const path = url.pathname;
 
     try {
-      // ---------------------------------------------------------
-      // ROUTE: Health Check (To verify the API is online)
-      // ---------------------------------------------------------
+      // 1. HEALTH CHECK
       if (path === '/api/health' && request.method === 'GET') {
         return new Response(JSON.stringify({ status: 'ok', message: 'All Pro API is connected to D1!' }), {
-          status: 200,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         });
       }
 
-      // ---------------------------------------------------------
-      // ROUTE: Get All Products
-      // ---------------------------------------------------------
+      // 2. FETCH PRODUCTS
       if (path === '/api/products' && request.method === 'GET') {
-        // Query the D1 database linked in wrangler.toml as env.DB
         const { results } = await env.DB.prepare("SELECT * FROM products").all();
-        
         return new Response(JSON.stringify(results), {
-          status: 200,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         });
       }
 
-      // ---------------------------------------------------------
-      // ROUTE: Login User (Placeholder for next step)
-      // ---------------------------------------------------------
+      // 3. USER LOGIN
       if (path === '/api/login' && request.method === 'POST') {
-        return new Response(JSON.stringify({ error: 'Login route under construction' }), {
-          status: 501,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        const body = await request.json();
+        const { email, password } = body;
+
+        if (!email || !password) {
+          return new Response(JSON.stringify({ error: 'Email and password required' }), { status: 400, headers: corsHeaders });
+        }
+
+        // Query the D1 database for the user
+        const { results } = await env.DB.prepare(
+          "SELECT * FROM users WHERE email = ? AND password = ?"
+        ).bind(email.toLowerCase(), password).all();
+
+        if (results.length === 0) {
+          return new Response(JSON.stringify({ error: 'Invalid email or password' }), { status: 401, headers: corsHeaders });
+        }
+
+        const user = results[0];
+
+        if (user.status !== 'approved') {
+          return new Response(JSON.stringify({ error: 'Account pending approval.' }), { status: 403, headers: corsHeaders });
+        }
+
+        // Return user data (excluding the password)
+        delete user.password;
+        
+        return new Response(JSON.stringify({ 
+          message: 'Login successful', 
+          token: 'secure-placeholder-token-123', // We will implement real JWT tokens later
+          user: user 
+        }), {
+          status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         });
       }
 
-      // ---------------------------------------------------------
-      // Fallback: Route Not Found
-      // ---------------------------------------------------------
-      return new Response(JSON.stringify({ error: 'API Route Not Found' }), {
-        status: 404,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      });
+      // 4. USER REGISTRATION
+      if (path === '/api/register' && request.method === 'POST') {
+        const body = await request.json();
+        const { id, fname, lname, company, email, phone, password } = body;
+
+        // Insert into D1 Database
+        await env.DB.prepare(
+          `INSERT INTO users (id, fname, lname, company, email, phone, password, status, canOrderPieces, registeredAt) 
+           VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', 1, ?)`
+        ).bind(id, fname, lname, company, email.toLowerCase(), phone, password, new Date().toISOString()).run();
+
+        return new Response(JSON.stringify({ message: 'Registration received!' }), {
+          status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      }
+
+      return new Response(JSON.stringify({ error: 'Not Found' }), { status: 404, headers: corsHeaders });
 
     } catch (error) {
-      // Catch-all for server errors
       return new Response(JSON.stringify({ error: 'Internal Server Error', details: error.message }), {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       });
     }
   }
