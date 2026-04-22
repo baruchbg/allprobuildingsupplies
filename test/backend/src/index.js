@@ -49,6 +49,36 @@ export default {
         return new Response(JSON.stringify({ message: 'Registration received!' }), { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' }});
       }
 
+      // NEW: Secure Public Orders Route (For Checkout Page)
+      if (path === '/api/orders' && request.method === 'POST') {
+        const o = await request.json();
+        
+        // Ensure required fields exist
+        if (!o.id || !o.customer || !o.customer.email) {
+          return new Response(JSON.stringify({ error: 'Missing required order data' }), { status: 400, headers: corsHeaders });
+        }
+
+        const stmts = [
+          env.DB.prepare(`
+            INSERT INTO orders (id, user_id, status, total_amount, delivery_method, delivery_address, po, notes, customer_snapshot, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          `).bind(
+            o.id, o.customer.email.toLowerCase(), 'pending', o.total, 
+            o.delivery.method || 'delivery', o.delivery.address || '', 
+            o.po || '', o.notes || '', JSON.stringify(o.customer), o.placedAt
+          )
+        ];
+
+        if (o.items && o.items.length > 0) {
+          for (const i of o.items) {
+            stmts.push(env.DB.prepare("INSERT INTO order_items (order_id, product_sku, size, quantity, price_at_purchase) VALUES (?, ?, ?, ?, ?)").bind(o.id, i.code, i.size, i.qty, i.unitPrice));
+          }
+        }
+
+        await env.DB.batch(stmts);
+        return new Response(JSON.stringify({ success: true, orderId: o.id }), { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      }
+
       // ---------------------------------------------------------
       // SECURE ADMIN ROUTES
       // ---------------------------------------------------------
@@ -81,6 +111,7 @@ export default {
       }
 
       // -- PRODUCTS --
+      // Wipe Clean Route (Used by Manual "Save Products" Button)
       if (path === '/api/admin/products/sync' && request.method === 'POST') {
         const products = await request.json();
         const stmts = [env.DB.prepare("DELETE FROM products")]; // Wipe clean
@@ -88,6 +119,23 @@ export default {
           stmts.push(env.DB.prepare("INSERT INTO products (code, description, size, pack, qty, price, image) VALUES (?, ?, ?, ?, ?, ?, ?)").bind(p.code, p.description, p.size, p.pack, p.qty, p.price, p.image));
         }
         await env.DB.batch(stmts); // Insert all new
+        return new Response(JSON.stringify({ success: true }), { status: 200, headers: corsHeaders });
+      }
+
+      // NEW: Safe CSV Upsert Route (Insert or Update without wiping)
+      if (path === '/api/admin/products/bulk-update' && request.method === 'POST') {
+        const products = await request.json();
+        const stmts = [];
+        for (const p of products) {
+          stmts.push(env.DB.prepare(`
+            INSERT INTO products (code, description, size, pack, qty, price, image) 
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT(code, size) DO UPDATE SET 
+              description=excluded.description, pack=excluded.pack, 
+              qty=excluded.qty, price=excluded.price, image=excluded.image
+          `).bind(p.code, p.description, p.size, p.pack, p.qty, p.price, p.image));
+        }
+        await env.DB.batch(stmts);
         return new Response(JSON.stringify({ success: true }), { status: 200, headers: corsHeaders });
       }
 
