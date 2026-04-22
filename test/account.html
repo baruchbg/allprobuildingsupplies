@@ -89,7 +89,12 @@ var currentUser = null;
   document.getElementById('display-email').textContent = currentUser.email || 'N/A';
   document.getElementById('display-status').textContent = currentUser.status || 'Pending';
   document.getElementById('display-rights').textContent = currentUser.canOrderPieces === false ? 'Cases Only' : 'Pieces & Cases';
-  document.getElementById('nav-logged-in-name').textContent = (currentUser.fname || '') + ' ' + (currentUser.lname || '');
+  
+  // FIX: Added protection for the asynchronous header injection
+  let navNameEl = document.getElementById('nav-logged-in-name');
+  if (navNameEl) {
+      navNameEl.textContent = (currentUser.fname || '') + ' ' + (currentUser.lname || '');
+  }
 
   loadOrders();
 })();
@@ -117,15 +122,15 @@ async function loadOrders() {
       
       let itemsCount = o.items ? o.items.reduce((sum, i) => sum + i.qty, 0) : 0;
 
-      return `
+      return \`
         <tr>
-          <td data-label="Order ID"><span style="color:var(--gold);font-family:'DM Mono',monospace;font-size:13px;">${o.id}</span></td>
-          <td data-label="Date Placed">${new Date(o.placedAt).toLocaleDateString()}</td>
-          <td data-label="Items">${itemsCount} pcs</td>
-          <td data-label="Total">$${(o.total || 0).toFixed(2)}</td>
-          <td data-label="Status"><span class="status-badge ${statusClass}">${o.status}</span></td>
+          <td data-label="Order ID"><span style="color:var(--gold);font-family:'DM Mono',monospace;font-size:13px;">\${o.id}</span></td>
+          <td data-label="Date Placed">\${new Date(o.placedAt).toLocaleDateString()}</td>
+          <td data-label="Items">\${itemsCount} pcs</td>
+          <td data-label="Total">$\${(o.total || 0).toFixed(2)}</td>
+          <td data-label="Status"><span class="status-badge \${statusClass}">\${o.status}</span></td>
         </tr>
-      `;
+      \`;
     }).join('');
 
   } catch(e) {
