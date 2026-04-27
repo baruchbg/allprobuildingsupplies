@@ -607,12 +607,15 @@ h1.htitle strong { color: var(--gold); }
 
 /* --- products.html --- */
 
+.filter-stack{margin-bottom:40px}
 .filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:40px}
+.filter-stack .filter-bar{margin-bottom:12px}
+.filter-stack .filter-bar:last-child{margin-bottom:0}
 .filter-btn{font-family:"Oswald",sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;padding:9px 20px;border:1px solid rgba(139,160,178,.2);color:var(--silver);background:transparent;cursor:none;transition:all .2s}
 .filter-btn:hover,.filter-btn.on{border-color:var(--gold);color:var(--gold);background:rgba(200,152,31,.07)}
 
 /* Mobile Filter Dropdown */
-.mobile-filter-wrap{display:none;margin-bottom:24px;}
+.mobile-filter-wrap{display:none;margin-bottom:24px;flex-direction:column;gap:12px}
 .mobile-filter-sel{width:100%;background:var(--ink2);border:1px solid rgba(200,152,31,.3);color:var(--gold);font-family:'Oswald',sans-serif;font-size:14px;padding:12px 16px;outline:none;letter-spacing:1px;text-transform:uppercase;cursor:none;}
 .mobile-filter-sel option{background:var(--ink3);color:var(--white);}
 
@@ -676,7 +679,8 @@ h1.htitle strong { color: var(--gold); }
 /* --- THE MOBILE FIX --- */
 @media(max-width:768px){
   .filter-bar{display:none !important;}
-  .mobile-filter-wrap{display:block;}
+  .filter-stack .filter-bar{display:none !important;}
+  .mobile-filter-wrap{display:flex;}
   .prod-section-thumb{width:50px;height:50px}
   .prod-section-title{font-size:13px;white-space:normal;line-height:1.4}
   .note-box{font-size:13px;padding:14px 16px}

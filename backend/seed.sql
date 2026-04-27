@@ -26,6 +26,8 @@ CREATE TABLE products (
   qty INTEGER,
   price REAL,
   image TEXT,
+  main_category TEXT,
+  sub_category TEXT,
   PRIMARY KEY (code, size)
 );
 
@@ -82,32 +84,32 @@ INSERT OR IGNORE INTO order_items (order_id, product_sku, size, quantity, price_
 INSERT OR IGNORE INTO order_items (order_id, product_sku, size, quantity, price_at_purchase) VALUES ('APB-MN9BWNA1', 'PVC-SANTEERED', '3x3x2', 30, 3.4);
 
 -- Products Data
-INSERT OR IGNORE INTO products (code, description, size, pack, qty, price, image) VALUES ('PIPE-SOLID', 'ASTM D1785 SCH40 PVC', '2', 20, 2806, 16.20, 'images/Sch40Solid.png');
-INSERT OR IGNORE INTO products (code, description, size, pack, qty, price, image) VALUES ('PIPE-SOLID', 'ASTM D1785 SCH40 PVC', '3', 20, 2806, 30.00, 'images/Sch40Solid.png');
-INSERT OR IGNORE INTO products (code, description, size, pack, qty, price, image) VALUES ('PIPE-SOLID', 'ASTM D1785 SCH40 PVC', '4', 20, 2800, 54.80, 'images/Sch40Solid.png');
-INSERT OR IGNORE INTO products (code, description, size, pack, qty, price, image) VALUES ('PIPE-FOAM', 'ASTM F891 PVC Foam Core DWV Pipe', '1-1/2', 20, 1, 7.70, 'images/Sch40Foam.png');
-INSERT OR IGNORE INTO products (code, description, size, pack, qty, price, image) VALUES ('PIPE-FOAM', 'ASTM F891 PVC Foam Core DWV Pipe', '2', 20, 1, 9.80, 'images/Sch40Foam.png');
-INSERT OR IGNORE INTO products (code, description, size, pack, qty, price, image) VALUES ('PIPE-FOAM', 'ASTM F891 PVC Foam Core DWV Pipe', '3', 20, 1, 18.60, 'images/Sch40Foam.png');
-INSERT OR IGNORE INTO products (code, description, size, pack, qty, price, image) VALUES ('PIPE-FOAM', 'ASTM F891 PVC Foam Core DWV Pipe', '4', 20, 1, 27.60, 'images/Sch40Foam.png');
-INSERT OR IGNORE INTO products (code, description, size, pack, qty, price, image) VALUES ('PVC-1/4HH', '1/4 BEND (H x H)', '1-1/2', 100, 3300, 0.60, 'images/90Elbow.png');
-INSERT OR IGNORE INTO products (code, description, size, pack, qty, price, image) VALUES ('PVC-1/4HH', '1/4 BEND (H x H)', '2', 50, 2700, 0.90, 'images/90Elbow.png');
-INSERT OR IGNORE INTO products (code, description, size, pack, qty, price, image) VALUES ('PVC-1/4HH', '1/4 BEND (H x H)', '3', 25, 1975, 2.40, 'images/90Elbow.png');
-INSERT OR IGNORE INTO products (code, description, size, pack, qty, price, image) VALUES ('PVC-1/4HH', '1/4 BEND (H x H)', '4', 10, 220, 4.10, 'images/90Elbow.png');
-INSERT OR IGNORE INTO products (code, description, size, pack, qty, price, image) VALUES ('PVC-1/8HH', '1/8 BEND (H x H)', '1-1/2', 100, 600, 0.60, 'images/90Elbow.png');
-INSERT OR IGNORE INTO products (code, description, size, pack, qty, price, image) VALUES ('PVC-1/8HH', '1/8 BEND (H x H)', '2', 50, 1400, 0.80, 'images/90Elbow.png');
-INSERT OR IGNORE INTO products (code, description, size, pack, qty, price, image) VALUES ('PVC-1/8HH', '1/8 BEND (H x H)', '3', 25, 1350, 2.30, 'images/90Elbow.png');
-INSERT OR IGNORE INTO products (code, description, size, pack, qty, price, image) VALUES ('PVC-1/8HH', '1/8 BEND (H x H)', '4', 15, 75, 4.10, 'images/90Elbow.png');
-INSERT OR IGNORE INTO products (code, description, size, pack, qty, price, image) VALUES ('PVC-1/8HS', '1/8 BEND STREET (H x S)', '1-1/2', 100, 0, 0.50, 'images/90Elbow.png');
-INSERT OR IGNORE INTO products (code, description, size, pack, qty, price, image) VALUES ('PVC-1/8HS', '1/8 BEND STREET (H x S)', '2', 50, 1900, 0.80, 'images/90Elbow.png');
-INSERT OR IGNORE INTO products (code, description, size, pack, qty, price, image) VALUES ('PVC-1/8HS', '1/8 BEND STREET (H x S)', '3', 25, 1375, 2.10, 'images/90Elbow.png');
-INSERT OR IGNORE INTO products (code, description, size, pack, qty, price, image) VALUES ('PVC-1/8HS', '1/8 BEND STREET (H x S)', '4', 9, 144, 3.50, 'images/90Elbow.png');
-INSERT OR IGNORE INTO products (code, description, size, pack, qty, price, image) VALUES ('PVC-SANTEE', 'SANITARY TEE (ALL HUB)', '1-1/2', 60, 120, 1.00, 'images/SanTee.png');
-INSERT OR IGNORE INTO products (code, description, size, pack, qty, price, image) VALUES ('PVC-SANTEE', 'SANITARY TEE (ALL HUB)', '2', 35, 0, 1.40, 'images/SanTee.png');
-INSERT OR IGNORE INTO products (code, description, size, pack, qty, price, image) VALUES ('PVC-SANTEE', 'SANITARY TEE (ALL HUB)', '3', 15, 105, 3.50, 'images/SanTee.png');
-INSERT OR IGNORE INTO products (code, description, size, pack, qty, price, image) VALUES ('PVC-SANTEE', 'SANITARY TEE (ALL HUB)', '4', 5, 100, 8.60, 'images/SanTee.png');
-INSERT OR IGNORE INTO products (code, description, size, pack, qty, price, image) VALUES ('PVC-WYEHUB', 'WYE (ALL HUB)', '1-1/2', 50, 100, 1.10, 'images/RedWye.png');
-INSERT OR IGNORE INTO products (code, description, size, pack, qty, price, image) VALUES ('PVC-WYEHUB', 'WYE (ALL HUB)', '2', 25, 450, 1.70, 'images/RedWye.png');
-INSERT OR IGNORE INTO products (code, description, size, pack, qty, price, image) VALUES ('PVC-WYEHUB', 'WYE (ALL HUB)', '3', 15, 0, 4.50, 'images/RedWye.png');
-INSERT OR IGNORE INTO products (code, description, size, pack, qty, price, image) VALUES ('PVC-WYEHUB', 'WYE (ALL HUB)', '4', 8, 104, 7.90, 'images/RedWye.png');
-INSERT OR IGNORE INTO products (code, description, size, pack, qty, price, image) VALUES ('PVC-SANTEERED', 'REDUCING SANITARY TEE (ALL HUB)', '3x3x2', 15, 345, 3.40, 'images/RedSanTee.png');
-INSERT OR IGNORE INTO products (code, description, size, pack, qty, price, image) VALUES ('PVC-CLSTFLNGH', 'CLOSET FLANGE W/TEST PLATE (H)', '4x3', 20, 1620, 3.10, 'images/CapSOC.png');
+INSERT OR IGNORE INTO products (code, description, size, pack, qty, price, image, main_category, sub_category) VALUES ('PIPE-SOLID', 'ASTM D1785 SCH40 PVC', '2', 20, 2806, 16.20, 'images/Sch40Solid.png', 'Plumbing', 'PIPE-SOLID');
+INSERT OR IGNORE INTO products (code, description, size, pack, qty, price, image, main_category, sub_category) VALUES ('PIPE-SOLID', 'ASTM D1785 SCH40 PVC', '3', 20, 2806, 30.00, 'images/Sch40Solid.png', 'Plumbing', 'PIPE-SOLID');
+INSERT OR IGNORE INTO products (code, description, size, pack, qty, price, image, main_category, sub_category) VALUES ('PIPE-SOLID', 'ASTM D1785 SCH40 PVC', '4', 20, 2800, 54.80, 'images/Sch40Solid.png', 'Plumbing', 'PIPE-SOLID');
+INSERT OR IGNORE INTO products (code, description, size, pack, qty, price, image, main_category, sub_category) VALUES ('PIPE-FOAM', 'ASTM F891 PVC Foam Core DWV Pipe', '1-1/2', 20, 1, 7.70, 'images/Sch40Foam.png', 'Plumbing', 'PIPE-FOAM');
+INSERT OR IGNORE INTO products (code, description, size, pack, qty, price, image, main_category, sub_category) VALUES ('PIPE-FOAM', 'ASTM F891 PVC Foam Core DWV Pipe', '2', 20, 1, 9.80, 'images/Sch40Foam.png', 'Plumbing', 'PIPE-FOAM');
+INSERT OR IGNORE INTO products (code, description, size, pack, qty, price, image, main_category, sub_category) VALUES ('PIPE-FOAM', 'ASTM F891 PVC Foam Core DWV Pipe', '3', 20, 1, 18.60, 'images/Sch40Foam.png', 'Plumbing', 'PIPE-FOAM');
+INSERT OR IGNORE INTO products (code, description, size, pack, qty, price, image, main_category, sub_category) VALUES ('PIPE-FOAM', 'ASTM F891 PVC Foam Core DWV Pipe', '4', 20, 1, 27.60, 'images/Sch40Foam.png', 'Plumbing', 'PIPE-FOAM');
+INSERT OR IGNORE INTO products (code, description, size, pack, qty, price, image, main_category, sub_category) VALUES ('PVC-1/4HH', '1/4 BEND (H x H)', '1-1/2', 100, 3300, 0.60, 'images/90Elbow.png', 'Plumbing', 'PVC-1/4HH');
+INSERT OR IGNORE INTO products (code, description, size, pack, qty, price, image, main_category, sub_category) VALUES ('PVC-1/4HH', '1/4 BEND (H x H)', '2', 50, 2700, 0.90, 'images/90Elbow.png', 'Plumbing', 'PVC-1/4HH');
+INSERT OR IGNORE INTO products (code, description, size, pack, qty, price, image, main_category, sub_category) VALUES ('PVC-1/4HH', '1/4 BEND (H x H)', '3', 25, 1975, 2.40, 'images/90Elbow.png', 'Plumbing', 'PVC-1/4HH');
+INSERT OR IGNORE INTO products (code, description, size, pack, qty, price, image, main_category, sub_category) VALUES ('PVC-1/4HH', '1/4 BEND (H x H)', '4', 10, 220, 4.10, 'images/90Elbow.png', 'Plumbing', 'PVC-1/4HH');
+INSERT OR IGNORE INTO products (code, description, size, pack, qty, price, image, main_category, sub_category) VALUES ('PVC-1/8HH', '1/8 BEND (H x H)', '1-1/2', 100, 600, 0.60, 'images/90Elbow.png', 'Plumbing', 'PVC-1/8HH');
+INSERT OR IGNORE INTO products (code, description, size, pack, qty, price, image, main_category, sub_category) VALUES ('PVC-1/8HH', '1/8 BEND (H x H)', '2', 50, 1400, 0.80, 'images/90Elbow.png', 'Plumbing', 'PVC-1/8HH');
+INSERT OR IGNORE INTO products (code, description, size, pack, qty, price, image, main_category, sub_category) VALUES ('PVC-1/8HH', '1/8 BEND (H x H)', '3', 25, 1350, 2.30, 'images/90Elbow.png', 'Plumbing', 'PVC-1/8HH');
+INSERT OR IGNORE INTO products (code, description, size, pack, qty, price, image, main_category, sub_category) VALUES ('PVC-1/8HH', '1/8 BEND (H x H)', '4', 15, 75, 4.10, 'images/90Elbow.png', 'Plumbing', 'PVC-1/8HH');
+INSERT OR IGNORE INTO products (code, description, size, pack, qty, price, image, main_category, sub_category) VALUES ('PVC-1/8HS', '1/8 BEND STREET (H x S)', '1-1/2', 100, 0, 0.50, 'images/90Elbow.png', 'Plumbing', 'PVC-1/8HS');
+INSERT OR IGNORE INTO products (code, description, size, pack, qty, price, image, main_category, sub_category) VALUES ('PVC-1/8HS', '1/8 BEND STREET (H x S)', '2', 50, 1900, 0.80, 'images/90Elbow.png', 'Plumbing', 'PVC-1/8HS');
+INSERT OR IGNORE INTO products (code, description, size, pack, qty, price, image, main_category, sub_category) VALUES ('PVC-1/8HS', '1/8 BEND STREET (H x S)', '3', 25, 1375, 2.10, 'images/90Elbow.png', 'Plumbing', 'PVC-1/8HS');
+INSERT OR IGNORE INTO products (code, description, size, pack, qty, price, image, main_category, sub_category) VALUES ('PVC-1/8HS', '1/8 BEND STREET (H x S)', '4', 9, 144, 3.50, 'images/90Elbow.png', 'Plumbing', 'PVC-1/8HS');
+INSERT OR IGNORE INTO products (code, description, size, pack, qty, price, image, main_category, sub_category) VALUES ('PVC-SANTEE', 'SANITARY TEE (ALL HUB)', '1-1/2', 60, 120, 1.00, 'images/SanTee.png', 'Plumbing', 'PVC-SANTEE');
+INSERT OR IGNORE INTO products (code, description, size, pack, qty, price, image, main_category, sub_category) VALUES ('PVC-SANTEE', 'SANITARY TEE (ALL HUB)', '2', 35, 0, 1.40, 'images/SanTee.png', 'Plumbing', 'PVC-SANTEE');
+INSERT OR IGNORE INTO products (code, description, size, pack, qty, price, image, main_category, sub_category) VALUES ('PVC-SANTEE', 'SANITARY TEE (ALL HUB)', '3', 15, 105, 3.50, 'images/SanTee.png', 'Plumbing', 'PVC-SANTEE');
+INSERT OR IGNORE INTO products (code, description, size, pack, qty, price, image, main_category, sub_category) VALUES ('PVC-SANTEE', 'SANITARY TEE (ALL HUB)', '4', 5, 100, 8.60, 'images/SanTee.png', 'Plumbing', 'PVC-SANTEE');
+INSERT OR IGNORE INTO products (code, description, size, pack, qty, price, image, main_category, sub_category) VALUES ('PVC-WYEHUB', 'WYE (ALL HUB)', '1-1/2', 50, 100, 1.10, 'images/RedWye.png', 'Plumbing', 'PVC-WYEHUB');
+INSERT OR IGNORE INTO products (code, description, size, pack, qty, price, image, main_category, sub_category) VALUES ('PVC-WYEHUB', 'WYE (ALL HUB)', '2', 25, 450, 1.70, 'images/RedWye.png', 'Plumbing', 'PVC-WYEHUB');
+INSERT OR IGNORE INTO products (code, description, size, pack, qty, price, image, main_category, sub_category) VALUES ('PVC-WYEHUB', 'WYE (ALL HUB)', '3', 15, 0, 4.50, 'images/RedWye.png', 'Plumbing', 'PVC-WYEHUB');
+INSERT OR IGNORE INTO products (code, description, size, pack, qty, price, image, main_category, sub_category) VALUES ('PVC-WYEHUB', 'WYE (ALL HUB)', '4', 8, 104, 7.90, 'images/RedWye.png', 'Plumbing', 'PVC-WYEHUB');
+INSERT OR IGNORE INTO products (code, description, size, pack, qty, price, image, main_category, sub_category) VALUES ('PVC-SANTEERED', 'REDUCING SANITARY TEE (ALL HUB)', '3x3x2', 15, 345, 3.40, 'images/RedSanTee.png', 'Plumbing', 'PVC-SANTEERED');
+INSERT OR IGNORE INTO products (code, description, size, pack, qty, price, image, main_category, sub_category) VALUES ('PVC-CLSTFLNGH', 'CLOSET FLANGE W/TEST PLATE (H)', '4x3', 20, 1620, 3.10, 'images/CapSOC.png', 'Plumbing', 'PVC-CLSTFLNGH');

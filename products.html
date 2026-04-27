@@ -45,14 +45,14 @@
     </div>
     
     <div class="mobile-filter-wrap">
-      <select class="mobile-filter-sel" id="mobile-filter-select" onchange="setFilter(this.value, null)">
-        <option value="all">View All Categories</option>
-        </select>
+      <select class="mobile-filter-sel" id="mobile-main-select" aria-label="Main category" onchange="onMobileMainChange(this.value)"></select>
+      <select class="mobile-filter-sel" id="mobile-sub-select" aria-label="Sub category" onchange="onMobileSubChange(this.value)"></select>
     </div>
 
-    <div class="filter-bar" id="dynamic-filters">
-      <button class="filter-btn on" onclick="setFilter('all',this)">All</button>
-      </div>
+    <div class="filter-stack" id="filter-stack">
+      <div class="filter-bar" id="main-filters" role="toolbar" aria-label="Main categories"></div>
+      <div class="filter-bar" id="sub-filters" role="toolbar" aria-label="Sub categories"></div>
+    </div>
     
     <div id="prod-sections">
       <div style="text-align:center;padding:40px;color:var(--silver);font-family:'DM Mono',monospace;">Loading Live Inventory...</div>
@@ -111,6 +111,228 @@ let isLoggedIn = false;
 })();
 
 // --- DYNAMIC PRODUCT RENDERER (CLOUDFLARE D1) ---
+window.catProductGroups = null;
+window.catActiveMain = 'all';
+window.catActiveSub = 'all';
+
+function catEscAttr(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+}
+function catEscHtml(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+function catMainKey(mainCat) {
+  return (mainCat === '' || mainCat == null) ? '__EMPTY__' : String(mainCat);
+}
+
+function applyCatalogFilters() {
+  var searchEl = document.getElementById('prod-search');
+  var qt = (searchEl && searchEl.value) ? searchEl.value.trim().toLowerCase() : '';
+  var main = window.catActiveMain;
+  var sub = window.catActiveSub;
+  document.querySelectorAll('.prod-section').forEach(function(sec) {
+    var mk = sec.getAttribute('data-main-key') || '__EMPTY__';
+    var sk = sec.getAttribute('data-sub') || '';
+    var mainOk = (main === 'all' || mk === main);
+    var subOk = (sub === 'all' || sk === sub);
+    var searchOk = true;
+    if (qt) {
+      var hay = (sec.getAttribute('data-search') || '').toLowerCase();
+      searchOk = hay.indexOf(qt) !== -1;
+    }
+    var show = mainOk && subOk && searchOk;
+    sec.style.display = show ? '' : 'none';
+    if (qt && searchOk) sec.classList.add('open');
+    if (!qt) sec.classList.remove('open');
+  });
+}
+
+function rebuildSubFilters() {
+  var groups = window.catProductGroups;
+  var subBar = document.getElementById('sub-filters');
+  if (!groups || !subBar) return;
+  var main = window.catActiveMain;
+  var subs = new Set();
+  Object.keys(groups).forEach(function(code) {
+    var data = groups[code];
+    var mk = catMainKey(data.mainCat);
+    if (main === 'all' || mk === main) subs.add(data.subCat || code);
+  });
+  var subArr = Array.from(subs).sort(function(a, b) { return a.localeCompare(b); });
+  subBar.innerHTML = '';
+  var allB = document.createElement('button');
+  allB.type = 'button';
+  allB.className = 'filter-btn on';
+  allB.textContent = 'All';
+  allB.setAttribute('data-cat-sub', 'all');
+  allB.onclick = function() { setCatSub('all', this); };
+  subBar.appendChild(allB);
+  subArr.forEach(function(sub) {
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'filter-btn';
+    btn.textContent = sub;
+    btn.setAttribute('data-cat-sub', sub);
+    btn.onclick = function() { setCatSub(sub, this); };
+    subBar.appendChild(btn);
+  });
+  window.catActiveSub = 'all';
+  syncMobileSubSelect();
+}
+
+function buildMainFilters(groups) {
+  var mainBar = document.getElementById('main-filters');
+  if (!mainBar) return;
+  var mainsMap = new Map();
+  Object.keys(groups).forEach(function(code) {
+    var g = groups[code];
+    var key = catMainKey(g.mainCat);
+    var lab = (g.mainCat === '' || g.mainCat == null) ? 'Other' : String(g.mainCat);
+    mainsMap.set(key, lab);
+  });
+  var keys = Array.from(mainsMap.keys()).sort(function(a, b) {
+    if (a === '__EMPTY__') return 1;
+    if (b === '__EMPTY__') return -1;
+    return mainsMap.get(a).localeCompare(mainsMap.get(b));
+  });
+  mainBar.innerHTML = '';
+  var allMain = document.createElement('button');
+  allMain.type = 'button';
+  allMain.className = 'filter-btn on';
+  allMain.textContent = 'All';
+  allMain.setAttribute('data-cat-main', 'all');
+  allMain.onclick = function() { setCatMain('all', this); };
+  mainBar.appendChild(allMain);
+  keys.forEach(function(k) {
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'filter-btn';
+    btn.textContent = mainsMap.get(k);
+    btn.setAttribute('data-cat-main', k);
+    btn.onclick = function() { setCatMain(k, this); };
+    mainBar.appendChild(btn);
+  });
+  window.catActiveMain = 'all';
+  window.catActiveSub = 'all';
+  populateMobileMainSelect(groups);
+  rebuildSubFilters();
+  applyCatalogFilters();
+}
+
+function setCatMain(mainKey, btn) {
+  window.catActiveMain = mainKey;
+  window.catActiveSub = 'all';
+  var mainBar = document.getElementById('main-filters');
+  if (mainBar) {
+    mainBar.querySelectorAll('.filter-btn').forEach(function(b) { b.classList.remove('on'); });
+    if (btn) btn.classList.add('on');
+    else {
+      var hit = null;
+      mainBar.querySelectorAll('.filter-btn').forEach(function(b) {
+        if (b.getAttribute('data-cat-main') === mainKey) hit = b;
+      });
+      if (!hit) hit = mainBar.querySelector('[data-cat-main="all"]');
+      if (hit) hit.classList.add('on');
+    }
+  }
+  rebuildSubFilters();
+  var mm = document.getElementById('mobile-main-select');
+  if (mm) mm.value = mainKey;
+  applyCatalogFilters();
+}
+
+function setCatSub(subVal, btn) {
+  window.catActiveSub = subVal;
+  var subBar = document.getElementById('sub-filters');
+  if (subBar) {
+    subBar.querySelectorAll('.filter-btn').forEach(function(b) { b.classList.remove('on'); });
+    if (btn) btn.classList.add('on');
+    else {
+      var sel = null;
+      subBar.querySelectorAll('.filter-btn').forEach(function(b) {
+        if (b.getAttribute('data-cat-sub') === subVal) sel = b;
+      });
+      if (!sel) sel = subBar.querySelector('[data-cat-sub="all"]');
+      if (sel) sel.classList.add('on');
+    }
+  }
+  var ms = document.getElementById('mobile-sub-select');
+  if (ms) ms.value = subVal;
+  applyCatalogFilters();
+}
+
+function populateMobileMainSelect(groups) {
+  var mm = document.getElementById('mobile-main-select');
+  if (!mm) return;
+  var mainsMap = new Map();
+  Object.keys(groups).forEach(function(code) {
+    var g = groups[code];
+    var key = catMainKey(g.mainCat);
+    var lab = (g.mainCat === '' || g.mainCat == null) ? 'Other' : String(g.mainCat);
+    mainsMap.set(key, lab);
+  });
+  var keys = Array.from(mainsMap.keys()).sort(function(a, b) {
+    if (a === '__EMPTY__') return 1;
+    if (b === '__EMPTY__') return -1;
+    return mainsMap.get(a).localeCompare(mainsMap.get(b));
+  });
+  mm.innerHTML = '<option value="all">All departments</option>';
+  keys.forEach(function(k) {
+    var opt = document.createElement('option');
+    opt.value = k;
+    opt.textContent = mainsMap.get(k);
+    mm.appendChild(opt);
+  });
+}
+
+function syncMobileSubSelect() {
+  var groups = window.catProductGroups;
+  var ms = document.getElementById('mobile-sub-select');
+  var mm = document.getElementById('mobile-main-select');
+  if (!ms || !groups) return;
+  var main = window.catActiveMain;
+  if (mm && mm.value !== main) mm.value = main;
+  var subs = new Set();
+  Object.keys(groups).forEach(function(code) {
+    var data = groups[code];
+    var mk = catMainKey(data.mainCat);
+    if (main === 'all' || mk === main) subs.add(data.subCat || code);
+  });
+  var subArr = Array.from(subs).sort(function(a, b) { return a.localeCompare(b); });
+  var prev = window.catActiveSub;
+  ms.innerHTML = '<option value="all">All types</option>';
+  subArr.forEach(function(sub) {
+    var opt = document.createElement('option');
+    opt.value = sub;
+    opt.textContent = sub;
+    ms.appendChild(opt);
+  });
+  if (prev !== 'all' && subArr.indexOf(prev) !== -1) {
+    ms.value = prev;
+    window.catActiveSub = prev;
+    var subBar = document.getElementById('sub-filters');
+    if (subBar) {
+      subBar.querySelectorAll('.filter-btn').forEach(function(b) { b.classList.remove('on'); });
+      var bHit = null;
+      subBar.querySelectorAll('.filter-btn').forEach(function(b) {
+        if (b.getAttribute('data-cat-sub') === prev) bHit = b;
+      });
+      if (bHit) bHit.classList.add('on');
+    }
+  } else {
+    ms.value = 'all';
+    window.catActiveSub = 'all';
+  }
+}
+
+function onMobileMainChange(v) {
+  setCatMain(v, null);
+}
+
+function onMobileSubChange(v) {
+  setCatSub(v, null);
+}
+
 async function fetchAndRenderProducts() {
   try {
     const apiURL = window.APBS_API_BASE ? window.APBS_API_BASE + '/products' : 'https://allpro-api.baruch-6d5.workers.dev/api/products';
@@ -119,65 +341,52 @@ async function fetchAndRenderProducts() {
     
     let groups = {};
     
-    // Group the JSON rows by Code
-    for(let i=0; i<rows.length; i++) {
+    for (let i = 0; i < rows.length; i++) {
       let row = rows[i];
-      if(!row.code) continue;
+      if (!row.code) continue;
       
       let code = row.code.trim();
-      if(!groups[code]) {
-        groups[code] = { desc: row.description, image: row.image || 'images/logo.png', rows: [] };
+      if (!groups[code]) {
+        var mainRaw = row.main_category != null ? String(row.main_category).trim() : '';
+        var subRaw = row.sub_category != null ? String(row.sub_category).trim() : '';
+        groups[code] = {
+          desc: row.description,
+          image: row.image || 'images/logo.png',
+          rows: [],
+          mainCat: mainRaw,
+          subCat: subRaw || code
+        };
       }
       
       groups[code].rows.push({ 
         size: row.size, 
         pack: row.pack, 
-        qty: parseInt(row.qty)||0, 
-        price: parseFloat(row.price)||0 
+        qty: parseInt(row.qty) || 0, 
+        price: parseFloat(row.price) || 0 
       });
     }
 
     const container = document.getElementById('prod-sections');
-    const filterBar = document.getElementById('dynamic-filters');
-    const mobileSelect = document.getElementById('mobile-filter-select');
     container.innerHTML = '';
-    if (filterBar) {
-      while (filterBar.children.length > 1) filterBar.removeChild(filterBar.lastChild);
-    }
-    if (mobileSelect) {
-      while (mobileSelect.options.length > 1) mobileSelect.remove(1);
-    }
     const sectionChunks = [];
 
     for (const [code, data] of Object.entries(groups)) {
-      // Build Desktop Filters
-      let fBtn = document.createElement('button');
-      fBtn.className = 'filter-btn';
-      fBtn.textContent = code;
-      fBtn.onclick = function() { setFilter(code, this); };
-      filterBar.appendChild(fBtn);
-      
-      // Build Mobile Filter Dropdown
-      let fOpt = document.createElement('option');
-      fOpt.value = code;
-      fOpt.textContent = code;
-      mobileSelect.appendChild(fOpt);
-      
-      const searchAttr = (code + ' ' + data.desc + ' ' + data.rows.map(function (r) { return r.size; }).join(' '))
+      var mainKey = catMainKey(data.mainCat);
+      var subLabel = data.subCat || code;
+      const searchAttr = (code + ' ' + data.desc + ' ' + data.mainCat + ' ' + subLabel + ' ' + data.rows.map(function (r) { return r.size; }).join(' '))
         .toLowerCase()
         .replace(/&/g, '&amp;')
         .replace(/"/g, '&quot;');
 
-      // Build Section
       let html = `
-        <div class="prod-section" id="${code}" data-code="${code}" data-search="${searchAttr}">
+        <div class="prod-section" id="${code.replace(/"/g, '')}" data-code="${code.replace(/"/g, '')}" data-main-key="${catEscAttr(mainKey)}" data-sub="${catEscAttr(subLabel)}" data-search="${searchAttr}">
           <div class="prod-section-hdr" onclick="toggleSection(this)">
             <div class="prod-section-thumb" onclick="event.stopPropagation();openLightbox('${data.image}','${data.desc.replace(/'/g,"\\'").replace(/"/g,"&quot;")}')">
               <img src="${data.image}" alt="${data.desc.replace(/"/g,"&quot;")}" class="cat-img" loading="lazy">
             </div>
             <div class="prod-section-meta">
-              <div class="prod-section-code">${code}</div>
-              <div class="prod-section-title">${data.desc}</div>
+              <div class="prod-section-code">${catEscHtml(subLabel)}</div>
+              <div class="prod-section-title">${catEscHtml(data.desc)}</div>
             </div>
             <span class="prod-section-chevron">&#9660;</span>
           </div>
@@ -221,6 +430,8 @@ async function fetchAndRenderProducts() {
     }
 
     container.innerHTML = sectionChunks.join('');
+    window.catProductGroups = groups;
+    buildMainFilters(groups);
   } catch(e) {
     document.getElementById('prod-sections').innerHTML = '<div style="color:#ff6b6b;padding:40px;text-align:center;">Failed to load catalog. Please refresh.</div>';
     console.error(e);
@@ -236,18 +447,6 @@ function toggleSection(hdr){
   sec.classList.toggle('open');
 }
 
-function setFilter(code, btn){
-  if(btn){
-    document.querySelectorAll('.filter-btn').forEach(function(b){ b.classList.remove('on'); });
-    btn.classList.add('on');
-    var sel = document.getElementById('mobile-filter-select');
-    if(sel) sel.value = code;
-  }
-  document.querySelectorAll('.prod-section').forEach(function(s){
-    s.style.display = (code==='all' || s.dataset.code===code) ? '' : 'none';
-  });
-}
-
 var searchInput = document.getElementById('prod-search');
 var searchDebounce = null;
 if(searchInput){
@@ -255,17 +454,7 @@ if(searchInput){
     var self = this;
     clearTimeout(searchDebounce);
     searchDebounce = setTimeout(function(){
-      var q = self.value.trim().toLowerCase();
-      document.querySelectorAll('.prod-section').forEach(function(sec){
-        if(!q){
-          sec.style.display = '';
-          sec.classList.remove('open');
-          return;
-        }
-        var hay = sec.getAttribute('data-search') || '';
-        sec.style.display = hay.indexOf(q) !== -1 ? '' : 'none';
-        if(hay.indexOf(q) !== -1) sec.classList.add('open');
-      });
+      applyCatalogFilters();
     }, 160);
   });
 }

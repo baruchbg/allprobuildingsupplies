@@ -164,7 +164,9 @@ export default {
         const products = await request.json();
         const stmts = [env.DB.prepare("DELETE FROM products")]; // Wipe clean
         for (const p of products) {
-          stmts.push(env.DB.prepare("INSERT INTO products (code, description, size, pack, qty, price, image) VALUES (?, ?, ?, ?, ?, ?, ?)").bind(p.code, p.description, p.size, p.pack, p.qty, p.price, p.image));
+          const mainCat = p.main_category != null ? String(p.main_category) : '';
+          const subCat = p.sub_category != null ? String(p.sub_category) : '';
+          stmts.push(env.DB.prepare("INSERT INTO products (code, description, size, pack, qty, price, image, main_category, sub_category) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)").bind(p.code, p.description, p.size, p.pack, p.qty, p.price, p.image, mainCat, subCat));
         }
         await env.DB.batch(stmts); // Insert all new
         return new Response(JSON.stringify({ success: true }), { status: 200, headers: corsHeaders });
@@ -175,13 +177,16 @@ export default {
         const products = await request.json();
         const stmts = [];
         for (const p of products) {
+          const mainCat = p.main_category != null ? String(p.main_category) : '';
+          const subCat = p.sub_category != null ? String(p.sub_category) : '';
           stmts.push(env.DB.prepare(`
-            INSERT INTO products (code, description, size, pack, qty, price, image) 
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO products (code, description, size, pack, qty, price, image, main_category, sub_category) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(code, size) DO UPDATE SET 
               description=excluded.description, pack=excluded.pack, 
-              qty=excluded.qty, price=excluded.price, image=excluded.image
-          `).bind(p.code, p.description, p.size, p.pack, p.qty, p.price, p.image));
+              qty=excluded.qty, price=excluded.price, image=excluded.image,
+              main_category=excluded.main_category, sub_category=excluded.sub_category
+          `).bind(p.code, p.description, p.size, p.pack, p.qty, p.price, p.image, mainCat, subCat));
         }
         await env.DB.batch(stmts);
         return new Response(JSON.stringify({ success: true }), { status: 200, headers: corsHeaders });
